@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .organic-shape {
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    }
+
+    .navbar-glass {
+        background: rgba(242, 239, 234, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(159, 175, 154, 0.2);
+    }
+}
