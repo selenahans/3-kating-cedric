@@ -23,6 +23,9 @@ export default {
                     clay: "#B09D85",
                 },
             },
+            animation: {
+                "bounce-slow": "bounce 3s infinite",
+            },
         },
     },
 
