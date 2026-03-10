@@ -9,10 +9,15 @@ Route::get('/', function () {
 Route::get('/onboarding', function () {
     return view('onboarding');
 });
-
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+});
+Route::get('/app', function () {
+    return view('layouts.app');
+});
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

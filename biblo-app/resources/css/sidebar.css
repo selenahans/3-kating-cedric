@@ -1,0 +1,64 @@
+/* Sidebar Container */
+.biblo-sidebar {
+    @apply fixed left-0 top-0 h-screen w-64 bg-white border-r border-[#CFC8BE]/20 flex flex-col justify-between py-10 px-6 z-[100] transition-all duration-300;
+}
+
+/* Navigasi Group */
+.sidebar-nav-group {
+    @apply space-y-2;
+}
+
+.sidebar-label {
+    @apply text-[10px] font-black uppercase tracking-[0.2em] text-[#3F453F]/30 px-4 mb-4 select-none;
+}
+
+/* Base Link Style */
+.sidebar-link {
+    @apply flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300;
+}
+
+/* Link State: Inactive */
+.sidebar-link-inactive {
+    @apply text-[#3F453F]/60 hover:bg-[#F2EFEA] hover:text-[#3F453F];
+}
+
+/* Link State: Active */
+.sidebar-link-active {
+    @apply bg-[#7E8F7A] text-white shadow-lg shadow-[#7E8F7A]/20;
+}
+
+/* Icon Container */
+.sidebar-icon {
+    @apply transition-colors duration-300;
+}
+
+.sidebar-link-inactive .sidebar-icon {
+    @apply text-[#CFC8BE] group-hover:text-[#7E8F7A];
+}
+
+.sidebar-link-active .sidebar-icon {
+    @apply text-white;
+}
+
+/* User Profile Section */
+.sidebar-user-card {
+    @apply flex items-center gap-3 px-2 py-3 bg-[#F2EFEA]/50 rounded-2xl border border-[#CFC8BE]/10;
+}
+
+.user-avatar {
+    @apply w-10 h-10 rounded-xl bg-[#9FAF9A] flex items-center justify-center text-white font-bold shadow-sm;
+}
+
+/* Logout Button */
+.btn-logout {
+    @apply w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-50 rounded-xl transition-all;
+}
+
+.btn-logout svg {
+    @apply group-hover:-translate-x-1 transition-transform duration-300;
+}
+
+/* Layout Spacer (agar konten dashboard tidak tertutup) */
+.sidebar-spacer {
+    @apply w-64 flex-shrink-0 hidden lg:block;
+}
