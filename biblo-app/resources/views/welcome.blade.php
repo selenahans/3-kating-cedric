@@ -1,3 +1,4 @@
+{{--
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 
@@ -44,35 +45,42 @@
 
 <body class="bg-biblo-oat text-biblo-charcoal">
 
-    <nav id="main-navbar" class="fixed w-full z-[100] transition-all duration-300 py-6 px-6">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <nav id="main-navbar" class="fixed w-full z-[100] transition-all duration-500 py-6 px-6 flex justify-center">
+        <div id="navbar-container"
+            class="w-full max-w-7xl transition-all duration-500 rounded-[32px] px-8 py-4 flex justify-between items-center bg-transparent">
+
             <div class="flex items-center gap-2 select-none cursor-pointer">
-                <div class="flex items-center select-none cursor-pointer">
-                    <a href="/">
-                        <img src="images/logo/biblo.webp" id="nav-logo" alt="Biblo Logo"
-                            class="h-8 md:h-10 w-auto transition-all duration-300">
-                    </a>
-                </div>
+                <a href="/" class="group">
+                    <img src="{{ asset('images/logo/biblo.webp') }}" id="nav-logo" alt="Biblo Logo"
+                        class="h-8 md:h-10 w-auto transition-all duration-300 group-hover:scale-105">
+                </a>
             </div>
 
             <div class="hidden md:flex items-center gap-10">
-                <div class="flex gap-8 items-center text-sm font-bold text-biblo-greige" id="nav-links">
+                <div class="flex gap-8 items-center text-[11px] font-black uppercase tracking-[0.2em] text-biblo-greige"
+                    id="nav-links">
                     <a href="#features" class="hover:text-biblo-sage transition-colors">Fitur</a>
                     <a href="#gamifikasi" class="hover:text-biblo-sage transition-colors">Sistem Pet</a>
                     <a href="#faq" class="hover:text-biblo-sage transition-colors">FAQ</a>
                 </div>
+
                 <div class="h-5 w-[1px] bg-biblo-greige/20"></div>
-                <div class="flex items-center gap-6">
-                    <a href="#" class="text-sm font-bold text-biblo-greige hover:text-white transition-colors"
-                        id="nav-login">Masuk</a>
+
+                <div class="flex items-center gap-8">
+                    <a href="{{ route('login') }}"
+                        class="text-[11px] font-black uppercase tracking-[0.2em] text-biblo-greige hover:text-biblo-charcoal transition-colors"
+                        id="nav-login">
+                        Masuk
+                    </a>
                     <button
-                        class="bg-biblo-moss text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-biblo-charcoal transition-all hover:shadow-lg shadow-biblo-moss/20">
+                        class="bg-biblo-moss text-white px-7 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-biblo-charcoal hover:-translate-y-1 active:translate-y-0 transition-all shadow-xl shadow-biblo-moss/20">
                         Mulai Membaca
                     </button>
                 </div>
             </div>
 
-            <button class="md:hidden text-white p-2" id="mobile-toggle">
+            <button class="md:hidden text-biblo-charcoal p-2 hover:bg-biblo-oat rounded-xl transition-colors"
+                id="mobile-toggle">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
@@ -81,12 +89,17 @@
         </div>
 
         <div id="mobile-menu"
-            class="hidden absolute top-full left-0 w-full bg-white shadow-xl p-6 flex flex-col gap-4 text-center md:hidden border-t border-biblo-oat">
-            <a href="#features" class="font-bold py-2">Fitur</a>
-            <a href="#gamifikasi" class="font-bold py-2">Sistem Pet</a>
-            <a href="#faq" class="font-bold py-2">FAQ</a>
-            <hr>
-            <button class="bg-biblo-charcoal text-white py-4 rounded-2xl font-bold">Mulai Membaca</button>
+            class="hidden absolute top-full left-6 right-6 bg-white/90 backdrop-blur-2xl shadow-2xl p-8 flex flex-col gap-6 text-center md:hidden border border-biblo-oat mt-4 rounded-[32px] overflow-hidden">
+            <div class="flex flex-col gap-4 text-[11px] font-black uppercase tracking-widest text-biblo-charcoal/60">
+                <a href="#features" class="py-2 hover:text-biblo-moss transition-colors">Fitur</a>
+                <a href="#gamifikasi" class="py-2 hover:text-biblo-moss transition-colors">Sistem Pet</a>
+                <a href="#faq" class="py-2 hover:text-biblo-moss transition-colors">FAQ</a>
+            </div>
+            <hr class="border-biblo-oat">
+            <button
+                class="bg-biblo-charcoal text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest">
+                Mulai Membaca
+            </button>
         </div>
     </nav>
 
@@ -121,6 +134,85 @@
         </div>
     </header>
 
+
+
+
+
+
+
+    <script>
+        const navbar = document.getElementById('main-navbar');
+        const logoLo = document.getElementById('logo-lo');
+        const navLinks = document.getElementById('nav-links');
+        const navLogin = document.getElementById('nav-login');
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 80) {
+                navbar.classList.add('navbar-glass', 'py-4');
+                navbar.classList.remove('py-6');
+                logoLo.classList.replace('text-white', 'text-biblo-charcoal');
+                navLinks.classList.replace('text-biblo-greige', 'text-biblo-charcoal/70');
+                navLogin.classList.replace('text-biblo-greige', 'text-biblo-charcoal/80');
+                mobileToggle.classList.replace('text-white', 'text-biblo-charcoal');
+            } else {
+                navbar.classList.remove('navbar-glass', 'py-4');
+                navbar.classList.add('py-6');
+                logoLo.classList.replace('text-biblo-charcoal', 'text-white');
+                navLinks.classList.replace('text-biblo-charcoal/70', 'text-biblo-greige');
+                navLogin.classList.replace('text-biblo-charcoal/80', 'text-biblo-greige');
+                mobileToggle.classList.replace('text-biblo-charcoal', 'text-white');
+            }
+        });
+
+        // Mobile Menu Toggle
+        mobileToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close menu on click link
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+        });
+    </script>
+</body>
+
+</html> --}}
+
+
+<x-guest-layout title="Selamat Datang di Biblo">
+
+    <header class="bg-biblo-charcoal rounded-b-[60px] pt-48 pb-40 px-6 relative overflow-hidden text-center">
+        <div class="absolute inset-0 opacity-5 pointer-events-none grid grid-cols-6 gap-10 p-10">
+            <span>📖</span><span>🐾</span><span>📖</span><span>🐾</span><span>📖</span><span>🐾</span>
+        </div>
+
+        <div class="max-w-4xl mx-auto relative z-10">
+
+
+            <h1 class="text-white text-5xl md:text-7xl font-extrabold mb-8 leading-[1.1] tracking-tighter">
+                Membaca Jadi <br> <span class="text-biblo-sage italic">Lebih Hidup.</span>
+            </h1>
+
+            <p class="text-biblo-greige/80 text-lg md:text-xl mb-16 max-w-2xl mx-auto leading-relaxed">
+                Tumbuhkan kebiasaan membaca bersama pet digitalmu. Setiap halaman adalah nutrisi pertumbuhannya.
+            </p>
+
+            <div class="relative inline-block group">
+                <div
+                    class="w-72 h-72 md:w-96 md:h-96 bg-biblo-moss/10 organic-shape absolute -top-8 -left-8 animate-pulse group-hover:scale-110 transition-transform duration-700">
+                </div>
+
+                <div
+                    class="relative w-72 h-72 md:w-96 md:h-96 organic-shape flex items-center justify-center shadow-2xl transition-transform duration-700 group-hover:scale-105 overflow-hidden">
+
+                    <img src="{{ asset('images/boo.webp') }}" alt="Boo Companion"
+                        class="w-full h-full object-contain p-10 animate-float-slow">
+                </div>
+            </div>
+        </div>
+    </header>
     <section id="features" class="max-w-6xl mx-auto px-6 -mt-16 relative z-20">
         <div class="grid md:grid-cols-3 gap-8">
             <div
@@ -223,98 +315,4 @@
         </div>
     </section>
 
-    <footer class="bg-white border-t border-biblo-greige/20 pt-24 pb-12 px-6">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-start gap-16 pb-20">
-                <div class="max-w-xs">
-                    <div class="mb-6">
-                        <img src="images/logo/biblo.webp" alt="Biblo Logo" class="h-10 w-auto">
-                    </div>
-                    <p class="text-biblo-charcoal/50 leading-relaxed mb-8">
-                        Membangun masa depan lewat lembaran buku dengan cara yang lebih modern dan adiktif (dalam cara
-                        yang baik!).
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-2 lg:grid-cols-3 gap-16">
-                    <div class="flex flex-col gap-4">
-                        <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-charcoal/30">Layanan
-                        </h4>
-                        <a href="#" class="text-sm font-semibold hover:text-biblo-moss transition">Perpustakaan</a>
-                        <a href="#" class="text-sm font-semibold hover:text-biblo-moss transition">Pet Shop</a>
-                        <a href="#" class="text-sm font-semibold hover:text-biblo-moss transition">Komunitas</a>
-                    </div>
-                    <div class="flex flex-col gap-4">
-                        <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-charcoal/30">Perusahaan
-                        </h4>
-                        <a href="#" class="text-sm font-semibold hover:text-biblo-moss transition">Tentang Kami</a>
-                        <a href="#" class="text-sm font-semibold hover:text-biblo-moss transition">Karir</a>
-                        <a href="#" class="text-sm font-semibold hover:text-biblo-moss transition">Kontak</a>
-                    </div>
-                    <div class="hidden lg:flex flex-col gap-4">
-                        <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-charcoal/30">Ikuti Kami
-                        </h4>
-                        <div class="flex gap-4">
-                            <div
-                                class="w-10 h-10 bg-biblo-oat rounded-full flex items-center justify-center cursor-pointer hover:bg-biblo-sage transition">
-                                IG</div>
-                            <div
-                                class="w-10 h-10 bg-biblo-oat rounded-full flex items-center justify-center cursor-pointer hover:bg-biblo-sage transition">
-                                TW</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div
-                class="pt-8 border-t border-biblo-greige/10 flex flex-col md:flex-row justify-between items-center gap-6">
-                <p class="text-[11px] text-biblo-charcoal/40 font-bold uppercase tracking-widest">
-                    © 2026 BIBLO INTERACTIVE. ALL RIGHTS RESERVED.
-                </p>
-                <div class="flex gap-8 text-[11px] font-bold text-biblo-charcoal/40 uppercase tracking-widest">
-                    <a href="#" class="hover:text-biblo-moss transition">Privacy</a>
-                    <a href="#" class="hover:text-biblo-moss transition">Terms</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        const navbar = document.getElementById('main-navbar');
-        const logoLo = document.getElementById('logo-lo');
-        const navLinks = document.getElementById('nav-links');
-        const navLogin = document.getElementById('nav-login');
-        const mobileToggle = document.getElementById('mobile-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 80) {
-                navbar.classList.add('navbar-glass', 'py-4');
-                navbar.classList.remove('py-6');
-                logoLo.classList.replace('text-white', 'text-biblo-charcoal');
-                navLinks.classList.replace('text-biblo-greige', 'text-biblo-charcoal/70');
-                navLogin.classList.replace('text-biblo-greige', 'text-biblo-charcoal/80');
-                mobileToggle.classList.replace('text-white', 'text-biblo-charcoal');
-            } else {
-                navbar.classList.remove('navbar-glass', 'py-4');
-                navbar.classList.add('py-6');
-                logoLo.classList.replace('text-biblo-charcoal', 'text-white');
-                navLinks.classList.replace('text-biblo-charcoal/70', 'text-biblo-greige');
-                navLogin.classList.replace('text-biblo-charcoal/80', 'text-biblo-greige');
-                mobileToggle.classList.replace('text-biblo-charcoal', 'text-white');
-            }
-        });
-
-        // Mobile Menu Toggle
-        mobileToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Close menu on click link
-        document.querySelectorAll('#mobile-menu a').forEach(link => {
-            link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
-        });
-    </script>
-</body>
-
-</html>
+</x-guest-layout>

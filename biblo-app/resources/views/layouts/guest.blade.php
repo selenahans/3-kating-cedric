@@ -1,30 +1,86 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="id" class="scroll-smooth">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ $title ?? 'Biblo - Sahabat Membacamu' }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'biblo-sage': '#9FAF9A',
+                        'biblo-greige': '#CFC8BE',
+                        'biblo-oat': '#F2EFEA',
+                        'biblo-charcoal': '#3F453F',
+                        'biblo-moss': '#7E8F7A',
+                        'biblo-clay': '#B09D85',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        .organic-shape {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        }
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
+        .navbar-glass {
+            background: rgba(242, 239, 234, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(159, 175, 154, 0.2);
+        }
+    </style>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
-            </div>
-        </div>
-    </body>
+        .organic-shape {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        }
+
+        /* Tambahkan CSS Keyframes untuk animasi melayang */
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(2deg);
+            }
+
+            /* Naik 20px & miring dikit */
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+        /* Buat class utilitas untuk animasi tersebut */
+        .animate-float-slow {
+            animation: float 6s ease-in-out infinite;
+            /* 6 detik per siklus, halus */
+        }
+    </style>
+</head>
+
+<body class="bg-biblo-oat text-biblo-charcoal">
+
+    <x-guest-navbar />
+
+    <main>
+        {{ $slot }}
+    </main>
+    <x-guest-footer />
+
+</body>
+
 </html>

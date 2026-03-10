@@ -27,6 +27,9 @@ Route::get('/mypet', function () {
 Route::get('/mynotes', function () {
     return view('mynotes');
 });
+Route::get('/guest', function () {
+    return view('layouts.guest');
+});
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
