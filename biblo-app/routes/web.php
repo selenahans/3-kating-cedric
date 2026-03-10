@@ -18,6 +18,9 @@ Route::get('/app', function () {
 Route::get('/explore', function () {
     return view('explore');
 });
+Route::get('/mylibrary', function () {
+    return view('mylibrary');
+});
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
