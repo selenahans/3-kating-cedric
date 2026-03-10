@@ -1,0 +1,23 @@
+.biblo-topbar {
+    @apply sticky top-0 bg-white/80 backdrop-blur-md border-b border-[#CFC8BE]/20 px-8 py-4 z-50 flex items-center justify-between transition-all duration-300;
+}
+
+.search-wrapper {
+    @apply relative w-full max-w-md hidden md:block;
+}
+
+.search-input {
+    @apply w-full bg-[#F2EFEA]/50 border-none rounded-2xl pl-12 pr-4 py-2.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#7E8F7A]/30 transition-all;
+}
+
+.icon-btn {
+    @apply p-2.5 rounded-xl bg-[#F2EFEA]/50 text-[#3F453F]/60 hover:bg-[#F2EFEA] hover:text-[#3F453F] transition-all relative;
+}
+
+.notification-dot {
+    @apply absolute top-2.5 right-2.5 w-2 h-2 bg-red-400 border-2 border-white rounded-full;
+}
+
+.user-nav-profile {
+    @apply flex items-center gap-3 pl-4 border-l border-[#CFC8BE]/30 ml-4;
+}

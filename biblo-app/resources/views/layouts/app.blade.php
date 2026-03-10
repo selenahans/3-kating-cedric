@@ -13,7 +13,7 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/css/sidebar.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/sidebar.css', 'resources/css/topbar.css', 'resources/js/app.js'])
 </head>
 
 <body class="font-sans antialiased">
@@ -21,7 +21,13 @@
         <x-sidebar active="home" />
 
         <main class="flex-1 p-6 md:p-10">
-            {{-- Konten Dashboard Kamu --}}
+            <div class="flex-1">
+                <x-topbar />
+
+                <main class="p-8">
+                    {{-- Konten Dashboard --}}
+                </main>
+            </div>
         </main>
     </div>
     {{-- <div class="min-h-screen bg-gray-100">
