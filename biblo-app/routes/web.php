@@ -24,6 +24,9 @@ Route::get('/mylibrary', function () {
 Route::get('/mypet', function () {
     return view('mypet');
 });
+Route::get('/mynotes', function () {
+    return view('mynotes');
+});
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
