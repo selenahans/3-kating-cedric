@@ -15,6 +15,9 @@ Route::get('/dashboard', function () {
 Route::get('/app', function () {
     return view('layouts.app');
 });
+Route::get('/explore', function () {
+    return view('explore');
+});
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');

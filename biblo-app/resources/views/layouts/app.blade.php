@@ -22,10 +22,10 @@
 
         <main class="flex-1 p-6 md:p-10">
             <div class="flex-1">
-                <x-topbar />
+                <x-topbar :title="$title ?? 'Explore'" />
 
-                <main class="p-8">
-                    {{-- Konten Dashboard --}}
+                <main class="p-8 md:p-10 lg:p-12 overflow-y-auto">
+                    {{ $slot }}
                 </main>
             </div>
         </main>
