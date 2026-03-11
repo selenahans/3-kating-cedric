@@ -30,6 +30,9 @@ Route::get('/mynotes', function () {
 Route::get('/guest', function () {
     return view('layouts.guest');
 });
+Route::get('/book-detail', function () {
+    return view('book.detail');
+});
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
