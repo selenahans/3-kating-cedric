@@ -33,6 +33,9 @@ Route::get('/guest', function () {
 Route::get('/book-detail', function () {
     return view('book.detail');
 });
+Route::get('/book-read', function () {
+    return view('book.read');
+});
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
