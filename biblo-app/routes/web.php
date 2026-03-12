@@ -39,6 +39,9 @@ Route::get('/book-read', function () {
 Route::get('/shop', function () {
     return view('shop');
 });
+Route::get('/profil', function () {
+    return view('profil');
+});
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
