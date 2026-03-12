@@ -42,6 +42,9 @@ Route::get('/shop', function () {
 Route::get('/profil', function () {
     return view('profil');
 });
+Route::get('/notification', function () {
+    return view('notification');
+});
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
