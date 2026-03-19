@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignId('category_id')->constrained();
             $table->string('title');
             $table->string('author');
+            $table->integer('total_pages');
             $table->string('file_path'); // Path to .epub file
             $table->string('cover_image')->nullable();
             $table->timestamps();

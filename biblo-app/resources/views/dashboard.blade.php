@@ -33,6 +33,7 @@
 
     <div class="max-w-7xl mx-auto space-y-8">
         
+        {{-- TOP STATS HEADER --}}
         <div class="grid md:grid-cols-3 gap-6">
             <div class="md:col-span-2 bg-biblo-charcoal rounded-[40px] p-8 text-white relative overflow-hidden flex flex-col justify-between min-h-[240px]">
                 <div class="relative z-10">
@@ -75,8 +76,10 @@
             </div>
         </div>
 
+        {{-- MAIN CONTENT GRID --}}
         <div class="grid md:grid-cols-12 gap-6">
             
+            {{-- RECAP SECTION --}}
             <div class="md:col-span-4 bg-white rounded-[40px] p-8 shadow-xl border border-white">
                 <h3 class="font-bold text-lg mb-6">Recap Februari</h3>
                 <div class="space-y-6">
@@ -111,77 +114,65 @@
                 </div>
             </div>
 
+            {{-- DYNAMIC CONTINUE READING --}}
             <div class="md:col-span-8 space-y-6">
                 <div class="flex justify-between items-center px-2">
                     <h3 class="font-bold text-lg">Lanjutkan Membaca</h3>
-                    <a href="#" class="text-xs font-bold text-biblo-moss hover:underline">Lihat Semua</a>
+                    <a href="{{ route('mylibrary') }}" class="text-xs font-bold text-biblo-moss hover:underline">Lihat Semua</a>
                 </div>
                 
+                {{-- Only show this block if there is a current book --}}
+                @if(isset($currentBook))
                 <div class="bg-white rounded-[40px] p-6 shadow-xl border border-white flex flex-col md:flex-row gap-6 items-center">
                     <div class="w-32 h-44 bg-biblo-greige rounded-2xl shadow-lg flex-shrink-0 overflow-hidden">
-                        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1974&auto=format&fit=crop" class="w-full h-full object-cover" alt="Cover">
+                        <img src="{{ asset($currentBook->cover_image) }}" onerror="this.src='https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1974&auto=format&fit=crop'" class="w-full h-full object-cover" alt="{{ $currentBook->title }}">
                     </div>
                     <div class="flex-1 w-full">
-                        <span class="text-[10px] font-black text-biblo-moss uppercase tracking-widest">Self Improvement</span>
-                        <h4 class="text-xl font-extrabold text-biblo-charcoal mt-1">Atomic Habits</h4>
-                        <p class="text-sm text-biblo-charcoal/50 mb-4">James Clear</p>
+                        {{-- Attempt to get the category name, fallback to 'Uncategorized' if null --}}
+                        <span class="text-[10px] font-black text-biblo-moss uppercase tracking-widest">{{ $currentBook->category->name ?? 'Book' }}</span>
+                        <h4 class="text-xl font-extrabold text-biblo-charcoal mt-1">{{ $currentBook->title }}</h4>
+                        <p class="text-sm text-biblo-charcoal/50 mb-4">{{ $currentBook->author }}</p>
                         
                         <div class="space-y-2 mb-6">
                             <div class="flex justify-between text-[11px] font-bold">
                                 <span>Progress Baca</span>
-                                <span>65%</span>
+                                <span>0%</span> {{-- Can be made dynamic later when progress tracking is built --}}
                             </div>
                             <div class="w-full bg-biblo-oat rounded-full h-1.5">
-                                <div class="bg-biblo-charcoal h-1.5 rounded-full" style="width: 65%"></div>
+                                <div class="bg-biblo-charcoal h-1.5 rounded-full" style="width: 5%"></div>
                             </div>
                         </div>
                         
-                        <button class="bg-biblo-moss text-white px-8 py-3 rounded-xl font-bold text-sm hover:bg-biblo-charcoal transition-all">
+                        <a href="{{ route('book.read', $currentBook->id) }}" class="inline-block bg-biblo-moss text-white px-8 py-3 rounded-xl font-bold text-sm hover:bg-biblo-charcoal transition-all">
                             Baca Sekarang
-                        </button>
+                        </a>
                     </div>
                 </div>
+                @else
+                <div class="bg-white rounded-[40px] p-6 shadow-xl border border-white flex items-center justify-center h-44">
+                    <p class="text-biblo-charcoal/50 font-medium">Belum ada buku yang sedang dibaca.</p>
+                </div>
+                @endif
             </div>
         </div>
 
+        {{-- DYNAMIC RECOMMENDATIONS --}}
         <div class="space-y-6">
             <h3 class="font-bold text-lg px-2">Rekomendasi Untukmu</h3>
             <div class="flex overflow-x-auto gap-6 pb-6 custom-scrollbar">
-                <div class="w-48 flex-shrink-0 group cursor-pointer">
+                
+                {{-- Loop through the books database --}}
+                @foreach($books as $book)
+                <a href="{{ route('book.read', $book->id) }}" class="w-48 flex-shrink-0 group cursor-pointer block">
                     <div class="w-full aspect-[3/4] bg-biblo-greige rounded-[30px] mb-4 overflow-hidden relative shadow-md group-hover:shadow-xl transition-all">
-                        <img src="https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=2112&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <img src="{{ asset($book->cover_image) }}" onerror="this.src='https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=2112&auto=format&fit=crop'" class="w-full h-full object-cover" alt="{{ $book->title }}">
                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
                     </div>
-                    <h5 class="font-bold text-sm text-biblo-charcoal truncate">The Psychology of Money</h5>
-                    <p class="text-xs text-biblo-charcoal/40">Morgan Housel</p>
-                </div>
-
-                <div class="w-48 flex-shrink-0 group cursor-pointer">
-                    <div class="w-full aspect-[3/4] bg-biblo-greige rounded-[30px] mb-4 overflow-hidden relative shadow-md group-hover:shadow-xl transition-all">
-                        <img src="https://images.unsplash.com/photo-1543004218-ee141104308e?q=80&w=1974&auto=format&fit=crop" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
-                    </div>
-                    <h5 class="font-bold text-sm text-biblo-charcoal truncate">Deep Work</h5>
-                    <p class="text-xs text-biblo-charcoal/40">Cal Newport</p>
-                </div>
-
-                <div class="w-48 flex-shrink-0 group cursor-pointer">
-                    <div class="w-full aspect-[3/4] bg-biblo-greige rounded-[30px] mb-4 overflow-hidden relative shadow-md group-hover:shadow-xl transition-all">
-                        <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=1948&auto=format&fit=crop" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
-                    </div>
-                    <h5 class="font-bold text-sm text-biblo-charcoal truncate">The Alchemist</h5>
-                    <p class="text-xs text-biblo-charcoal/40">Paulo Coelho</p>
-                </div>
-
-                <div class="w-48 flex-shrink-0 group cursor-pointer">
-                    <div class="w-full aspect-[3/4] bg-biblo-greige rounded-[30px] mb-4 overflow-hidden relative shadow-md group-hover:shadow-xl transition-all">
-                        <img src="https://images.unsplash.com/photo-1495446815901-a7297e633e8d?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
-                    </div>
-                    <h5 class="font-bold text-sm text-biblo-charcoal truncate">Ikigai</h5>
-                    <p class="text-xs text-biblo-charcoal/40">Hector Garcia</p>
-                </div>
+                    <h5 class="font-bold text-sm text-biblo-charcoal truncate" title="{{ $book->title }}">{{ $book->title }}</h5>
+                    <p class="text-xs text-biblo-charcoal/40 truncate">{{ $book->author }}</p>
+                </a>
+                @endforeach
+                
             </div>
         </div>
 

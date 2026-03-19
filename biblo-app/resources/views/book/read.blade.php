@@ -1,50 +1,61 @@
 @extends('layouts.read')
 
-@section('title', 'Reading: Atomic Habits')
+@section('title', 'Reading: ' . $book->title)
 
 @section('content')
 
-
     {{-- Navbar --}}
-    <x-read.navbar 
-        title="Atomic Habits" 
-        currentPage="34" 
-        totalPages="120" 
-    />
+    <x-read.navbar :title="$book->title" :currentPage="$progress->current_location ?? 'Start'"
+        :totalPages="$book->total_pages ?? '100%'" />
 
-    {{-- Content --}}
-    <main class="pt-40 pb-44 px-6">
-        <div class="max-w-2xl mx-auto">
-            <article class="font-serif text-2xl md:text-3xl leading-[1.8] text-biblo-charcoal/90 space-y-12">
-                
-                <div class="relative py-4">
-                    <p class="italic border-l-4 border-biblo-sage pl-8">
-                        You do not rise to the level of your goals. <br>
-                        You fall to the level of your systems.
-                    </p>
-                </div>
+    {{-- Cleaned Content Area --}}
+    <main class="pb-44 px-6 bg-biblo-cream/10">
+        <div class="max-w-4xl mx-auto">
+            {{-- This is the only element ePub.js needs --}}
+            <div id="viewer" class="h-[600px] w-full bg-white rounded-lg"></div>
 
-                <p class="font-sans text-lg md:text-xl font-medium tracking-tight opacity-80">
-                    Your habits shape identity.
-                </p>
-
-                <div class="space-y-8 text-xl leading-relaxed opacity-70">
-                    <p>
-                        Every action you take is a vote for the type of person you wish to become. 
-                        No single instance will transform your beliefs, but as the votes build up, 
-                        so does the evidence of your new identity.
-                    </p>
-                </div>
-
-            </article>
+            {{-- Loading State --}}
+            <div id="loading" class="text-center py-20 text-biblo-sage font-medium">
+                <div class="animate-pulse">Opening "{{ $book->title }}"...</div>
+            </div>
         </div>
     </main>
 
     {{-- Bottom Bar --}}
-    <x-read.bottom-bar 
-        prevUrl="#" 
-        nextUrl="#" 
-        progress="28" 
-    />
+    <x-read.bottom-bar id="prev" nextId="next" :progress="$progress->progress_percentage ?? 0" />
 
+    {{-- ePub.js Library --}}
+    <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const loading = document.getElementById("loading");
+
+            const url = "{{ asset('storage/' . $book->file_path) }}";
+
+            const book = ePub(url);
+
+            const rendition = book.renderTo("viewer", {
+                width: "100%",
+                height: "100%",
+                flow: "paginated",
+                spread: "none",
+                allowScriptedContent: true
+            });
+
+            rendition.display();
+
+            // hide loading when ready
+            book.ready.then(function () {
+                loading.style.display = "none";
+            });
+
+
+            // next / prev buttons
+            document.getElementById("next").onclick = () => rendition.next();
+            document.getElementById("prev").onclick = () => rendition.prev();
+
+        });
+    </script>
 @endsection
