@@ -20,6 +20,8 @@
     <div class="flex min-h-screen bg-biblo-oat">
         <x-sidebar active="home" />
 
+        <div id="sidebarOverlay" class="fixed inset-0 z-[90] bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"></div>
+
         <main class="flex-1 p-6 md:p-10">
             <div class="flex-1">
                 <x-topbar :title="$title ?? 'Explore'" />
