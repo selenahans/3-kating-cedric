@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->text('description');
             $table->integer('coin_reward');
             $table->integer('xp_reward');
+            $table->integer('target_value')->nullable();
             $table->timestamps();
         });
     }

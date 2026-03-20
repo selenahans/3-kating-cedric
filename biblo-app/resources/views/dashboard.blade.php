@@ -76,6 +76,46 @@
             </div>
         </div>
 
+        <!-- task list -->
+        <h3 class="text-lg font-semibold mb-4">Task Hari Ini</h3>
+
+        <div class="flex gap-4 overflow-x-auto">
+
+            @foreach($tasks as $task)
+            <div class="min-w-[220px] bg-gray-50 rounded-xl p-4 flex-shrink-0 shadow-sm">
+
+                <h4 class="font-semibold">{{ $task->title }}</h4>
+
+                 <div class="text-xs text-gray-400 mt-1">
+                    <span>{{$task->description}}</span>
+                </div>
+
+                {{-- Progress Bar --}}
+                <div class="mt-3">
+                    <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div 
+                            class="bg-gradient-to-r from-green-400 to-green-600 h-full rounded-full transition-all duration-700"
+                            style="width: 0%">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Label --}}
+                <div class="flex justify-between text-xs text-gray-400 mt-1">
+                    <span>Progress</span>
+                    <span>0%</span>
+                </div>
+
+                {{-- Reward --}}
+                <p class="text-xs text-gray-400 mt-2">
+                    +{{ $task->coin_reward }} coin • +{{ $task->xp_reward }} XP
+                </p>
+
+            </div>
+            @endforeach
+
+        </div>
+
         {{-- MAIN CONTENT GRID --}}
         <div class="grid md:grid-cols-12 gap-6">
             
@@ -155,6 +195,8 @@
                 @endif
             </div>
         </div>
+
+
 
         {{-- DYNAMIC RECOMMENDATIONS --}}
         <div class="space-y-6">
