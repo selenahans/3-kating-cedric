@@ -1,43 +1,12 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Biblo - Semangat Membaca!</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'biblo-sage': '#9FAF9A',
-                        'biblo-greige': '#CFC8BE',
-                        'biblo-oat': '#F2EFEA',
-                        'biblo-charcoal': '#3F453F',
-                        'biblo-moss': '#7E8F7A',
-                        'biblo-purple': '#A688CC',
-                    }
-                }
-            }
-        }
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.4); }
-        .custom-scrollbar::-webkit-scrollbar { height: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #CFC8BE; border-radius: 10px; }
-    </style>
-</head>
-<body class="bg-biblo-oat text-biblo-charcoal min-h-screen p-6 md:p-10">
-
+<x-app-layout title="Dashboard" active="home">
     <div class="max-w-7xl mx-auto space-y-8">
         
         {{-- TOP STATS HEADER --}}
         <div class="grid md:grid-cols-3 gap-6">
             <div class="md:col-span-2 bg-biblo-charcoal rounded-[40px] p-8 text-white relative overflow-hidden flex flex-col justify-between min-h-[240px]">
                 <div class="relative z-10">
-                    <h1 class="text-3xl font-extrabold mb-2">Selamat Pagi, Kak! 👋</h1>
+                    {{-- Ditambahkan ?? 'Kak' supaya tidak error saat logout --}}
+                    <h1 class="text-3xl font-extrabold mb-2">Selamat Pagi, {{ Auth::user()->name ?? 'Kak' }}! 👋</h1>
                     <p class="text-biblo-greige/60 text-sm">Barnaby sedang menunggumu untuk membacakan cerita baru.</p>
                 </div>
                 
@@ -161,14 +130,12 @@
                     <a href="{{ route('mylibrary') }}" class="text-xs font-bold text-biblo-moss hover:underline">Lihat Semua</a>
                 </div>
                 
-                {{-- Only show this block if there is a current book --}}
                 @if(isset($currentBook))
                 <div class="bg-white rounded-[40px] p-6 shadow-xl border border-white flex flex-col md:flex-row gap-6 items-center">
                     <div class="w-32 h-44 bg-biblo-greige rounded-2xl shadow-lg flex-shrink-0 overflow-hidden">
                         <img src="{{ asset($currentBook->cover_image) }}" onerror="this.src='https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1974&auto=format&fit=crop'" class="w-full h-full object-cover" alt="{{ $currentBook->title }}">
                     </div>
                     <div class="flex-1 w-full">
-                        {{-- Attempt to get the category name, fallback to 'Uncategorized' if null --}}
                         <span class="text-[10px] font-black text-biblo-moss uppercase tracking-widest">{{ $currentBook->category->name ?? 'Book' }}</span>
                         <h4 class="text-xl font-extrabold text-biblo-charcoal mt-1">{{ $currentBook->title }}</h4>
                         <p class="text-sm text-biblo-charcoal/50 mb-4">{{ $currentBook->author }}</p>
@@ -176,7 +143,7 @@
                         <div class="space-y-2 mb-6">
                             <div class="flex justify-between text-[11px] font-bold">
                                 <span>Progress Baca</span>
-                                <span>0%</span> {{-- Can be made dynamic later when progress tracking is built --}}
+                                <span>0%</span>
                             </div>
                             <div class="w-full bg-biblo-oat rounded-full h-1.5">
                                 <div class="bg-biblo-charcoal h-1.5 rounded-full" style="width: 5%"></div>
@@ -203,7 +170,6 @@
             <h3 class="font-bold text-lg px-2">Rekomendasi Untukmu</h3>
             <div class="flex overflow-x-auto gap-6 pb-6 custom-scrollbar">
                 
-                {{-- Loop through the books database --}}
                 @foreach($books as $book)
                 <a href="{{ route('book.read', $book->id) }}" class="w-48 flex-shrink-0 group cursor-pointer block">
                     <div class="w-full aspect-[3/4] bg-biblo-greige rounded-[30px] mb-4 overflow-hidden relative shadow-md group-hover:shadow-xl transition-all">
@@ -217,8 +183,5 @@
                 
             </div>
         </div>
-
     </div>
-
-</body>
-</html>
+</x-app-layout>
