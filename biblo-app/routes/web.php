@@ -2,10 +2,11 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\ExploreController;
 
 
 use App\Models\Book;
@@ -32,9 +33,9 @@ Route::get('/mynotes', function () {
 Route::get('/guest', function () {
     return view('layouts.guest');
 });
-Route::get('/book-detail', function () {
-    return view('book.detail');
-});
+Route::get('/explore', [ExploreController::class, 'index'])->name('explore');
+Route::get('/book-detail/{id}', [BookController::class, 'show']
+)->name('book.detail');
 Route::get('/book-read/{id}', function ($id) {
     // 1. Fetch the book by its ID. (findOrFail will automatically show a 404 if the ID doesn't exist)
     $book = Book::findOrFail($id);

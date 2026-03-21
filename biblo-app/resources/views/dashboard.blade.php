@@ -150,7 +150,7 @@
                             </div>
                         </div>
                         
-                        <a href="{{ route('book.read', $currentBook->id) }}" class="inline-block bg-biblo-moss text-white px-8 py-3 rounded-xl font-bold text-sm hover:bg-biblo-charcoal transition-all">
+                        <a href="{{ route('book.detail', $currentBook->id) }}" class="inline-block bg-biblo-moss text-white px-8 py-3 rounded-xl font-bold text-sm hover:bg-biblo-charcoal transition-all">
                             Baca Sekarang
                         </a>
                     </div>
@@ -171,7 +171,7 @@
             <div class="flex overflow-x-auto gap-6 pb-6 custom-scrollbar">
                 
                 @foreach($books as $book)
-                <a href="{{ route('book.read', $book->id) }}" class="w-48 flex-shrink-0 group cursor-pointer block">
+                <a href="{{ route('book.detail', $book->id) }}" class="w-48 flex-shrink-0 group cursor-pointer block">
                     <div class="w-full aspect-[3/4] bg-biblo-greige rounded-[30px] mb-4 overflow-hidden relative shadow-md group-hover:shadow-xl transition-all">
                         <img src="{{ asset($book->cover_image) }}" onerror="this.src='https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=2112&auto=format&fit=crop'" class="w-full h-full object-cover" alt="{{ $book->title }}">
                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
