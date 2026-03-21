@@ -14,4 +14,9 @@ class Book extends Model {
     public function highlights() {
         return $this->hasMany(HighlightNote::class);
     }
+
+    public function readingLogs()
+    {
+        return $this->hasMany(ReadingLog::class);
+    }
 }
