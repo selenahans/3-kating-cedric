@@ -15,7 +15,14 @@ return new class extends Migration {
             $col->string('name');
             $col->string('email')->unique();
             $col->string('password');
-            $col->integer('coins')->default(0); // The currency for the store
+
+            // --- ADD THIS LINE ---
+            $col->string('photo')->nullable();
+            // ---------------------
+
+            $col->integer('coins')->default(0);
+            $col->timestamp('email_verified_at')->nullable();
+            $col->rememberToken();
             $col->timestamps();
         });
 
@@ -31,7 +38,7 @@ return new class extends Migration {
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
-            $table->integer('coins')->default(0);
+            // Removed 'coins' from here - it doesn't belong in the session table
             $table->integer('last_activity')->index();
         });
     }

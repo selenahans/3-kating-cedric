@@ -46,6 +46,6 @@ class NoteController extends Controller
         })->count();
 
         // 3. Pass to the view
-        return view('notes', compact('notes', 'totalHighlights', 'totalNotes'));
+        return view('mynotes', compact('notes', 'totalHighlights', 'totalNotes'));
     }
 }
