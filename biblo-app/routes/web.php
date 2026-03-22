@@ -7,10 +7,88 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\ExploreController;
+use App\Http\Controllers\NoteController;
 
-
+use App\Models\User;
 use App\Models\Book;
 use App\Models\UserBookProgress;
+
+/********************
+ LOGIN & REGISTRATION
+ ********************/
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+Route::middleware('guest')->group(function () {
+    Route::get('login', function () {
+        return view('auth.login');
+    })->name('login');
+    Route::get('register', function () {
+        return view('auth.register');
+    })->name('register');
+    Route::post('/Auth/register', [RegisterController::class, 'store'])
+        ->name('register.process');
+    Route::post('/Auth/login', [LoginController::class, 'authenticate'])
+        ->name('login.process');
+});
+
+/********************
+ EMAIL VERIFICATION
+ ********************/
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+Route::get('/email/verify', function () {
+    return view('verify-email');
+})->name('verification.notice');
+Route::get('/email/verify/{id}/{hash}', function (Request $request, $id) {
+
+    $user = User::findOrFail($id);
+
+    if (!hash_equals((string) $request->hash, sha1($user->getEmailForVerification()))) {
+        abort(403);
+    }
+
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+
+    return redirect()->route('login')
+        ->with('status', 'Email berhasil diverifikasi. Silakan login.');
+
+})->middleware('signed')->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Link verifikasi telah dikirim ulang.');
+})->middleware('throttle:6,1')->name('verification.send');
+
+
+/********************
+ RESET PAssWORD
+ ********************/
+use App\Http\Controllers\Auth\Logout;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+Route::get('/forgotpass', function () {
+    return view('forgot-password');
+})->name('forgot-password');
+Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])
+    ->name('password.request');
+
+Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
+    ->name('password.email');
+
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])
+    ->name('password.reset');
+
+Route::post('/reset-password', [ResetPasswordController::class, 'store'])
+    ->name('password.update');
+
+/********************
+LOGOUT
+ ********************/
+Route::post('/logout', Logout::class)->name('Logout');
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,14 +105,13 @@ Route::get('/explore', function () {
 Route::get('/mypet', function () {
     return view('mypet');
 });
-Route::get('/mynotes', function () {
-    return view('mynotes');
-});
 Route::get('/guest', function () {
     return view('layouts.guest');
 });
 Route::get('/explore', [ExploreController::class, 'index'])->name('explore');
-Route::get('/book-detail/{id}', [BookController::class, 'show']
+Route::get(
+    '/book-detail/{id}',
+    [BookController::class, 'show']
 )->name('book.detail');
 Route::get('/book-read/{id}', function ($id) {
     // 1. Fetch the book by its ID. (findOrFail will automatically show a 404 if the ID doesn't exist)
@@ -63,14 +140,16 @@ Route::get('/notification', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+    Route::post('/notes/save', [NoteController::class, 'store'])->name('notes.store');
+    Route::get('/mynotes', [NoteController::class, 'index'])->name('notes.index');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
 
 
 // Route::get('/book-test', function () {
@@ -115,6 +194,6 @@ Route::get('/stream-book/{filename}', function ($filename) {
 })->name('book.stream');
 
 // Add a dummy POST route so the JS fetch doesn't 404
-Route::post('/update-progress/{id}', function($id) {
+Route::post('/update-progress/{id}', function ($id) {
     return response()->json(['status' => 'success']);
 })->name('reading.update-progress');
