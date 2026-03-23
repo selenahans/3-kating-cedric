@@ -4,24 +4,93 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Category;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ExploreController extends Controller
 {
-    public function index()
+    public function index(Request $request): View
     {
-        // 1. Recommended (Random for now, later you can base this on user reading history)
-        $recommendedBooks = Book::inRandomOrder()->take(5)->get();
+        $search = trim((string) $request->query('q', ''));
+        $categoryId = $request->integer('category');
+        $sort = $request->query('sort', 'latest');
 
-        // 2. Fetch all categories from the database for the Genre section
-        $genres = Category::all();
+        $genres = Category::orderBy('name')->get();
+        $preferredCategoryIds = $request->user()
+            ->preferredCategories()
+            ->pluck('categories.id');
 
-        // 3. Popular This Week (Random for now until you have a 'views' or 'reads' counter)
-        $popularBooks = Book::inRandomOrder()->take(5)->get();
+        $baseQuery = Book::with('category');
 
-        // 4. New Arrivals (Sorted by newest first)
-        $newArrivals = Book::latest()->take(5)->get();
+        if ($search !== '') {
+            $baseQuery->where(function (Builder $query) use ($search) {
+                $query->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('author', 'like', '%' . $search . '%')
+                    ->orWhereHas('category', function (Builder $categoryQuery) use ($search) {
+                        $categoryQuery->where('name', 'like', '%' . $search . '%');
+                    });
+            });
+        }
 
-        return view('explore', compact('recommendedBooks', 'genres', 'popularBooks', 'newArrivals'));
+        if ($categoryId) {
+            $baseQuery->where('category_id', $categoryId);
+        }
+
+        $filteredBooksQuery = clone $baseQuery;
+
+        switch ($sort) {
+            case 'title':
+                $filteredBooksQuery->orderBy('title');
+                break;
+            case 'author':
+                $filteredBooksQuery->orderBy('author');
+                break;
+            case 'oldest':
+                $filteredBooksQuery->oldest();
+                break;
+            case 'latest':
+            default:
+                $filteredBooksQuery->latest();
+                break;
+        }
+
+        $filteredBooks = $filteredBooksQuery->take(15)->get();
+
+        if ($search !== '' || $categoryId) {
+            $recommendedBooks = $filteredBooks;
+        } else {
+            $recommendedBooks = Book::with('category')
+                ->when($preferredCategoryIds->isNotEmpty(), function (Builder $query) use ($preferredCategoryIds) {
+                    $query->whereIn('category_id', $preferredCategoryIds);
+                })
+                ->inRandomOrder()
+                ->take(5)
+                ->get();
+
+            if ($recommendedBooks->count() < 5) {
+                $recommendedBooks = Book::with('category')->inRandomOrder()->take(5)->get();
+            }
+        }
+
+        $popularBooks = Book::with('category')
+            ->withCount('progressRecords')
+            ->orderByDesc('progress_records_count')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $newArrivals = Book::with('category')->latest()->take(5)->get();
+
+        return view('explore', compact(
+            'recommendedBooks',
+            'genres',
+            'popularBooks',
+            'newArrivals',
+            'filteredBooks',
+            'search',
+            'categoryId',
+            'sort'
+        ));
     }
 }

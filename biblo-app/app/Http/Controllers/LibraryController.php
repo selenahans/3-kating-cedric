@@ -3,28 +3,59 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
-use App\Models\UserBookProgress; // <-- Don't forget to add this!
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class LibraryController extends Controller
 {
-    public function index()
+    public function index(Request $request): View
     {
-        // 1. Get the current logged-in user's ID
-        $userId = auth()->id();
+        $userId = $request->user()->id;
+        $search = trim((string) $request->query('q', ''));
+        $status = $request->query('status');
+        $sort = $request->query('sort', 'latest');
 
-        // 2. Get an array of book IDs that this user has favorited
-        $favoritedBookIds = UserBookProgress::where('user_id', $userId)
-                                        ->where('is_favorite', true)
-                                        ->pluck('book_id');
+        $query = Book::with(['category', 'progressRecords' => function ($progressQuery) use ($userId) {
+            $progressQuery->where('user_id', $userId);
+        }])->whereHas('progressRecords', function (Builder $progressQuery) use ($userId, $status) {
+            $progressQuery->where('user_id', $userId)
+                ->where('is_favorite', true);
 
-        // 3. Fetch only the books that match those favorited IDs
-        $books = Book::whereIn('id', $favoritedBookIds)->get();
-        
-        // 4. Count for the top statistic in your view
+            if (!empty($status)) {
+                $progressQuery->where('status', $status);
+            }
+        });
+
+        if ($search !== '') {
+            $query->where(function (Builder $bookQuery) use ($search) {
+                $bookQuery->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('author', 'like', '%' . $search . '%')
+                    ->orWhereHas('category', function (Builder $categoryQuery) use ($search) {
+                        $categoryQuery->where('name', 'like', '%' . $search . '%');
+                    });
+            });
+        }
+
+        switch ($sort) {
+            case 'title':
+                $query->orderBy('title');
+                break;
+            case 'author':
+                $query->orderBy('author');
+                break;
+            case 'oldest':
+                $query->oldest();
+                break;
+            case 'latest':
+            default:
+                $query->latest();
+                break;
+        }
+
+        $books = $query->get();
         $totalBooks = $books->count();
 
-        // 5. Pass them to the library view
-        return view('mylibrary', compact('books', 'totalBooks'));
+        return view('mylibrary', compact('books', 'totalBooks', 'search', 'status', 'sort'));
     }
 }
