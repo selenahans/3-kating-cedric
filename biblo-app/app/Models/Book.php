@@ -29,4 +29,9 @@ class Book extends Model
     {
         return $this->hasMany(UserBookProgress::class);
     }
+
+    public function readingLogs()
+    {
+        return $this->hasMany(ReadingLog::class);
+    }
 }

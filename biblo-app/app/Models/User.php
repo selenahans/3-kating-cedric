@@ -11,6 +11,39 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+   protected $fillable = ['name', 'email', 'password', 'coins'];
+
+    public function pet() {
+        return $this->hasOne(UserPet::class);
+    }
+
+    public function inventory() {
+        return $this->hasMany(UserInventory::class);
+    }
+
+    public function bookProgress() {
+        return $this->hasMany(UserBookProgress::class);
+    }
+
+    public function taskCompletions() {
+        return $this->hasMany(TaskCompletion::class);
+    }
+
+    public function readingLogs()
+    {
+        return $this->hasMany(ReadingLog::class);
+    }
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
     protected $fillable = [
         'name',
         'email',
