@@ -21,6 +21,31 @@
         </div>
     </main>
 
+    {{-- Highlight Action Modal --}}
+    <div id="highlight-action-modal"
+        class="fixed inset-0 z-[95] bg-biblo-charcoal/30 backdrop-blur-sm hidden items-center justify-center px-4">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all">
+            <h3 class="font-bold text-xl text-biblo-charcoal mb-3">Simpan Highlight</h3>
+            <p class="text-sm text-biblo-charcoal/60 mb-5">Pilih aksi untuk teks yang kamu highlight.</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button id="highlight-only-btn"
+                    class="py-3 rounded-xl font-bold text-sm text-biblo-charcoal bg-biblo-greige/20 hover:bg-biblo-greige/40 transition-all">
+                    Highlight Saja
+                </button>
+                <button id="add-note-btn"
+                    class="py-3 rounded-xl font-bold text-sm text-white bg-biblo-moss hover:bg-[#7e8f7a] transition-all">
+                    Tambah ke Notes
+                </button>
+            </div>
+
+            <button id="cancel-action-btn"
+                class="w-full mt-3 py-3 rounded-xl font-bold text-sm text-biblo-charcoal/70 hover:text-biblo-charcoal hover:bg-biblo-oat transition-all">
+                Batal
+            </button>
+        </div>
+    </div>
+
     {{-- Note Taking Modal (Hidden by default) --}}
     <div id="note-modal"
         class="fixed inset-0 z-[100] bg-biblo-charcoal/40 backdrop-blur-sm hidden items-center justify-center px-4">
@@ -124,11 +149,33 @@
                 `;
             }
 
+            function registerDummyHighlightHandler() {
+                if (!viewer) return;
+
+                viewer.onmouseup = function () {
+                    if (!isDummyMode) return;
+
+                    const selection = window.getSelection();
+                    const selectedText = selection ? selection.toString().trim() : '';
+
+                    if (selectedText === '') return;
+
+                    currentSelection = {
+                        cfi: `dummy-page-${currentDummyPage}-${Date.now()}`,
+                        text: selectedText
+                    };
+
+                    highlightPreview.innerText = `"${selectedText}"`;
+                    openActionModal();
+                };
+            }
+
             function activateDummyReader() {
                 isDummyMode = true;
                 loading.style.display = "none";
                 currentDummyPage = clampPage(currentDummyPage);
                 renderDummyPage(currentDummyPage);
+                registerDummyHighlightHandler();
                 updateProgressUI(currentDummyPage);
                 persistProgress(currentDummyPage);
             }
@@ -194,9 +241,82 @@
             // --- HIGHLIGHT & NOTES LOGIC ---
 
             let currentSelection = null;
+            const highlightActionModal = document.getElementById('highlight-action-modal');
             const noteModal = document.getElementById('note-modal');
             const noteInput = document.getElementById('note-input');
             const highlightPreview = document.getElementById('highlighted-text-preview');
+
+            function clearIframeSelection() {
+                if (rendition) {
+                    rendition.getContents().forEach(c => c.window.getSelection().removeAllRanges());
+                }
+            }
+
+            function openActionModal() {
+                highlightActionModal.classList.remove('hidden');
+                highlightActionModal.classList.add('flex');
+            }
+
+            function closeActionModal() {
+                highlightActionModal.classList.add('hidden');
+                highlightActionModal.classList.remove('flex');
+            }
+
+            function openNoteModal() {
+                noteModal.classList.remove('hidden');
+                noteModal.classList.add('flex');
+            }
+
+            function closeNoteModal() {
+                noteModal.classList.add('hidden');
+                noteModal.classList.remove('flex');
+            }
+
+            function resetSelectionState() {
+                currentSelection = null;
+                noteInput.value = "";
+                closeActionModal();
+                closeNoteModal();
+                clearIframeSelection();
+            }
+
+            async function saveCurrentSelection(noteText = "") {
+                if (!currentSelection) return;
+
+                const cfi = currentSelection.cfi;
+                const text = currentSelection.text;
+
+                if (rendition && !isDummyMode) {
+                    rendition.annotations.highlight(cfi, {}, (e) => {
+                        console.log("Highlight clicked", e);
+                    });
+                }
+
+                try {
+                    const response = await fetch("{{ route('notes.store') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            book_id: {{ $book->id }},
+                            cfi_range: cfi,
+                            highlighted_text: text,
+                            note_content: noteText,
+                            color_code: '#FDE047'
+                        })
+                    });
+
+                    if (!response.ok) throw new Error("Failed to save note");
+                    console.log("Highlight saved successfully!");
+                } catch (error) {
+                    console.error("Error saving note:", error);
+                    alert("Failed to save note to database.");
+                } finally {
+                    resetSelectionState();
+                }
+            }
 
             // 1. Listen for text selection
             function registerHighlightHandler() {
@@ -215,25 +335,30 @@
                             text: selectedText
                         };
 
-                        // Show Modal
+                        // Show action chooser first
                         highlightPreview.innerText = `"${selectedText}"`;
-                        noteModal.classList.remove('hidden');
-                        noteModal.classList.add('flex');
+                        openActionModal();
                     }
                 });
             });
             }
 
             // 2. Handle Cancel
+            document.getElementById('cancel-action-btn').onclick = function () {
+                resetSelectionState();
+            };
+
+            document.getElementById('highlight-only-btn').onclick = async function () {
+                await saveCurrentSelection("");
+            };
+
+            document.getElementById('add-note-btn').onclick = function () {
+                closeActionModal();
+                openNoteModal();
+            };
+
             document.getElementById('cancel-note-btn').onclick = function () {
-                noteModal.classList.add('hidden');
-                noteModal.classList.remove('flex');
-                noteInput.value = "";
-                currentSelection = null;
-                // Clear the temporary selection in the iframe
-                if (rendition) {
-                    rendition.getContents().forEach(c => c.window.getSelection().removeAllRanges());
-                }
+                resetSelectionState();
             };
 
             // 3. Handle Save Note
@@ -241,50 +366,7 @@
                 if (!currentSelection) return;
 
                 const noteText = noteInput.value;
-                const cfi = currentSelection.cfi;
-                const text = currentSelection.text;
-
-                // A. Apply the highlight visually in the reader right now
-                if (rendition && !isDummyMode) {
-                    rendition.annotations.highlight(cfi, {}, (e) => {
-                        console.log("Highlight clicked", e);
-                    });
-                }
-
-                // B. Hide modal and reset
-                noteModal.classList.add('hidden');
-                noteModal.classList.remove('flex');
-                noteInput.value = "";
-                if (rendition) {
-                    rendition.getContents().forEach(c => c.window.getSelection().removeAllRanges());
-                }
-
-                // C. Send to Laravel Backend
-                // C. Send to Laravel Backend
-                try {
-                    const response = await fetch("{{ route('notes.store') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            // Grabs the token from the meta tag in your layout
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            book_id: {{ $book->id }},
-                            cfi_range: cfi,               // Matches your DB
-                            highlighted_text: text,       // Matches your DB
-                            note_content: noteText,       // Matches your DB
-                            color_code: '#FDE047'         // A default yellow hex code
-                        })
-                    });
-
-                    if (!response.ok) throw new Error("Failed to save note");
-                    console.log("Highlight and note saved successfully!");
-
-                } catch (error) {
-                    console.error("Error saving note:", error);
-                    alert("Failed to save note to database.");
-                }
+                await saveCurrentSelection(noteText);
             };
         });
     </script>

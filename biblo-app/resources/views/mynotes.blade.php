@@ -1,6 +1,12 @@
 <x-app-layout title="My Notes" active="notes">
     <div class="max-w-5xl mx-auto space-y-8 md:space-y-10">
 
+        @if(session('status'))
+            <div class="bg-biblo-sage/20 border border-biblo-sage/40 text-biblo-charcoal px-4 py-3 rounded-2xl text-sm font-bold">
+                {{ session('status') }}
+            </div>
+        @endif
+
         <header class="flex flex-col lg:flex-row items-start lg:items-center justify-between w-full gap-6 lg:gap-12 mb-8 md:mb-12">
             <div class="flex-shrink-0">
                 <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-moss/60 mb-1">Knowledge Archive</p>
@@ -70,6 +76,40 @@
                                     </p>
                                 </div>
                             @endif
+
+                            <details class="bg-white/70 border border-biblo-greige/20 rounded-2xl p-4">
+                                <summary class="cursor-pointer text-xs font-black uppercase tracking-[0.12em] text-biblo-charcoal/60">
+                                    Edit Note
+                                </summary>
+
+                                <form action="{{ route('notes.update', $note) }}" method="POST" class="mt-4 space-y-3">
+                                    @csrf
+                                    @method('PATCH')
+
+                                    <textarea name="note_content" rows="4"
+                                        class="w-full bg-white border border-biblo-greige/30 rounded-xl p-3 text-sm focus:ring-2 focus:ring-biblo-sage/20 focus:outline-none"
+                                        placeholder="Tulis atau ubah isi catatan...">{{ old('note_content', $note->note_content) }}</textarea>
+
+                                    <div class="flex items-center justify-between gap-3">
+                                        <input type="color" name="color_code" value="{{ $note->color_code ?? '#FDE047' }}"
+                                            class="h-10 w-16 rounded-lg border border-biblo-greige/30 bg-white p-1">
+                                        <button type="submit"
+                                            class="px-5 py-2.5 rounded-xl bg-biblo-charcoal text-white text-xs font-black uppercase tracking-[0.12em] hover:bg-biblo-moss transition-all">
+                                            Simpan Edit
+                                        </button>
+                                    </div>
+                                </form>
+                            </details>
+
+                            <form action="{{ route('notes.destroy', $note) }}" method="POST"
+                                onsubmit="return confirm('Yakin mau hapus note ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-50 text-red-600 border border-red-200 text-xs font-black uppercase tracking-[0.12em] hover:bg-red-100 transition-all">
+                                    Hapus Note
+                                </button>
+                            </form>
                         </div>
                     </div>
                 @empty
