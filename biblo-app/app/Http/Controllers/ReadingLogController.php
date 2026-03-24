@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ReadingLog;
 use App\Models\User;
+use App\Models\UserPet;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,6 +46,21 @@ class ReadingLogController extends Controller
         $leveledUp = $newLevel > $oldLevel;
 
         $user = User::findOrFail($userId);
+        $pet = UserPet::firstOrCreate(
+            ['user_id' => $userId],
+            [
+                'nickname' => $user->name,
+                'type' => 'owl',
+                'xp' => 0,
+                'stage' => 'baby',
+                'health' => 100,
+                'happiness' => 100,
+            ]
+        );
+
+        $pet->health = max(0, (int) $pet->health - ($pagesRead * 3));
+        $pet->save();
+
         $coinsBefore = 0;
         $coinsAwarded = 0;
         if (Schema::hasColumn('users', 'coins')) {

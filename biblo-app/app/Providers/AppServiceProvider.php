@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\ReadingLog;
+use App\Models\Item;
 use App\Models\User;
+use App\Models\UserInventory;
 use App\Models\UserNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -29,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
             $unreadNotificationCount = 0;
             $currentPetName = null;
             $currentCoins = 0;
+            $starterAppleQty = 0;
+            $starterHoneyQty = 0;
 
             if (Auth::check()) {
                 $authUser = Auth::user();
@@ -54,6 +58,51 @@ class AppServiceProvider extends ServiceProvider
                         $user->save();
                         $currentCoins = $minimumCoins;
                     }
+
+                    if (
+                        Schema::hasTable('items')
+                        && Schema::hasTable('user_inventory')
+                        && Schema::hasColumn('user_inventory', 'quantity')
+                        && Schema::hasColumn('users', 'starter_items_granted_at')
+                        && $currentLevel >= 1
+                    ) {
+                        $appleItem = Item::firstOrCreate(
+                            ['name' => 'Organic Apple'],
+                            ['type' => 'food', 'price' => 45, 'image_path' => 'items/organic_apple.png']
+                        );
+
+                        $honeyItem = Item::firstOrCreate(
+                            ['name' => 'Sweet Honey'],
+                            ['type' => 'food', 'price' => 80, 'image_path' => 'items/sweet_honey.png']
+                        );
+
+                        if (is_null($user->starter_items_granted_at)) {
+                            UserInventory::create([
+                                'user_id' => $user->id,
+                                'item_id' => $appleItem->id,
+                                'quantity' => 3,
+                                'is_equipped' => false,
+                            ]);
+
+                            UserInventory::create([
+                                'user_id' => $user->id,
+                                'item_id' => $honeyItem->id,
+                                'quantity' => 2,
+                                'is_equipped' => false,
+                            ]);
+
+                            $user->starter_items_granted_at = now();
+                            $user->save();
+                        }
+
+                        $starterAppleQty = (int) UserInventory::where('user_id', $user->id)
+                            ->where('item_id', $appleItem->id)
+                            ->sum('quantity');
+
+                        $starterHoneyQty = (int) UserInventory::where('user_id', $user->id)
+                            ->where('item_id', $honeyItem->id)
+                            ->sum('quantity');
+                    }
                 }
 
                 if (Schema::hasTable('notifications')) {
@@ -65,7 +114,9 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('unreadNotificationCount', $unreadNotificationCount)
                 ->with('currentPetName', $currentPetName)
-                ->with('currentCoins', $currentCoins);
+                ->with('currentCoins', $currentCoins)
+                ->with('starterAppleQty', $starterAppleQty)
+                ->with('starterHoneyQty', $starterHoneyQty);
         });
     }
 }

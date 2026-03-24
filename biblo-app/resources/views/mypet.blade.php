@@ -1,4 +1,4 @@
-<x-app-layout title="My Pet" active="pet">
+﻿<x-app-layout title="My Pet" active="pet">
     <div class="max-w-5xl mx-auto space-y-8 md:space-y-10">
 
         <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
@@ -8,7 +8,6 @@
                     class="text-biblo-clay">{{ $currentPetName ?? 'Barnaby' }}</span></h1>
             </div>
             <div class="flex flex-wrap gap-3 w-full md:w-auto">
-                {{-- href="{{ route('mylibrary') }}" --}}
                 <a
                     class="bg-white border border-biblo-greige/30 px-5 sm:px-6 py-3 rounded-2xl shadow-sm flex items-center gap-2 hover:bg-biblo-oat transition-all group">
                     <span class="text-lg group-hover:rotate-12 transition-transform">📚</span>
@@ -23,40 +22,33 @@
         </header>
 
 <section class="relative bg-biblo-oat rounded-[32px] sm:rounded-[44px] md:rounded-[60px] min-h-[32rem] md:min-h-0 md:aspect-[21/9] overflow-hidden flex flex-col items-center justify-center border border-biblo-greige/20 shadow-inner p-4 sm:p-6 md:p-8">
-    {{-- Decorative Background Blurs --}}
     <div class="absolute top-10 left-10 w-32 h-32 bg-biblo-sage/20 rounded-full blur-3xl"></div>
     <div class="absolute bottom-10 right-20 w-48 h-48 bg-biblo-clay/10 rounded-full blur-3xl"></div>
 
-    {{-- MASKOT AREA --}}
     <div class="relative flex flex-col items-center group mb-8 md:mb-20">
-        {{-- Shadow --}}
         <div class="absolute -bottom-2 w-24 h-4 bg-biblo-charcoal/10 rounded-[100%] blur-md group-hover:scale-110 transition-transform duration-700"></div>
 
-        {{-- Pet Image --}}
         <div class="w-32 h-32 md:w-40 md:h-40 animate-bounce-slow cursor-pointer hover:scale-110 transition-transform duration-500 flex items-center justify-center relative z-10">
             <img src="{{ asset('images/boo-pet.webp') }}" alt="{{ $currentPetName ?? 'Pet' }}" class="w-full h-full object-contain">
         </div>
 
-        {{-- BUBBLE CHAT (Sekarang Absolute agar tidak mendorong layout) --}}
         <div class="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/80 backdrop-blur-md border border-white/50 px-3 sm:px-4 py-1.5 rounded-2xl shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
             <p class="text-[9px] sm:text-[10px] font-black text-biblo-charcoal uppercase tracking-tighter">
                 "Sudah baca apa hari ini?"
             </p>
-            {{-- Segitiga kecil di bawah bubble chat --}}
             <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white/80 rotate-45 border-r border-b border-white/50"></div>
         </div>
     </div>
 
-    {{-- STATS GRID (Posisikan di bawah dengan padding yang pas) --}}
     <div class="mt-6 w-full grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:absolute md:bottom-6 md:left-6 md:right-6 md:w-auto">
         @foreach(($petStats ?? []) as $stat)
             <div class="bg-white/40 backdrop-blur-md border border-white/60 p-2.5 sm:p-3 md:p-4 rounded-[1.25rem] sm:rounded-[2rem] shadow-sm flex flex-col justify-between">
                 <div class="flex justify-between items-center mb-2">
                     <p class="text-[9px] font-black text-biblo-charcoal/40 uppercase tracking-widest">{{ $stat['label'] }}</p>
-                    <p class="text-[10px] font-bold text-biblo-charcoal">{{ $stat['val'] }}</p>
+                    <p class="text-[10px] font-bold text-biblo-charcoal" @if($stat['label'] === 'Kenyang') id="kenyang-value" @endif>{{ $stat['val'] }}</p>
                 </div>
                 <div class="w-full bg-biblo-charcoal/5 h-1.5 rounded-full overflow-hidden">
-                    <div class="{{ $stat['color'] }} h-full rounded-full transition-all duration-1000"
+                    <div class="{{ $stat['color'] }} h-full rounded-full transition-all duration-1000" @if($stat['label'] === 'Kenyang') id="kenyang-bar" @endif
                         style="width: {{ $stat['width'] }}"></div>
                 </div>
             </div>
@@ -119,22 +111,23 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <button
+                        <button type="button" data-feed-item="apple"
                             class="bg-white/10 hover:bg-white/20 border border-white/10 p-4 rounded-3xl transition-all flex flex-col items-center gap-2">
                             <span class="text-2xl">🍎</span>
                             <span class="text-[10px] font-black uppercase tracking-tighter">Organic Apple</span>
-                            <span class="text-[9px] text-biblo-sage font-bold">Qty: 12</span>
+                            <span class="text-[9px] text-biblo-sage font-bold">Qty: <span id="apple-qty">{{ $appleQty ?? 0 }}</span></span>
                         </button>
-                        <button
+                        <button type="button" data-feed-item="honey"
                             class="bg-white/10 hover:bg-white/20 border border-white/10 p-4 rounded-3xl transition-all flex flex-col items-center gap-2">
                             <span class="text-2xl">🍯</span>
                             <span class="text-[10px] font-black uppercase tracking-tighter">Sweet Honey</span>
-                            <span class="text-[9px] text-biblo-sage font-bold">Qty: 05</span>
+                            <span class="text-[9px] text-biblo-sage font-bold">Qty: <span id="honey-qty">{{ $honeyQty ?? 0 }}</span></span>
                         </button>
                     </div>
                 </div>
 
                 <div class="mt-8 pt-6 border-t border-white/10">
+                    <p id="feed-status" class="text-[10px] font-bold text-biblo-sage/80 mb-3 min-h-[14px]"></p>
                     <p class="text-[10px] font-bold text-white/40 leading-relaxed italic mb-4">
                         "Give {{ $currentPetName ?? 'your pet' }} treats earned from finishing book chapters to keep them happy!"
                     </p>
@@ -147,4 +140,84 @@
 
         </section>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const buttons = document.querySelectorAll('[data-feed-item]');
+            const appleQtyEl = document.getElementById('apple-qty');
+            const honeyQtyEl = document.getElementById('honey-qty');
+            const feedStatusEl = document.getElementById('feed-status');
+            const kenyangValueEl = document.getElementById('kenyang-value');
+            const kenyangBarEl = document.getElementById('kenyang-bar');
+
+            let currentKenyang = Number((kenyangValueEl?.textContent || '0').replace('%', '').trim()) || 0;
+
+            const updateButtonsState = () => {
+                const appleQty = Number(appleQtyEl?.textContent || 0);
+                const honeyQty = Number(honeyQtyEl?.textContent || 0);
+
+                buttons.forEach((btn) => {
+                    const item = btn.getAttribute('data-feed-item');
+                    const outOfStock = (item === 'apple' ? appleQty : honeyQty) <= 0;
+                    const full = currentKenyang >= 90;
+                    btn.disabled = outOfStock || full;
+                    btn.classList.toggle('opacity-50', btn.disabled);
+                    btn.classList.toggle('cursor-not-allowed', btn.disabled);
+                });
+            };
+
+            const setKenyang = (value) => {
+                currentKenyang = Math.max(0, Math.min(100, Number(value) || 0));
+                if (kenyangValueEl) kenyangValueEl.textContent = currentKenyang + '%';
+                if (kenyangBarEl) kenyangBarEl.style.width = currentKenyang + '%';
+                updateButtonsState();
+            };
+
+            buttons.forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const item = button.getAttribute('data-feed-item');
+                    button.disabled = true;
+
+                    try {
+                        const response = await fetch("{{ route('mypet.feed') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            },
+                            body: JSON.stringify({ item }),
+                        });
+
+                        const payload = await response.json();
+
+                        if (!response.ok || !payload.success) {
+                            feedStatusEl.textContent = payload.message || 'Gagal memberi makan pet.';
+                            feedStatusEl.classList.remove('text-biblo-sage/80');
+                            feedStatusEl.classList.add('text-biblo-clay/90');
+                            if (typeof payload.kenyang !== 'undefined') {
+                                setKenyang(payload.kenyang);
+                            }
+                            return;
+                        }
+
+                        if (appleQtyEl) appleQtyEl.textContent = String(payload.apple_qty ?? 0);
+                        if (honeyQtyEl) honeyQtyEl.textContent = String(payload.honey_qty ?? 0);
+                        setKenyang(payload.kenyang ?? currentKenyang);
+
+                        feedStatusEl.textContent = payload.message || 'Pet berhasil diberi makan.';
+                        feedStatusEl.classList.remove('text-biblo-clay/90');
+                        feedStatusEl.classList.add('text-biblo-sage/80');
+                    } catch (error) {
+                        feedStatusEl.textContent = 'Terjadi error saat memberi makan.';
+                        feedStatusEl.classList.remove('text-biblo-sage/80');
+                        feedStatusEl.classList.add('text-biblo-clay/90');
+                    } finally {
+                        updateButtonsState();
+                    }
+                });
+            });
+
+            updateButtonsState();
+        });
+    </script>
 </x-app-layout>

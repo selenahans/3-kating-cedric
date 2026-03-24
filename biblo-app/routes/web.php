@@ -181,6 +181,7 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::get('/mypet', [MyPetController::class, 'index'])->name('mypet');
+    Route::post('/mypet/feed', [MyPetController::class, 'feed'])->name('mypet.feed');
 
     Route::get('/shop', function () {
         return view('shop');

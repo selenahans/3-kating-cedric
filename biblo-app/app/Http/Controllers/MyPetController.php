@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Item;
 use App\Models\ReadingLog;
+use App\Models\UserInventory;
+use App\Models\UserPet;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class MyPetController extends Controller
@@ -19,6 +25,17 @@ class MyPetController extends Controller
     {
         $user = $request->user();
         $totalPagesRead = (int) ReadingLog::where('user_id', $user->id)->sum('pages_read');
+        $pet = UserPet::firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'nickname' => $user->name,
+                'type' => 'owl',
+                'xp' => 0,
+                'stage' => 'baby',
+                'health' => 100,
+                'happiness' => 100,
+            ]
+        );
 
         $xpPerPage = 5;
         $xpPerLevel = 100;
@@ -29,7 +46,7 @@ class MyPetController extends Controller
 
         // Level 1 tuning requested: +10 knowledge, -3 kenyang, +3 happiness per page.
         $knowledgePercent = min(100, $totalPagesRead * 10);
-        $kenyangPercent = max(0, 100 - ($totalPagesRead * 3));
+        $kenyangPercent = max(0, min(100, (int) ($pet->health ?? 100)));
         $happinessPercent = min(100, $totalPagesRead * 3);
         $expPercent = (int) round(($xpInCurrentLevel / $xpPerLevel) * 100);
 
@@ -52,10 +69,129 @@ class MyPetController extends Controller
             ['label' => 'Exp', 'val' => $xpInCurrentLevel . '/' . $xpPerLevel, 'color' => 'bg-biblo-charcoal', 'width' => $expPercent . '%'],
         ];
 
+        $appleQty = 0;
+        $honeyQty = 0;
+        if (Schema::hasTable('items') && Schema::hasTable('user_inventory') && Schema::hasColumn('user_inventory', 'quantity')) {
+            $appleItem = Item::where('name', 'Organic Apple')->first();
+            $honeyItem = Item::where('name', 'Sweet Honey')->first();
+
+            if ($appleItem) {
+                $appleQty = (int) UserInventory::where('user_id', $user->id)
+                    ->where('item_id', $appleItem->id)
+                    ->sum('quantity');
+            }
+
+            if ($honeyItem) {
+                $honeyQty = (int) UserInventory::where('user_id', $user->id)
+                    ->where('item_id', $honeyItem->id)
+                    ->sum('quantity');
+            }
+        }
+
         return view('mypet', [
             'petLevel' => $level,
             'growthTitle' => $growthTitle,
             'petStats' => $petStats,
+            'appleQty' => $appleQty,
+            'honeyQty' => $honeyQty,
+            'canFeed' => $kenyangPercent < 90,
+        ]);
+    }
+
+    public function feed(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $validated = $request->validate([
+            'item' => ['required', 'in:apple,honey'],
+        ]);
+
+        if (!Schema::hasTable('items') || !Schema::hasTable('user_inventory') || !Schema::hasColumn('user_inventory', 'quantity')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Inventory belum siap.',
+            ], 422);
+        }
+
+        $itemMap = [
+            'apple' => ['name' => 'Organic Apple', 'gain' => 15],
+            'honey' => ['name' => 'Sweet Honey', 'gain' => 20],
+        ];
+
+        $chosen = $itemMap[$validated['item']];
+        $item = Item::where('name', $chosen['name'])->first();
+
+        if (!$item) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Item tidak ditemukan.',
+            ], 404);
+        }
+
+        $pet = UserPet::firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'nickname' => $user->name,
+                'type' => 'owl',
+                'xp' => 0,
+                'stage' => 'baby',
+                'health' => 100,
+                'happiness' => 100,
+            ]
+        );
+
+        if ((int) $pet->health >= 90) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pet sudah kenyang, belum bisa dikasih makan dulu.',
+                'kenyang' => (int) $pet->health,
+            ], 422);
+        }
+
+        $totalQty = (int) UserInventory::where('user_id', $user->id)
+            ->where('item_id', $item->id)
+            ->sum('quantity');
+
+        if ($totalQty <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Stok item habis.',
+                'kenyang' => (int) $pet->health,
+            ], 422);
+        }
+
+        DB::transaction(function () use ($user, $item, $chosen, $pet) {
+            $row = UserInventory::where('user_id', $user->id)
+                ->where('item_id', $item->id)
+                ->where('quantity', '>', 0)
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $row->quantity -= 1;
+            $row->save();
+
+            $pet->health = min(100, (int) $pet->health + $chosen['gain']);
+            $pet->save();
+        });
+
+        $appleItem = Item::where('name', 'Organic Apple')->first();
+        $honeyItem = Item::where('name', 'Sweet Honey')->first();
+
+        $appleQty = $appleItem
+            ? (int) UserInventory::where('user_id', $user->id)->where('item_id', $appleItem->id)->sum('quantity')
+            : 0;
+
+        $honeyQty = $honeyItem
+            ? (int) UserInventory::where('user_id', $user->id)->where('item_id', $honeyItem->id)->sum('quantity')
+            : 0;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pet berhasil diberi makan.',
+            'kenyang' => (int) $pet->fresh()->health,
+            'apple_qty' => $appleQty,
+            'honey_qty' => $honeyQty,
+            'can_feed' => ((int) $pet->fresh()->health) < 90,
         ]);
     }
 }
