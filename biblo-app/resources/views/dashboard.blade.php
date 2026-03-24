@@ -164,7 +164,7 @@
                                 </div>
                             </div>
 
-                            <a href="{{ route('book.detail', $currentBook->id) }}"
+                            <a href="{{ route('book.detail', $currentBook) }}"
                                 class="inline-block bg-biblo-moss text-white px-8 py-3 rounded-2xl font-bold text-sm hover:bg-biblo-charcoal transition-all shadow-lg shadow-biblo-moss/10">
                                 Baca Sekarang
                             </a>
@@ -194,7 +194,7 @@
                         @break
                     @endif
 
-                    <a href="{{ route('book.detail', $book->id) }}" class="group cursor-pointer block">
+                    <a href="{{ route('book.detail', $book) }}" class="group cursor-pointer block">
                         {{-- Container Cover dengan Radius Besar sesuai Gambar --}}
                         <div
                             class="aspect-[3/4] bg-biblo-greige rounded-[1.5rem] sm:rounded-[2rem] lg:rounded-[2.5rem] mb-3 sm:mb-4 overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-500 relative border border-biblo-greige/10">

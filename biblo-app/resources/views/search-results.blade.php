@@ -38,7 +38,7 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                     @forelse($books as $book)
-                        <a href="{{ route('book.detail', $book->id) }}" class="group bg-white rounded-3xl border border-biblo-greige/20 p-4 shadow-sm hover:shadow-md transition-all">
+                        <a href="{{ route('book.detail', $book) }}" class="group bg-white rounded-3xl border border-biblo-greige/20 p-4 shadow-sm hover:shadow-md transition-all">
                             <p class="text-sm font-extrabold text-biblo-charcoal line-clamp-2">{{ $book->title }}</p>
                             <p class="text-xs font-bold text-biblo-clay mt-1">{{ $book->author }}</p>
                             <p class="text-[11px] text-biblo-charcoal/60 mt-3">

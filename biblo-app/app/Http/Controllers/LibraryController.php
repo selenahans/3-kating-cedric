@@ -55,7 +55,16 @@ class LibraryController extends Controller
 
         $books = $query->get();
         $totalBooks = $books->count();
+        $onProgressCount = $books->filter(function (Book $book) {
+            $progress = $book->progressRecords->first();
+            return $progress && $progress->status === 'reading';
+        })->count();
 
-        return view('mylibrary', compact('books', 'totalBooks', 'search', 'status', 'sort'));
+        $completedCount = $books->filter(function (Book $book) {
+            $progress = $book->progressRecords->first();
+            return $progress && $progress->status === 'completed';
+        })->count();
+
+        return view('mylibrary', compact('books', 'totalBooks', 'onProgressCount', 'completedCount', 'search', 'status', 'sort'));
     }
 }

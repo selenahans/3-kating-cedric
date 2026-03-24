@@ -5,8 +5,8 @@
 @section('content')
 
     {{-- Navbar --}}
-    <x-read.navbar :title="$book->title" :currentPage="$progress->current_location ?? 'Start'"
-        :totalPages="$book->total_pages ?? '100%'" />
+    <x-read.navbar :title="$book->title" :currentPage="$currentDummyPage" :totalPages="$dummyTotalPages"
+        :backUrl="route('book.detail', $book)" />
 
     {{-- Cleaned Content Area --}}
     <main class="pb-44 px-6 bg-biblo-cream/10">
@@ -23,7 +23,7 @@
 
     {{-- Note Taking Modal (Hidden by default) --}}
     <div id="note-modal"
-        class="fixed inset-0 z-[100] bg-biblo-charcoal/40 backdrop-blur-sm hidden flex items-center justify-center px-4">
+        class="fixed inset-0 z-[100] bg-biblo-charcoal/40 backdrop-blur-sm hidden items-center justify-center px-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all">
             <h3 class="font-bold text-xl text-biblo-charcoal mb-4">Add a Note</h3>
 
@@ -55,28 +55,141 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const loading = document.getElementById("loading");
-            const url = "{{ asset('storage/' . $book->file_path) }}";
-            const book = ePub(url);
+            const viewer = document.getElementById("viewer");
+            const totalDummyPages = {{ $dummyTotalPages }};
+            let currentDummyPage = {{ $currentDummyPage }};
+            const bookSourceUrl = @json($bookSourceUrl);
+            let epubBook = null;
+            let rendition = null;
+            let isDummyMode = false;
 
-            const rendition = book.renderTo("viewer", {
-                width: "100%",
-                height: "100%",
-                flow: "paginated",
-                spread: "none",
-                allowScriptedContent: true
-            });
+            const DUMMY_PAGES = [
+                "Di awal cerita, suasana diperkenalkan perlahan dan tokoh utama mulai tampil dengan konflik kecil yang memancing rasa penasaran.",
+                "Relasi antar tokoh mulai terbentuk. Masing-masing karakter menunjukkan sikap yang berbeda dan menambah ketegangan cerita.",
+                "Bab ini memperlihatkan perubahan sudut pandang tokoh terhadap keadaan sekitarnya, membuat alur terasa semakin hidup.",
+                "Konflik utama mulai terlihat jelas. Pilihan yang diambil tokoh memunculkan konsekuensi yang tidak terduga.",
+                "Cerita bergerak lebih cepat. Tokoh utama menghadapi tantangan emosional sekaligus sosial yang menguji prinsipnya.",
+                "Nuansa narasi menjadi lebih dalam dengan dialog-dialog penting yang mengubah hubungan antar tokoh.",
+                "Puncak ketegangan mulai terasa. Keputusan besar diambil dan efeknya mulai menyebar ke semua karakter.",
+                "Setelah konflik memuncak, cerita memberi ruang refleksi dan memperlihatkan perkembangan karakter secara signifikan.",
+                "Bab mendekati akhir mempertemukan kembali benang-benang cerita yang sebelumnya terpisah.",
+                "Penutup membawa resolusi yang kuat. Perjalanan tokoh terasa utuh dengan makna yang lebih matang."
+            ];
 
-            rendition.display();
+            function clampPage(page) {
+                return Math.max(1, Math.min(totalDummyPages, page));
+            }
 
-            book.ready.then(function () {
+            function updateProgressUI(page) {
+                const safePage = clampPage(page);
+                const progress = Math.round((safePage / totalDummyPages) * 100);
+
+                const progressBar = document.getElementById('progress-bar');
+                const progressText = document.getElementById('progress-text');
+                const pageText = document.getElementById('reader-current-page');
+
+                if (progressBar) progressBar.style.width = `${progress}%`;
+                if (progressText) progressText.textContent = `${progress}% Completed`;
+                if (pageText) pageText.textContent = String(safePage);
+            }
+
+            async function persistProgress(page) {
+                try {
+                    await fetch("{{ route('reading.update-progress', $book) }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            page: clampPage(page),
+                            current_location: String(clampPage(page))
+                        })
+                    });
+                } catch (error) {
+                    console.error('Failed to update progress:', error);
+                }
+            }
+
+            function renderDummyPage(page) {
+                const safePage = clampPage(page);
+                const pageText = DUMMY_PAGES[safePage - 1] ?? DUMMY_PAGES[0];
+
+                viewer.innerHTML = `
+                    <article class="h-full w-full overflow-y-auto p-8 sm:p-10 text-biblo-charcoal">
+                        <h2 class="text-2xl font-extrabold mb-6">${@json($book->title)} - Page ${safePage}</h2>
+                        <p class="text-base leading-8 mb-6">${pageText}</p>
+                        <p class="text-base leading-8">Ini adalah konten bacaan dummy agar reader tetap bisa dipakai saat file EPUB asli belum tersedia di server.</p>
+                    </article>
+                `;
+            }
+
+            function activateDummyReader() {
+                isDummyMode = true;
                 loading.style.display = "none";
+                currentDummyPage = clampPage(currentDummyPage);
+                renderDummyPage(currentDummyPage);
+                updateProgressUI(currentDummyPage);
+                persistProgress(currentDummyPage);
+            }
 
-                // TODO: Later, you will fetch existing notes from the DB here 
-                // and loop through them using rendition.annotations.highlight(note.cfi)
-            });
+            async function initReader() {
+                if (!bookSourceUrl) {
+                    activateDummyReader();
+                    return;
+                }
 
-            document.getElementById("next").onclick = () => rendition.next();
-            document.getElementById("prev").onclick = () => rendition.prev();
+                try {
+                    epubBook = ePub(bookSourceUrl);
+                    rendition = epubBook.renderTo("viewer", {
+                        width: "100%",
+                        height: "100%",
+                        flow: "paginated",
+                        spread: "none",
+                        allowScriptedContent: true
+                    });
+
+                    rendition.display();
+
+                    await epubBook.ready;
+                    loading.style.display = "none";
+                    updateProgressUI(currentDummyPage);
+                    registerHighlightHandler();
+                } catch (error) {
+                    console.error('EPUB failed to load, switching to dummy reader:', error);
+                    activateDummyReader();
+                }
+            }
+
+            initReader();
+
+            document.getElementById("next").onclick = async (event) => {
+                event.preventDefault();
+                currentDummyPage = clampPage(currentDummyPage + 1);
+
+                if (!isDummyMode && rendition) {
+                    rendition.next();
+                } else {
+                    renderDummyPage(currentDummyPage);
+                }
+
+                updateProgressUI(currentDummyPage);
+                await persistProgress(currentDummyPage);
+            };
+
+            document.getElementById("prev").onclick = async (event) => {
+                event.preventDefault();
+                currentDummyPage = clampPage(currentDummyPage - 1);
+
+                if (!isDummyMode && rendition) {
+                    rendition.prev();
+                } else {
+                    renderDummyPage(currentDummyPage);
+                }
+
+                updateProgressUI(currentDummyPage);
+                await persistProgress(currentDummyPage);
+            };
 
             // --- HIGHLIGHT & NOTES LOGIC ---
 
@@ -86,9 +199,14 @@
             const highlightPreview = document.getElementById('highlighted-text-preview');
 
             // 1. Listen for text selection
-            rendition.on("selected", function (cfiRange, contents) {
+            function registerHighlightHandler() {
+                if (!rendition || isDummyMode) {
+                    return;
+                }
+
+                rendition.on("selected", function (cfiRange, contents) {
                 // Get the actual text the user highlighted
-                book.getRange(cfiRange).then(function (range) {
+                epubBook.getRange(cfiRange).then(function (range) {
                     const selectedText = range.toString();
 
                     if (selectedText.trim() !== "") {
@@ -100,17 +218,22 @@
                         // Show Modal
                         highlightPreview.innerText = `"${selectedText}"`;
                         noteModal.classList.remove('hidden');
+                        noteModal.classList.add('flex');
                     }
                 });
             });
+            }
 
             // 2. Handle Cancel
             document.getElementById('cancel-note-btn').onclick = function () {
                 noteModal.classList.add('hidden');
+                noteModal.classList.remove('flex');
                 noteInput.value = "";
                 currentSelection = null;
                 // Clear the temporary selection in the iframe
-                rendition.getContents().forEach(c => c.window.getSelection().removeAllRanges());
+                if (rendition) {
+                    rendition.getContents().forEach(c => c.window.getSelection().removeAllRanges());
+                }
             };
 
             // 3. Handle Save Note
@@ -122,14 +245,19 @@
                 const text = currentSelection.text;
 
                 // A. Apply the highlight visually in the reader right now
-                rendition.annotations.highlight(cfi, {}, (e) => {
-                    console.log("Highlight clicked", e);
-                });
+                if (rendition && !isDummyMode) {
+                    rendition.annotations.highlight(cfi, {}, (e) => {
+                        console.log("Highlight clicked", e);
+                    });
+                }
 
                 // B. Hide modal and reset
                 noteModal.classList.add('hidden');
+                noteModal.classList.remove('flex');
                 noteInput.value = "";
-                rendition.getContents().forEach(c => c.window.getSelection().removeAllRanges());
+                if (rendition) {
+                    rendition.getContents().forEach(c => c.window.getSelection().removeAllRanges());
+                }
 
                 // C. Send to Laravel Backend
                 // C. Send to Laravel Backend

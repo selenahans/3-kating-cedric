@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class BookSeeder extends Seeder
 {
@@ -101,6 +102,7 @@ class BookSeeder extends Seeder
         foreach ($books as $data) {
             Book::create([
                 'category_id' => $categories[$data['cat']],
+                'slug'        => Str::slug($data['title']),
                 'title'       => $data['title'],
                 'author'      => $data['author'],
                 'total_pages' => $data['total_pages'],

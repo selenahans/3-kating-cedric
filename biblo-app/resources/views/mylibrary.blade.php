@@ -15,7 +15,7 @@
             <div class="bg-white rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] p-5 sm:p-6 lg:p-8 border border-biblo-greige/30 shadow-sm flex items-center justify-between group hover:border-biblo-sage transition-all">
                 <div>
                     <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-charcoal/40 mb-2">On Progress</p>
-                    <h2 class="text-4xl font-extrabold text-biblo-charcoal">0</h2>
+                    <h2 class="text-4xl font-extrabold text-biblo-charcoal">{{ $onProgressCount }}</h2>
                 </div>
                 <div class="w-16 h-16 bg-biblo-sage/20 rounded-[2rem] flex items-center justify-center text-3xl group-hover:rotate-12 transition-transform">⌛</div>
             </div>
@@ -23,7 +23,7 @@
             <div class="bg-white rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] p-5 sm:p-6 lg:p-8 border border-biblo-greige/30 shadow-sm flex items-center justify-between group hover:border-biblo-moss transition-all">
                 <div>
                     <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-charcoal/40 mb-2">Completed</p>
-                    <h2 class="text-4xl font-extrabold text-biblo-charcoal">0</h2>
+                    <h2 class="text-4xl font-extrabold text-biblo-charcoal">{{ $completedCount }}</h2>
                 </div>
                 <div class="w-16 h-16 bg-biblo-moss/20 rounded-[2rem] flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">✅</div>
             </div>
@@ -32,9 +32,18 @@
         {{-- FILTER SECTION --}}
         <section class="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div class="flex items-center gap-1 bg-biblo-oat p-1.5 rounded-3xl border border-biblo-greige/20 shadow-sm overflow-x-auto no-scrollbar w-full md:w-auto">
-                <button class="bg-biblo-charcoal text-white px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold transition-all shadow-lg whitespace-nowrap">All Books</button>
-                <button class="text-biblo-charcoal/60 px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold hover:bg-biblo-greige/20 transition-all whitespace-nowrap">Reading</button>
-                <button class="text-biblo-charcoal/60 px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold hover:bg-biblo-greige/20 transition-all whitespace-nowrap">Finished</button>
+                <a href="{{ route('mylibrary', array_filter(['status' => null, 'q' => $search ?: null, 'sort' => $sort ?: null])) }}"
+                    class="{{ empty($status) ? 'bg-biblo-charcoal text-white shadow-lg' : 'text-biblo-charcoal/60 hover:bg-biblo-greige/20' }} px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold transition-all whitespace-nowrap">
+                    All Books
+                </a>
+                <a href="{{ route('mylibrary', array_filter(['status' => 'reading', 'q' => $search ?: null, 'sort' => $sort ?: null])) }}"
+                    class="{{ $status === 'reading' ? 'bg-biblo-charcoal text-white shadow-lg' : 'text-biblo-charcoal/60 hover:bg-biblo-greige/20' }} px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold transition-all whitespace-nowrap">
+                    Reading
+                </a>
+                <a href="{{ route('mylibrary', array_filter(['status' => 'completed', 'q' => $search ?: null, 'sort' => $sort ?: null])) }}"
+                    class="{{ $status === 'completed' ? 'bg-biblo-charcoal text-white shadow-lg' : 'text-biblo-charcoal/60 hover:bg-biblo-greige/20' }} px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold transition-all whitespace-nowrap">
+                    Finished
+                </a>
             </div>
             
             <div class="flex items-center gap-3 w-full md:w-auto">
@@ -49,7 +58,7 @@
         <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-10">
             @forelse($books as $book)
                 {{-- Make the whole card a clickable link to the reader --}}
-                <a href="{{ route('book.read', ['id' => $book->id]) }}" class="group cursor-pointer block">
+                <a href="{{ route('book.read', $book) }}" class="group cursor-pointer block">
                     <div class="aspect-[3/4] bg-biblo-greige rounded-[1rem] mb-3 sm:mb-5 overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-500 relative">
                         
                         {{-- Image Handling: Added a fallback image just in case your local EPUB covers aren't accessible yet --}}

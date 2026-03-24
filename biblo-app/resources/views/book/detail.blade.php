@@ -34,7 +34,7 @@
 
                     <div class="grid grid-cols-1 gap-4">
                         {{-- Redirects to the reader view we built earlier --}}
-                        <a href="{{ route('book.read', $book->id) }}"
+                        <a href="{{ route('book.read', $book) }}"
                             class="w-full flex items-center justify-center bg-biblo-charcoal text-white py-5 rounded-[2rem] font-bold text-sm tracking-widest uppercase hover:bg-biblo-moss transition-all hover:shadow-xl active:scale-95 shadow-lg shadow-biblo-charcoal/20">
                             Start Reading
                         </a>
@@ -154,7 +154,7 @@
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
                 @foreach($recommendations as $rec)
-                    <a href="{{ route('book.detail', $rec->id) }}" class="group cursor-pointer block">
+                    <a href="{{ route('book.detail', $rec) }}" class="group cursor-pointer block">
                         <div
                             class="aspect-[3/4] bg-biblo-greige rounded-[2.5rem] mb-4 overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-500 relative">
                             <img src="{{ asset($rec->cover_image) }}"

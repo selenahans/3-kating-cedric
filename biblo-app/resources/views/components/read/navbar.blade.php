@@ -1,4 +1,4 @@
-@props(['title', 'currentPage', 'totalPages'])
+@props(['title', 'currentPage', 'totalPages', 'backUrl' => null])
 
 <nav class="fixed top-0 inset-x-0 z-50 bg-[#FDFBF8]/80 backdrop-blur-md border-b border-biblo-greige/20">
     <div class="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -8,7 +8,7 @@
                 <span class="text-[11px] font-extrabold uppercase tracking-widest text-biblo-charcoal">← Back</span>
             </a> --}}
             {{-- Di dalam navbar.blade.php --}}
-            <a href="{{ route('book.detail', request()->route('id')) }}"
+            <a href="{{ $backUrl ?? route('explore') }}"
                 class="text-biblo-charcoal/40 hover:text-biblo-charcoal transition-colors">
                 <span class="text-[11px] font-extrabold uppercase tracking-widest text-biblo-charcoal">← Back</span>
             </a>
@@ -18,7 +18,7 @@
 
         <div class="flex items-center gap-6">
             <span class="text-[11px] font-bold text-biblo-charcoal/40 uppercase tracking-widest">
-                Page <span class="text-biblo-charcoal">{{ $currentPage }}</span> / {{ $totalPages }}
+                Page <span id="reader-current-page" class="text-biblo-charcoal">{{ $currentPage }}</span> / {{ $totalPages }}
             </span>
             <button class="hover:rotate-45 transition-transform duration-500">
                 <img src="{{ asset('images/icons/gear-purple.png') }}" class="h-6 w-6 object-contain" alt="Settings">

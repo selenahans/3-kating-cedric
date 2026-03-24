@@ -62,7 +62,7 @@
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
                 @forelse($filteredBooks as $book)
-                <a href="{{ route('book.detail', $book->id) }}" class="group cursor-pointer block">
+                <a href="{{ route('book.detail', $book) }}" class="group cursor-pointer block">
                     <div class="aspect-[3/4] bg-biblo-greige rounded-[1.5rem] sm:rounded-[2rem] lg:rounded-[2.5rem] mb-3 sm:mb-4 overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-500 relative">
                         <img src="{{ asset($book->cover_image) }}" onerror="this.src='https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1974&auto=format&fit=crop'" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="{{ $book->title }}">
                         <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md p-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity">
@@ -137,7 +137,7 @@
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
                 @foreach($popularBooks as $book)
-                <a href="{{ route('book.detail', $book->id) }}" class="group cursor-pointer block">
+                <a href="{{ route('book.detail', $book) }}" class="group cursor-pointer block">
                     <div class="aspect-[3/4] bg-biblo-greige rounded-[1.5rem] sm:rounded-[2rem] lg:rounded-[2.5rem] mb-3 sm:mb-4 overflow-hidden shadow-md group-hover:shadow-xl transition-all relative">
                         <img src="{{ asset($book->cover_image) }}" onerror="this.src='https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=2112&auto=format&fit=crop'" class="w-full h-full object-cover transition-all group-hover:scale-105" alt="{{ $book->title }}">
                     </div>
@@ -156,7 +156,7 @@
             </div>
             <div class="flex lg:grid lg:grid-cols-5 gap-4 sm:gap-6 overflow-x-auto no-scrollbar">
                 @foreach($newArrivals as $book)
-                <a href="{{ route('book.detail', $book->id) }}" class="w-44 lg:w-full flex-shrink-0 group cursor-pointer block">
+                <a href="{{ route('book.detail', $book) }}" class="w-44 lg:w-full flex-shrink-0 group cursor-pointer block">
                     <div class="aspect-[3/4] bg-biblo-greige rounded-[1.5rem] sm:rounded-[2rem] mb-3 sm:mb-4 overflow-hidden shadow-md group-hover:shadow-xl transition-all relative">
                         <img src="{{ asset($book->cover_image) }}" onerror="this.src='https://images.unsplash.com/photo-1543004218-ee141104308e?q=80&w=1974&auto=format&fit=crop'" class="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="{{ $book->title }}">
                         <div class="absolute bottom-4 left-4">

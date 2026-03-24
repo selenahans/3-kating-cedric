@@ -143,43 +143,10 @@ Route::middleware('auth')->group(function () {
     | BOOK DETAIL / READ / STREAM / PROGRESS
     |--------------------------------------------------------------------------
     */
-    Route::get('/book-detail/{id}', [BookController::class, 'show'])->name('book.detail');
-
-    Route::get('/book-read/{id}', function ($id) {
-        $book = Book::findOrFail($id);
-
-        $progress = UserBookProgress::firstOrCreate(
-            [
-                'user_id' => Auth::id(),
-                'book_id' => $book->id,
-            ],
-            [
-                'current_location' => '',
-                'progress_percentage' => 0,
-                'is_favorite' => false,
-                'status' => 'reading',
-            ]
-        );
-
-        return view('book.read', compact('book', 'progress'));
-    })->name('book.read');
-
-    Route::get('/stream-book/{filename}', function ($filename) {
-        $path = storage_path('app/books/' . $filename);
-
-        if (!File::exists($path)) {
-            return response("File not found at: " . $path, 404);
-        }
-
-        return response()->file($path, [
-            'Content-Type' => 'application/epub+zip',
-            'Access-Control-Allow-Origin' => '*',
-        ]);
-    })->name('book.stream');
-
-    Route::post('/update-progress/{id}', function ($id) {
-        return response()->json(['status' => 'success']);
-    })->name('reading.update-progress');
+    Route::get('/book-detail/{book:slug}', [BookController::class, 'show'])->name('book.detail');
+    Route::get('/book-read/{book:slug}', [BookController::class, 'read'])->name('book.read');
+    Route::get('/stream-book/{book:slug}', [BookController::class, 'stream'])->name('book.stream');
+    Route::post('/update-progress/{book:slug}', [BookController::class, 'updateProgress'])->name('reading.update-progress');
 
     /*
     |--------------------------------------------------------------------------
