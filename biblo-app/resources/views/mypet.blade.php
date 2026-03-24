@@ -5,7 +5,7 @@
             <div>
                 <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-moss mb-1">Companion Status</p>
                 <h1 class="text-4xl font-extrabold text-biblo-charcoal tracking-tighter">Meet, <span
-                        class="text-biblo-clay">Boo</span></h1>
+                    class="text-biblo-clay">{{ $currentPetName ?? 'Barnaby' }}</span></h1>
             </div>
             <div class="flex flex-wrap gap-3 w-full md:w-auto">
                 {{-- href="{{ route('mylibrary') }}" --}}
@@ -34,7 +34,7 @@
 
         {{-- Pet Image --}}
         <div class="w-32 h-32 md:w-40 md:h-40 animate-bounce-slow cursor-pointer hover:scale-110 transition-transform duration-500 flex items-center justify-center relative z-10">
-            <img src="{{ asset('images/boo-pet.webp') }}" alt="Boo Pet" class="w-full h-full object-contain">
+            <img src="{{ asset('images/boo-pet.webp') }}" alt="{{ $currentPetName ?? 'Pet' }}" class="w-full h-full object-contain">
         </div>
 
         {{-- BUBBLE CHAT (Sekarang Absolute agar tidak mendorong layout) --}}
@@ -145,7 +145,7 @@
 
                 <div class="mt-8 pt-6 border-t border-white/10">
                     <p class="text-[10px] font-bold text-white/40 leading-relaxed italic mb-4">
-                        "Give Boo treats earned from finishing book chapters to keep them happy!"
+                        "Give {{ $currentPetName ?? 'your pet' }} treats earned from finishing book chapters to keep them happy!"
                     </p>
                     {{-- href="{{ route('shop') }}" --}}
                     <a

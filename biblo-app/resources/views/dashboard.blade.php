@@ -10,7 +10,7 @@
                     <h1 class="text-2xl sm:text-3xl font-extrabold mb-2">Selamat Pagi,
                         {{ Auth::user()->name ?? 'sel' }}! 👋
                     </h1>
-                    <p class="text-biblo-greige/60 text-sm">Barnaby sedang menunggumu untuk membacakan cerita baru.</p>
+                    <p class="text-biblo-greige/60 text-sm">{{ $currentPetName ?? 'Barnaby' }} sedang menunggumu untuk membacakan cerita baru.</p>
                 </div>
 
                 <div class="relative z-10 flex flex-wrap gap-4 mt-6">
@@ -35,13 +35,13 @@
                             <p class="text-[10px] font-black uppercase tracking-widest text-white/40 leading-none">
                                 Pet Status
                             </p>
-                            <p class="text-xl font-bold">Barnaby (Lv. 4)</p>
+                            <p class="text-xl font-bold">{{ $currentPetName ?? 'Barnaby' }} (Lv. 4)</p>
                         </div>
                     </div>
                 </div>
                 <div
                     class="absolute right-0 bottom-[-20px] w-40 md:w-60 opacity-20 select-none pointer-events-none z-0">
-                    <img src="{{ asset('images/boo-pet.webp') }}" alt="Barnaby Mascot"
+                    <img src="{{ asset('images/boo-pet.webp') }}" alt="{{ $currentPetName ?? 'Pet' }} Mascot"
                         class="w-full h-auto object-contain">
                 </div>
             </div>
@@ -60,7 +60,7 @@
                     </div>
                 </div>
                 <p class="text-[11px] font-bold text-biblo-charcoal/40 italic mt-4">3 lembar lagi untuk memberi makan
-                    Barnaby!</p>
+                    {{ $currentPetName ?? 'Barnaby' }}!</p>
             </div>
         </div>
 

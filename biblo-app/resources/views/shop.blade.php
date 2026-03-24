@@ -4,7 +4,7 @@
         <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
             <div>
                 {{-- <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-moss mb-1">Marketplace</p> --}}
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-biblo-charcoal tracking-tighter">Lumi's <span class="text-biblo-clay">Shop</span></h1>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-biblo-charcoal tracking-tighter">{{ $currentPetName ?? 'Pet' }}'s <span class="text-biblo-clay">Shop</span></h1>
             </div>
             
             <div class="flex items-center gap-3 w-full md:w-auto">
