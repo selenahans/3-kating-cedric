@@ -23,19 +23,25 @@
                     </div>
                     <div
                         class="bg-white/10 backdrop-blur-md rounded-2xl p-4 flex items-center gap-3 border border-white/5">
-                        <span class="text-2xl">🦉</span>
+                        {{-- Container Ikon Gambar --}}
+                        <div class="w-8 h-8 flex-shrink-0">
+                            <img src="{{ asset('images/boo-pet.webp') }}" alt="Pet Icon"
+                                class="w-full h-full object-contain">
+                        </div>
+
                         <div>
-                            <p class="text-[10px] font-black uppercase tracking-widest text-white/40 leading-none">Pet
-                                Status</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-white/40 leading-none">
+                                Pet Status
+                            </p>
                             <p class="text-xl font-bold">Barnaby (Lv. 4)</p>
                         </div>
                     </div>
                 </div>
-
-                {{-- Ikon Burung Hantu (Safe Position agar tidak narik layout) --}}
                 <div
-                    class="absolute right-4 bottom-[-10px] text-[120px] md:text-[160px] opacity-20 select-none pointer-events-none">
-                    🦉</div>
+                    class="absolute right-0 bottom-[-20px] w-40 md:w-60 opacity-20 select-none pointer-events-none z-0">
+                    <img src="{{ asset('images/boo-pet.webp') }}" alt="Barnaby Mascot"
+                        class="w-full h-auto object-contain">
+                </div>
             </div>
 
             {{-- Target Hari Ini --}}
