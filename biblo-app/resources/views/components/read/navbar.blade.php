@@ -21,7 +21,7 @@
                 Page <span id="reader-current-page" class="text-biblo-charcoal">{{ $currentPage }}</span> / {{ $totalPages }}
             </span>
             <button class="hover:rotate-45 transition-transform duration-500">
-                <img src="{{ asset('images/icons/gear-purple.png') }}" class="h-6 w-6 object-contain" alt="Settings">
+                <img src="{{ asset('images/boo-pet.webp') }}" class="h-6 w-6 object-contain" alt="Settings">
             </button>
         </div>
     </div>
