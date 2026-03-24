@@ -8,7 +8,7 @@
                 <span class="text-[11px] font-extrabold uppercase tracking-widest text-biblo-charcoal">← Back</span>
             </a> --}}
             {{-- Di dalam navbar.blade.php --}}
-            <a href="{{ $backUrl ?? route('explore') }}"
+            <a href="{{ $backUrl ?? route('explore') }}" id="back-btn"
                 class="text-biblo-charcoal/40 hover:text-biblo-charcoal transition-colors">
                 <span class="text-[11px] font-extrabold uppercase tracking-widest text-biblo-charcoal">← Back</span>
             </a>

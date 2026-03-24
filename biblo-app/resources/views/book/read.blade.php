@@ -105,16 +105,65 @@
             let currentProgress = lastSavedProgress;
             let hasProgressChanged = false;
 
-            const backBtn = document.querySelector('a[href="{{ route('book.detail', $book) }}"]');
+             function calculatePagesRead() {
+                const lastPages = Math.round((lastSavedProgress / 100) * totalPages);
+                const currentPages = Math.round((currentProgress / 100) * totalPages);
+
+                return Math.max(0, currentPages - lastPages);
+            }
+            async function saveReadingLog() {
+                console.log("SAVE READING LOG DIPANGGIL"); // 🔥 DEBUG
+
+                const pagesRead = calculatePagesRead();
+
+                console.log("pagesRead:", pagesRead); // 🔥 DEBUG
+
+                if (pagesRead <= 0) return;
+
+                try {
+                    await fetch("{{ route('reading-log.store') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            book_id: {{ $book->id }},
+                            pages_read: pagesRead
+                        })
+                    });
+
+                    console.log("SUCCESS SIMPAN"); // 🔥 DEBUG
+                } catch (error) {
+                    console.error("Failed to save reading log:", error);
+                }
+            }
+
+            const backBtn = document.querySelector('#back-btn');
 
             if (backBtn) {
-                backBtn.addEventListener("click", async function (e) {
+                backBtn.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    console.log("BACK DIKLIK");
+
                     if (hasProgressChanged) {
-                        e.preventDefault();
+                        console.log("ADA PERUBAHAN");
 
-                        await saveReadingLog();
+                        saveReadingLog()
+                            .then(() => {
+                                console.log("SELESAI SAVE");
+                                window.location.href = backBtn.href;
+                            })
+                            .catch((err) => {
+                                console.error("ERROR SAVE:", err);
+                                window.location.href = backBtn.href; // tetap redirect walau error
+                            });
 
-                        window.location.href = this.href;
+                    } else {
+                        console.log("TIDAK ADA PERUBAHAN");
+                        window.location.href = backBtn.href;
                     }
                 });
             }
@@ -167,7 +216,7 @@
                 document.getElementById("reader-current-page").textContent = current;
             }
 
-            lrendition.on("rendered", () => {
+            rendition.on("rendered", () => {
                 loadSavedHighlights(); // 🔥 THIS WAS MISSING
             });
 
@@ -230,9 +279,7 @@
 
                 currentProgress = progress;
 
-                if (progress !== lastSavedProgress) {
-                    hasProgressChanged = true;
-                }
+                hasProgressChanged = true;
 
                 try {
                     await fetch("{{ route('reading.update-progress', $book) }}", {
@@ -352,36 +399,9 @@
             };
         });
         
-        function calculatePagesRead() {
-            const lastPages = Math.round((lastSavedProgress / 100) * totalPages);
-            const currentPages = Math.round((currentProgress / 100) * totalPages);
+       
 
-            return Math.max(0, currentPages - lastPages);
-        }
-
-        async function saveReadingLog() {
-            const pagesRead = calculatePagesRead();
-
-            if (pagesRead <= 0) return;
-
-            try {
-                await fetch("{{ route('reading-log.store') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": document
-                            .querySelector('meta[name="csrf-token"]')
-                            .getAttribute('content')
-                    },
-                    body: JSON.stringify({
-                        book_id: {{ $book->id }},
-                        pages_read: pagesRead
-                    })
-                });
-            } catch (error) {
-                console.error("Failed to save reading log:", error);
-            }
-        }
+        
 
     </script>
 @endsection

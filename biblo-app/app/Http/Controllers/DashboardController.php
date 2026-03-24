@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\TaskCompletion;
 use App\Models\UserBookProgress;
 use App\Models\ReadingLog;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -18,7 +19,15 @@ class DashboardController extends Controller
         $user = $request->user();
         
         // $userId = auth()->id();
-        $userId = 0;
+       
+        
+        $books = Book::with('category')->latest()->take(10)->get();
+
+        $completedTaskIdsToday = TaskCompletion::where('user_id', $user->id)
+            ->whereDate('completed_at', today())
+            ->pluck('task_id');
+
+        $userId = Auth::id();
         $tasks = Task::all();
         foreach ($tasks as $task) {
 
@@ -50,17 +59,6 @@ class DashboardController extends Controller
                 );
             }
         }
-        
-        $books = Book::with('category')->latest()->take(10)->get();
-
-        $completedTaskIdsToday = TaskCompletion::where('user_id', $user->id)
-            ->whereDate('completed_at', today())
-            ->pluck('task_id');
-
-        $tasks = Task::orderBy('id')->get()->map(function ($task) use ($completedTaskIdsToday) {
-            $task->progress_percent = $completedTaskIdsToday->contains($task->id) ? 100 : 0;
-            return $task;
-        });
 
         $currentProgress = UserBookProgress::with('book.category')
             ->where('user_id', $user->id)
