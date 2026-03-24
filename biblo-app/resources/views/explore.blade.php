@@ -1,4 +1,17 @@
 <x-app-layout>
+    @php
+        $baseParams = [];
+        if (!empty($search)) {
+            $baseParams['q'] = $search;
+        }
+        if (!empty($categoryId)) {
+            $baseParams['category'] = $categoryId;
+        }
+
+        $baseParamsWithoutCategory = $baseParams;
+        unset($baseParamsWithoutCategory['category']);
+    @endphp
+
     <div class="space-y-8 md:space-y-10 lg:space-y-12">
         
         {{-- HEADER & FILTERS --}}
@@ -7,22 +20,48 @@
                 <h1 class="text-3xl font-extrabold tracking-tight text-biblo-charcoal">Explore</h1>
                 
                 <div class="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-2 -mx-1 px-1">
-                    <button class="bg-biblo-charcoal text-white px-6 py-2 rounded-full text-xs font-bold whitespace-nowrap">Semua</button>
-                    <button class="bg-white text-biblo-charcoal/60 border border-biblo-greige/20 px-6 py-2 rounded-full text-xs font-bold whitespace-nowrap hover:bg-biblo-oat transition-colors">Terpopuler</button>
-                    <button class="bg-white text-biblo-charcoal/60 border border-biblo-greige/20 px-6 py-2 rounded-full text-xs font-bold whitespace-nowrap hover:bg-biblo-oat transition-colors">Terbaru</button>
-                    <button class="bg-white text-biblo-charcoal/60 border border-biblo-greige/20 px-6 py-2 rounded-full text-xs font-bold whitespace-nowrap hover:bg-biblo-oat transition-colors">Gratis</button>
+                    <a href="{{ route('explore', array_merge($baseParams, ['filter' => 'all'])) }}"
+                        class="{{ ($filter ?? 'all') === 'all' ? 'bg-biblo-charcoal text-white' : 'bg-white text-biblo-charcoal/60 border border-biblo-greige/20 hover:bg-biblo-oat' }} px-6 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors">
+                        Semua
+                    </a>
+                    <a href="{{ route('explore', array_merge($baseParams, ['filter' => 'popular'])) }}"
+                        class="{{ ($filter ?? 'all') === 'popular' ? 'bg-biblo-charcoal text-white' : 'bg-white text-biblo-charcoal/60 border border-biblo-greige/20 hover:bg-biblo-oat' }} px-6 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors">
+                        Terpopuler
+                    </a>
+                    <a href="{{ route('explore', array_merge($baseParams, ['filter' => 'latest'])) }}"
+                        class="{{ ($filter ?? 'all') === 'latest' ? 'bg-biblo-charcoal text-white' : 'bg-white text-biblo-charcoal/60 border border-biblo-greige/20 hover:bg-biblo-oat' }} px-6 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors">
+                        Terbaru
+                    </a>
+                    <a href="{{ route('explore', array_merge($baseParams, ['filter' => 'free'])) }}"
+                        class="{{ ($filter ?? 'all') === 'free' ? 'bg-biblo-charcoal text-white' : 'bg-white text-biblo-charcoal/60 border border-biblo-greige/20 hover:bg-biblo-oat' }} px-6 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-colors">
+                        Gratis
+                    </a>
                 </div>
             </div>
         </section>
 
-        {{-- RECOMMENDED FOR YOU --}}
+        {{-- FILTER RESULTS --}}
         <section>
             <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-                <h3 class="font-bold text-xl">Recommended For You</h3>
-                <a href="#" class="text-xs font-bold text-biblo-moss uppercase tracking-widest hover:underline">See All</a>
+                <h3 class="font-bold text-xl">
+                    @if(!empty($activeCategory))
+                        Genre: {{ $activeCategory->name }}
+                    @elseif(($filter ?? 'all') === 'popular')
+                        Buku Terpopuler
+                    @elseif(($filter ?? 'all') === 'latest')
+                        Buku Terbaru
+                    @elseif(($filter ?? 'all') === 'free')
+                        Buku Gratis
+                    @else
+                        Semua Buku
+                    @endif
+                </h3>
+                @if(!empty($activeCategory) || !empty($search) || ($filter ?? 'all') !== 'all')
+                    <a href="{{ route('explore') }}" class="text-xs font-bold text-biblo-moss uppercase tracking-widest hover:underline">Reset</a>
+                @endif
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
-                @foreach($recommendedBooks as $book)
+                @forelse($filteredBooks as $book)
                 <a href="{{ route('book.detail', $book->id) }}" class="group cursor-pointer block">
                     <div class="aspect-[3/4] bg-biblo-greige rounded-[1.5rem] sm:rounded-[2rem] lg:rounded-[2.5rem] mb-3 sm:mb-4 overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-500 relative">
                         <img src="{{ asset($book->cover_image) }}" onerror="this.src='https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1974&auto=format&fit=crop'" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" alt="{{ $book->title }}">
@@ -33,7 +72,9 @@
                     <h5 class="font-bold text-sm truncate px-2" title="{{ $book->title }}">{{ $book->title }}</h5>
                     <p class="text-xs text-biblo-charcoal/40 px-2 mt-1 truncate">{{ $book->author }}</p>
                 </a>
-                @endforeach
+                @empty
+                    <p class="col-span-full text-sm text-biblo-charcoal/60">Tidak ada buku pada filter ini.</p>
+                @endforelse
             </div>
         </section>
 
@@ -61,14 +102,21 @@
                         ];
                     @endphp
 
+                    <a href="{{ route('explore', array_merge($baseParamsWithoutCategory, ['filter' => $filter ?? 'all'])) }}"
+                        class="group flex items-center gap-3 rounded-2xl border {{ empty($categoryId) ? 'border-[#9FAF9A] bg-[#9FAF9A] text-[#3F453F]' : 'border-white/10 bg-white/10 text-white hover:bg-[#9FAF9A] hover:text-[#3F453F] hover:border-[#9FAF9A]' }} px-4 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold transition-all hover:shadow-xl hover:shadow-[#9FAF9A]/20">
+                        <span class="text-lg grayscale group-hover:grayscale-0 transition-all">📚</span>
+                        <span>Semua Genre</span>
+                    </a>
+
                     @foreach($genres as $genre)
-                        <button class="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold text-white transition-all hover:bg-[#9FAF9A] hover:text-[#3F453F] hover:border-[#9FAF9A] hover:shadow-xl hover:shadow-[#9FAF9A]/20">
+                        <a href="{{ route('explore', array_merge($baseParams, ['category' => $genre->id, 'filter' => $filter ?? 'all'])) }}"
+                            class="group flex items-center gap-3 rounded-2xl border {{ (int) ($categoryId ?? 0) === (int) $genre->id ? 'border-[#9FAF9A] bg-[#9FAF9A] text-[#3F453F]' : 'border-white/10 bg-white/10 text-white hover:bg-[#9FAF9A] hover:text-[#3F453F] hover:border-[#9FAF9A]' }} px-4 sm:px-6 py-3 sm:py-3.5 text-xs sm:text-sm font-bold transition-all hover:shadow-xl hover:shadow-[#9FAF9A]/20">
                             {{-- Fallback to a default book emoji if the slug isn't in the map --}}
                             <span class="text-lg grayscale group-hover:grayscale-0 transition-all">
                                 {{ $iconMap[$genre->slug] ?? '📚' }}
                             </span>
                             <span>{{ $genre->name }}</span>
-                        </button>
+                        </a>
                     @endforeach
                 </div>
             </div>

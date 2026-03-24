@@ -14,14 +14,15 @@ class ExploreController extends Controller
     {
         $search = trim((string) $request->query('q', ''));
         $categoryId = $request->integer('category');
-        $sort = $request->query('sort', 'latest');
+        $filter = $request->query('filter', 'all');
 
         $genres = Category::orderBy('name')->get();
+        $activeCategory = $genres->firstWhere('id', $categoryId);
         $preferredCategoryIds = $request->user()
             ->preferredCategories()
             ->pluck('categories.id');
 
-        $baseQuery = Book::with('category');
+        $baseQuery = Book::with('category')->withCount('progressRecords');
 
         if ($search !== '') {
             $baseQuery->where(function (Builder $query) use ($search) {
@@ -39,25 +40,25 @@ class ExploreController extends Controller
 
         $filteredBooksQuery = clone $baseQuery;
 
-        switch ($sort) {
-            case 'title':
-                $filteredBooksQuery->orderBy('title');
-                break;
-            case 'author':
-                $filteredBooksQuery->orderBy('author');
-                break;
-            case 'oldest':
-                $filteredBooksQuery->oldest();
+        switch ($filter) {
+            case 'popular':
+                $filteredBooksQuery->orderByDesc('progress_records_count')->latest();
                 break;
             case 'latest':
+                $filteredBooksQuery->latest();
+                break;
+            case 'free':
+                $filteredBooksQuery->whereNotNull('file_path')->latest();
+                break;
+            case 'all':
             default:
                 $filteredBooksQuery->latest();
                 break;
         }
 
-        $filteredBooks = $filteredBooksQuery->take(15)->get();
+        $filteredBooks = $filteredBooksQuery->take(20)->get();
 
-        if ($search !== '' || $categoryId) {
+        if ($search !== '' || $categoryId || $filter !== 'all') {
             $recommendedBooks = $filteredBooks;
         } else {
             $recommendedBooks = Book::with('category')
@@ -90,7 +91,8 @@ class ExploreController extends Controller
             'filteredBooks',
             'search',
             'categoryId',
-            'sort'
+            'filter',
+            'activeCategory'
         ));
     }
 }
