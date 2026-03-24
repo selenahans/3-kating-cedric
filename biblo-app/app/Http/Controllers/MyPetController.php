@@ -194,4 +194,26 @@ class MyPetController extends Controller
             'can_feed' => ((int) $pet->fresh()->health) < 90,
         ]);
     }
+
+    public function getStatus(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $pet = UserPet::firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'nickname' => $user->name,
+                'type' => 'owl',
+                'xp' => 0,
+                'stage' => 'baby',
+                'health' => 100,
+                'happiness' => 100,
+            ]
+        );
+
+        return response()->json([
+            'success' => true,
+            'health' => (int) $pet->health,
+            'is_hungry' => (int) $pet->health <= 30,
+        ]);
+    }
 }

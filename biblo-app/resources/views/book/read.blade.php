@@ -85,6 +85,23 @@
 
     {{-- Bottom Bar --}}
     <x-read.bottom-bar id="prev" nextId="next" :progress="$progress->progress_percentage ?? 0" />
+    
+    {{-- Hungry Pet Notification Modal --}}
+    <div id="hungry-pet-modal"
+        class="fixed inset-0 z-[98] bg-biblo-charcoal/30 backdrop-blur-sm hidden items-center justify-center px-4">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl transform transition-all text-center">
+            <div class="text-5xl mb-4">🍽️</div>
+            <h3 class="font-bold text-2xl text-biblo-charcoal mb-2">Pet Kamu Lapar!</h3>
+            <p class="text-biblo-charcoal/70 mb-6">Pet kamu perlu makan sebelum bisa melanjutkan membaca. Kenyang: <span id="hungry-pet-health" class="font-bold">0</span>%</p>
+            <p class="text-sm text-biblo-charcoal/60 mb-6">Kasih makan pet kamu dulu, ya!</p>
+            
+            <a href="{{ route('mypet') }}" 
+                class="w-full py-3 rounded-xl font-bold text-white bg-biblo-moss hover:bg-[#7e8f7a] transition-all inline-block">
+                Beri Makan Pet
+            </a>
+        </div>
+    </div>
+
     <x-read.level-up-modal />
 
     {{-- ePub.js Library --}}
@@ -114,6 +131,46 @@
             const levelUpViewPetBtn = document.getElementById("level-up-view-pet");
             const levelUpContinueReadingBtn = document.getElementById("level-up-continue-reading");
             const levelUpConfetti = document.getElementById("level-up-confetti");
+            
+            const hungryPetModal = document.getElementById("hungry-pet-modal");
+            const hungryPetHealth = document.getElementById("hungry-pet-health");
+
+            // Check pet status on page load
+            async function checkPetStatus() {
+                try {
+                    const response = await fetch("{{ route('mypet.status') }}", {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch pet status");
+                    }
+
+                    const data = await response.json();
+                    
+                    if (data.is_hungry) {
+                        // Show hungry pet modal
+                        if (hungryPetHealth) {
+                            hungryPetHealth.textContent = data.health;
+                        }
+                        if (hungryPetModal) {
+                            hungryPetModal.classList.remove("hidden");
+                            hungryPetModal.classList.add("flex");
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to check pet status:", error);
+                }
+            }
+            
+            // Check pet status immediately
+            checkPetStatus();
 
             function triggerConfettiBurst() {
                 if (!levelUpConfetti) return;
