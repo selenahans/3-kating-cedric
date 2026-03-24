@@ -17,6 +17,7 @@ use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SearchController;
 
 /********************
  LOGIN & REGISTRATION
@@ -122,6 +123,7 @@ Route::middleware('auth')->group(function () {
     */
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/explore', [ExploreController::class, 'index'])->name('explore');
+    Route::get('/search', [SearchController::class, 'index'])->name('search.global');
 
     /*
     |--------------------------------------------------------------------------

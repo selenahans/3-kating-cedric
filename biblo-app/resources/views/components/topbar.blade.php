@@ -7,16 +7,16 @@
             <line x1="3" y1="18" x2="21" y2="18"></line>
         </svg>
     </button>
-    <div class="search-wrapper">
-        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#CFC8BE]">
+    <form class="search-wrapper" method="GET" action="{{ route('search.global') }}">
+        <button type="submit" class="absolute left-4 top-1/2 -translate-y-1/2 text-[#CFC8BE]" aria-label="Cari">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-        </span>
-        <input type="text" placeholder="Cari buku, catatan, atau teman..." class="search-input">
-    </div>
+        </button>
+        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari buku, kategori, atau catatan..." class="search-input">
+    </form>
 
     <div class="md:hidden">
         <img src="{{ asset('images/logo/biblo.webp') }}" class="h-6 w-auto" alt="Logo">
