@@ -11,18 +11,23 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/css/sidebar.css', 'resources/css/topbar.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased">
+<body class="font-sans antialiased" x-data="{ sidebarOpen: true }">
     <div class="flex min-h-screen bg-biblo-oat">
-        <x-sidebar active="home" />
 
-        <div id="sidebarOverlay" class="fixed inset-0 z-[90] bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"></div>
+        <x-sidebar active="home" ::class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'" />
 
-        <main class="flex-1 p-6 md:p-10">
+        <div id="sidebarOverlay" x-show="sidebarOpen" @click="sidebarOpen = false"
+            class="fixed inset-0 z-[90] bg-black/40 transition-opacity duration-300 lg:hidden"
+            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+        </div>
+
+        <main class="flex-1 p-6 md:p-10 transition-all duration-300">
             <div class="flex-1">
                 <x-topbar :title="$title ?? 'Explore'" />
 
@@ -32,23 +37,6 @@
             </div>
         </main>
     </div>
-    {{-- <div class="min-h-screen bg-gray-100">
-        @include('layouts.navigation')
-
-        <!-- Page Heading -->
-        @isset($header)
-        <header class="bg-white shadow">
-            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                {{ $header }}
-            </div>
-        </header>
-        @endisset
-
-        <!-- Page Content -->
-        <main>
-            {{ $slot }}
-        </main>
-    </div> --}}
 </body>
 
 </html>

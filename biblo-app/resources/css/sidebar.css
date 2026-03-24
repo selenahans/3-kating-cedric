@@ -86,9 +86,13 @@ body.sidebar-mobile-open .biblo-sidebar {
         justify-content: center;
     }
 
-    body.sidebar-desktop-collapsed .sidebar-brand-logo {
+    /* body.sidebar-desktop-collapsed .sidebar-brand-logo {
         width: 2rem;
         overflow: hidden;
+    } */
+    body.sidebar-desktop-collapsed .sidebar-brand-logo {
+        width: auto;
+        overflow: visible;
     }
 
     body.sidebar-desktop-collapsed .sidebar-link {
@@ -110,5 +114,24 @@ body.sidebar-mobile-open .biblo-sidebar {
         justify-content: center;
         padding-left: 0.75rem;
         padding-right: 0.75rem;
+    }
+}
+.logo-mini {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    body.sidebar-desktop-collapsed .logo-full {
+        display: none;
+    }
+
+    body.sidebar-desktop-collapsed .logo-mini {
+        display: flex;
+    }
+
+    /* Supaya ikon mini tidak kepotong */
+    body.sidebar-desktop-collapsed .sidebar-brand-logo {
+        width: auto;
+        overflow: visible;
     }
 }
