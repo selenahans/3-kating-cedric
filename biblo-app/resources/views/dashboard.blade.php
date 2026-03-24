@@ -7,7 +7,9 @@
             <div
                 class="lg:col-span-2 bg-biblo-charcoal rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] p-5 sm:p-6 lg:p-8 text-white relative overflow-hidden flex flex-col justify-between min-h-[220px] sm:min-h-[240px]">
                 <div class="relative z-10">
-                    <h1 class="text-2xl sm:text-3xl font-extrabold mb-2">Selamat Pagi, {{ Auth::user()->name ?? 'sel' }}! 👋</h1>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold mb-2">Selamat Pagi,
+                        {{ Auth::user()->name ?? 'sel' }}! 👋
+                    </h1>
                     <p class="text-biblo-greige/60 text-sm">Barnaby sedang menunggumu untuk membacakan cerita baru.</p>
                 </div>
 
@@ -96,7 +98,8 @@
         {{-- GRID UTAMA --}}
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {{-- Recap --}}
-            <div class="lg:col-span-4 bg-white rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] p-5 sm:p-6 lg:p-8 shadow-sm border border-biblo-greige/10">
+            <div
+                class="lg:col-span-4 bg-white rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] p-5 sm:p-6 lg:p-8 shadow-sm border border-biblo-greige/10">
                 <h3 class="font-bold text-lg mb-6">Recap Februari</h3>
                 <div class="space-y-4 text-biblo-charcoal">
                     <div class="flex justify-between items-center bg-biblo-oat/30 p-4 rounded-2xl">
@@ -132,7 +135,8 @@
             </div>
 
             {{-- Continue Reading --}}
-            <div class="lg:col-span-8 bg-white rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] p-5 sm:p-6 lg:p-8 shadow-sm border border-biblo-greige/10">
+            <div
+                class="lg:col-span-8 bg-white rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] p-5 sm:p-6 lg:p-8 shadow-sm border border-biblo-greige/10">
                 <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
                     <h3 class="font-bold text-lg text-biblo-charcoal">Lanjutkan Membaca</h3>
                     <a href="{{ route('mylibrary') }}"
@@ -154,13 +158,18 @@
                             <p class="text-sm text-biblo-charcoal/50 mb-6">{{ $currentBook->author }}</p>
 
                             {{-- Progress bar detail --}}
+                            @php
+                                $progress = $currentProgress->progress_percentage ?? 0;
+                            @endphp
+
                             <div class="space-y-2 mb-8">
                                 <div class="flex justify-between text-[11px] font-bold">
                                     <span class="text-biblo-charcoal/40">Progress Baca</span>
-                                    <span>5%</span>
+                                    <span>{{ $progress }}%</span>
                                 </div>
                                 <div class="w-full bg-biblo-oat rounded-full h-1.5">
-                                    <div class="bg-biblo-charcoal h-1.5 rounded-full" style="width: 5%"></div>
+                                    <div class="bg-biblo-charcoal h-1.5 rounded-full" style="width: {{ $progress }}%">
+                                    </div>
                                 </div>
                             </div>
 

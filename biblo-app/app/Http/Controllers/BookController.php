@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserBookProgress;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use App\Models\HighlightNote;
 
 class BookController extends Controller
 {
@@ -81,6 +82,8 @@ class BookController extends Controller
                 'status' => 'reading',
             ]
         );
+        
+        $currentLocation = $progress->current_location ?? null;
 
         $storagePath = storage_path('app/public/' . $book->file_path);
 
@@ -88,7 +91,11 @@ class BookController extends Controller
             ? route('book.stream', $book)
             : null;
 
-        return view('book.read', compact('book', 'progress', 'bookSourceUrl'));
+        $notes = HighlightNote::where('user_id', Auth::id())
+            ->where('book_id', $book->id)
+            ->get();
+
+        return view('book.read', compact('book', 'progress', 'bookSourceUrl', 'notes', 'currentLocation'));
     }
 
 

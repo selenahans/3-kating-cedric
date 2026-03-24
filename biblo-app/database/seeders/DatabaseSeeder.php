@@ -10,6 +10,7 @@ use App\Models\Item;
 use Illuminate\Database\Seeder;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\BookSeeder;
+Use Database\Seeders\UserSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -33,7 +34,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-       $this->call([CategorySeeder::class,BookSeeder::class]);
+       $this->call([CategorySeeder::class,BookSeeder::class,UserSeeder::class]);
        
         // 3. Create Daily Tasks (The Coin Engine)
         Task::create(['title' => 'Daily Reader', 'description' => 'Read at least 3 pages of any book', 'coin_reward' => 50, 'xp_reward' => 20, 'target_value' => 5, 'type' => 'reading/any']);

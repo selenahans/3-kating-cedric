@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('12345678'),
                 'photo' => 'default.png',
                 'coins' => 100,
+                'email_verified_at' => now(),
             ],
             [
                 'name' => 'Selena',
@@ -24,6 +25,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('12345678'),
                 'photo' => 'default.png',
                 'coins' => 250,
+                'email_verified_at' => now(),
             ],
             [
                 'name' => 'Aileen',
@@ -31,6 +33,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('12345678'),
                 'photo' => 'default.png',
                 'coins' => 500,
+                'email_verified_at' => now(),
             ],
             [
                 'name' => 'Mikael',
@@ -38,6 +41,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('12345678'),
                 'photo' => 'default.png',
                 'coins' => 500,
+                'email_verified_at' => now(),
             ],
         ]);
     }

@@ -1,37 +1,49 @@
 <x-app-layout title="My Library" active="library">
     <div class="space-y-8 md:space-y-10 lg:space-y-12">
-        
+
         {{-- TOP STATS SECTION --}}
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-biblo-charcoal rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] p-5 sm:p-6 lg:p-8 text-white relative overflow-hidden shadow-2xl shadow-biblo-charcoal/20 group">
+            <div
+                class="bg-biblo-charcoal rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] p-5 sm:p-6 lg:p-8 text-white relative overflow-hidden shadow-2xl shadow-biblo-charcoal/20 group">
                 <div class="relative z-10">
                     <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-sage mb-2">My Collection</p>
                     {{-- Dynamically inject the total book count --}}
-                    <h2 class="text-4xl sm:text-5xl font-extrabold tracking-tighter">{{ $totalBooks }} <span class="text-xs sm:text-sm font-bold text-biblo-greige/60 ml-2 uppercase">Books</span></h2>
+                    <h2 class="text-4xl sm:text-5xl font-extrabold tracking-tighter">{{ $totalBooks }} <span
+                            class="text-xs sm:text-sm font-bold text-biblo-greige/60 ml-2 uppercase">Books</span></h2>
                 </div>
-                <div class="absolute -right-6 -bottom-6 text-9xl opacity-10 group-hover:scale-110 transition-transform">📚</div>
-            </div>
-            
-            <div class="bg-white rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] p-5 sm:p-6 lg:p-8 border border-biblo-greige/30 shadow-sm flex items-center justify-between group hover:border-biblo-sage transition-all">
-                <div>
-                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-charcoal/40 mb-2">On Progress</p>
-                    <h2 class="text-4xl font-extrabold text-biblo-charcoal">{{ $onProgressCount }}</h2>
-                </div>
-                <div class="w-16 h-16 bg-biblo-sage/20 rounded-[2rem] flex items-center justify-center text-3xl group-hover:rotate-12 transition-transform">⌛</div>
+                <div class="absolute -right-6 -bottom-6 text-9xl opacity-10 group-hover:scale-110 transition-transform">
+                    📚</div>
             </div>
 
-            <div class="bg-white rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] p-5 sm:p-6 lg:p-8 border border-biblo-greige/30 shadow-sm flex items-center justify-between group hover:border-biblo-moss transition-all">
+            <div
+                class="bg-white rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] p-5 sm:p-6 lg:p-8 border border-biblo-greige/30 shadow-sm flex items-center justify-between group hover:border-biblo-sage transition-all">
                 <div>
-                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-charcoal/40 mb-2">Completed</p>
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-charcoal/40 mb-2">On Progress
+                    </p>
+                    <h2 class="text-4xl font-extrabold text-biblo-charcoal">{{ $onProgressCount }}</h2>
+                </div>
+                <div
+                    class="w-16 h-16 bg-biblo-sage/20 rounded-[2rem] flex items-center justify-center text-3xl group-hover:rotate-12 transition-transform">
+                    ⌛</div>
+            </div>
+
+            <div
+                class="bg-white rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] p-5 sm:p-6 lg:p-8 border border-biblo-greige/30 shadow-sm flex items-center justify-between group hover:border-biblo-moss transition-all">
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-charcoal/40 mb-2">Completed
+                    </p>
                     <h2 class="text-4xl font-extrabold text-biblo-charcoal">{{ $completedCount }}</h2>
                 </div>
-                <div class="w-16 h-16 bg-biblo-moss/20 rounded-[2rem] flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">✅</div>
+                <div
+                    class="w-16 h-16 bg-biblo-moss/20 rounded-[2rem] flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                    ✅</div>
             </div>
         </section>
 
         {{-- FILTER SECTION --}}
         <section class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div class="flex items-center gap-1 bg-biblo-oat p-1.5 rounded-3xl border border-biblo-greige/20 shadow-sm overflow-x-auto no-scrollbar w-full md:w-auto">
+            <div
+                class="flex items-center gap-1 bg-biblo-oat p-1.5 rounded-3xl border border-biblo-greige/20 shadow-sm overflow-x-auto no-scrollbar w-full md:w-auto">
                 <a href="{{ route('mylibrary', array_filter(['status' => null, 'q' => $search ?: null, 'sort' => $sort ?: null])) }}"
                     class="{{ empty($status) ? 'bg-biblo-charcoal text-white shadow-lg' : 'text-biblo-charcoal/60 hover:bg-biblo-greige/20' }} px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold transition-all whitespace-nowrap">
                     All Books
@@ -45,31 +57,29 @@
                     Finished
                 </a>
             </div>
-            
-            <div class="flex items-center gap-3 w-full md:w-auto">
-                <button class="flex items-center gap-2 px-6 py-3 bg-white border border-biblo-greige/30 rounded-2xl text-xs font-bold text-biblo-charcoal hover:bg-biblo-oat transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-biblo-clay"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
-                    Filter
-                </button>
-            </div>
+
         </section>
 
         {{-- DYNAMIC BOOKS GRID --}}
         <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-10">
             @forelse($books as $book)
+                @php
+                    $progress = $book->progressRecords->first();
+                    $percent = $progress->progress_percentage ?? 0;
+                @endphp
                 {{-- Make the whole card a clickable link to the reader --}}
                 <a href="{{ route('book.read', $book) }}" class="group cursor-pointer block">
-                    <div class="aspect-[3/4] bg-biblo-greige rounded-[1rem] mb-3 sm:mb-5 overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-500 relative">
-                        
-                        {{-- Image Handling: Added a fallback image just in case your local EPUB covers aren't accessible yet --}}
-                        <img 
-                            src="{{$book->cover_image}}" 
-                            onerror="this.src='https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1974&auto=format&fit=crop'" 
+                    <div
+                        class="aspect-[3/4] bg-biblo-greige rounded-[1rem] mb-3 sm:mb-5 overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-500 relative">
+
+                        {{-- Image Handling: Added a fallback image just in case your local EPUB covers aren't accessible
+                        yet --}}
+                        <img src="{{$book->cover_image}}"
+                            onerror="this.src='https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1974&auto=format&fit=crop'"
                             alt="{{ $book->title }} Cover"
-                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                        >
+                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                     </div>
-                    
+
                     <div class="px-2">
                         <h5 class="font-extrabold text-sm text-biblo-charcoal truncate" title="{{ $book->title }}">
                             {{ $book->title }}
@@ -77,6 +87,17 @@
                         <p class="text-[11px] font-bold text-biblo-clay mt-1">
                             {{ $book->author }}
                         </p>
+                        <div class="mt-2">
+                            <div class="flex justify-between text-[10px] font-bold">
+                                <span class="text-biblo-charcoal/40">Progress</span>
+                                <span>{{ $percent }}%</span>
+                            </div>
+
+                            <div class="w-full bg-biblo-oat rounded-full h-1 mt-1">
+                                <div class="bg-biblo-moss h-1 rounded-full" style="width: {{ $percent }}%">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </a>
             @empty

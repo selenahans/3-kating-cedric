@@ -16,11 +16,13 @@ class LibraryController extends Controller
         $status = $request->query('status');
         $sort = $request->query('sort', 'latest');
 
-        $query = Book::with(['category', 'progressRecords' => function ($progressQuery) use ($userId) {
+        $query = Book::with([
+            'category',
+            'progressRecords' => function ($progressQuery) use ($userId) {
+                $progressQuery->where('user_id', $userId);
+            }
+        ])->whereHas('progressRecords', function ($progressQuery) use ($userId, $status) {
             $progressQuery->where('user_id', $userId);
-        }])->whereHas('progressRecords', function (Builder $progressQuery) use ($userId, $status) {
-            $progressQuery->where('user_id', $userId)
-                ->where('is_favorite', true);
 
             if (!empty($status)) {
                 $progressQuery->where('status', $status);
