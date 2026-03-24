@@ -99,6 +99,26 @@
             let selectedColor = "#FDE047"; // default
             const savedCfi = @json($progress->current_location ?? null);
 
+            const totalPages = {{ $book->total_pages }};
+
+            let lastSavedProgress = {{ $progress->progress_percentage ?? 0 }};
+            let currentProgress = lastSavedProgress;
+            let hasProgressChanged = false;
+
+            const backBtn = document.querySelector('a[href="{{ route('book.detail', $book) }}"]');
+
+            if (backBtn) {
+                backBtn.addEventListener("click", async function (e) {
+                    if (hasProgressChanged) {
+                        e.preventDefault();
+
+                        await saveReadingLog();
+
+                        window.location.href = this.href;
+                    }
+                });
+            }
+
             let book = ePub(url);
             let rendition = book.renderTo("viewer", {
                 width: "100%",
@@ -207,6 +227,12 @@
                     : 0;
 
                 const progress = Math.round(percentage * 100);
+
+                currentProgress = progress;
+
+                if (progress !== lastSavedProgress) {
+                    hasProgressChanged = true;
+                }
 
                 try {
                     await fetch("{{ route('reading.update-progress', $book) }}", {
@@ -325,7 +351,37 @@
                 noteInput.value = "";
             };
         });
+        
+        function calculatePagesRead() {
+            const lastPages = Math.round((lastSavedProgress / 100) * totalPages);
+            const currentPages = Math.round((currentProgress / 100) * totalPages);
 
+            return Math.max(0, currentPages - lastPages);
+        }
+
+        async function saveReadingLog() {
+            const pagesRead = calculatePagesRead();
+
+            if (pagesRead <= 0) return;
+
+            try {
+                await fetch("{{ route('reading-log.store') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document
+                            .querySelector('meta[name="csrf-token"]')
+                            .getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        book_id: {{ $book->id }},
+                        pages_read: pagesRead
+                    })
+                });
+            } catch (error) {
+                console.error("Failed to save reading log:", error);
+            }
+        }
 
     </script>
 @endsection

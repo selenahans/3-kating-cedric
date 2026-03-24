@@ -206,3 +206,12 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+
+
+
+
+use App\Http\Controllers\ReadingLogController;
+
+Route::post('/reading-log', [ReadingLogController::class, 'store'])
+    ->name('reading-log.store')
+    ->middleware('auth');
