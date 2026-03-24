@@ -16,8 +16,8 @@
                 </a>
                 <div class="bg-white border border-biblo-greige/30 px-5 sm:px-6 py-3 rounded-2xl shadow-sm">
                     <p class="text-[9px] font-black text-biblo-charcoal/40 uppercase tracking-widest">Growth Level</p>
-                    <p class="text-xl font-extrabold text-biblo-charcoal">Lv. 14 <span
-                            class="text-xs font-bold text-biblo-moss ml-1">Adolescent</span></p>
+                    <p class="text-xl font-extrabold text-biblo-charcoal">Lv. {{ $petLevel ?? 1 }} <span
+                            class="text-xs font-bold text-biblo-moss ml-1">{{ $growthTitle ?? 'Baby' }}</span></p>
                 </div>
             </div>
         </header>
@@ -49,16 +49,7 @@
 
     {{-- STATS GRID (Posisikan di bawah dengan padding yang pas) --}}
     <div class="mt-6 w-full grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:absolute md:bottom-6 md:left-6 md:right-6 md:w-auto">
-        @php
-            $stats = [
-                ['label' => 'Hunger', 'val' => '80%', 'color' => 'bg-biblo-clay', 'width' => '80%'],
-                ['label' => 'Happiness', 'val' => '95%', 'color' => 'bg-biblo-sage', 'width' => '95%'],
-                ['label' => 'Knowledge', 'val' => '42%', 'color' => 'bg-biblo-moss', 'width' => '42%'],
-                ['label' => 'Exp', 'val' => '120/500', 'color' => 'bg-biblo-charcoal', 'width' => '24%'],
-            ];
-        @endphp
-
-        @foreach($stats as $stat)
+        @foreach(($petStats ?? []) as $stat)
             <div class="bg-white/40 backdrop-blur-md border border-white/60 p-2.5 sm:p-3 md:p-4 rounded-[1.25rem] sm:rounded-[2rem] shadow-sm flex flex-col justify-between">
                 <div class="flex justify-between items-center mb-2">
                     <p class="text-[9px] font-black text-biblo-charcoal/40 uppercase tracking-widest">{{ $stat['label'] }}</p>

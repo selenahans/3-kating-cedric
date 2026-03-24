@@ -35,7 +35,7 @@
                             <p class="text-[10px] font-black uppercase tracking-widest text-white/40 leading-none">
                                 Pet Status
                             </p>
-                            <p class="text-xl font-bold">{{ $currentPetName ?? 'Barnaby' }} (Lv. 4)</p>
+                            <p class="text-xl font-bold">{{ $currentPetName ?? 'Barnaby' }} (Lv. {{ $petLevel ?? 1 }})</p>
                         </div>
                     </div>
                 </div>

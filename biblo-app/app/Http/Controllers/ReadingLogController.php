@@ -15,15 +15,33 @@ class ReadingLogController extends Controller
             'pages_read' => 'required|integer|min:1',
         ]);
 
+        $userId = Auth::id();
+        $pagesRead = (int) $request->pages_read;
+
+        $totalPagesBefore = (int) ReadingLog::where('user_id', $userId)->sum('pages_read');
+
         ReadingLog::create([
             'user_id' => Auth::id(),
             'book_id' => $request->book_id,
-            'pages_read' => $request->pages_read,
+            'pages_read' => $pagesRead,
         ]);
+
+        $totalPagesAfter = $totalPagesBefore + $pagesRead;
+
+        $xpPerPage = 5;
+        $xpPerLevel = 100;
+
+        $oldLevel = intdiv($totalPagesBefore * $xpPerPage, $xpPerLevel) + 1;
+        $newLevel = intdiv($totalPagesAfter * $xpPerPage, $xpPerLevel) + 1;
+        $leveledUp = $newLevel > $oldLevel;
 
         return response()->json([
             'success' => true,
-            'message' => 'Reading log saved'
+            'message' => 'Reading log saved',
+            'leveled_up' => $leveledUp,
+            'old_level' => $oldLevel,
+            'new_level' => $newLevel,
+            'pages_read' => $pagesRead,
         ]);
     }
 }

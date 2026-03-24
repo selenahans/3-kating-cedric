@@ -85,6 +85,7 @@
 
     {{-- Bottom Bar --}}
     <x-read.bottom-bar id="prev" nextId="next" :progress="$progress->progress_percentage ?? 0" />
+    <x-read.level-up-modal />
 
     {{-- ePub.js Library --}}
     <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
@@ -104,24 +105,110 @@
             let lastSavedProgress = {{ $progress->progress_percentage ?? 0 }};
             let currentProgress = lastSavedProgress;
             let hasProgressChanged = false;
+            let previousDisplayedPage = null;
+            let accumulatedPagesRead = 0;
+            const levelUpModal = document.getElementById("level-up-modal");
+            const levelUpOld = document.getElementById("level-up-old");
+            const levelUpNew = document.getElementById("level-up-new");
+            const levelUpPetName = document.getElementById("level-up-pet-name");
+            const levelUpViewPetBtn = document.getElementById("level-up-view-pet");
+            const levelUpContinueReadingBtn = document.getElementById("level-up-continue-reading");
+            const levelUpConfetti = document.getElementById("level-up-confetti");
 
-             function calculatePagesRead() {
+            function triggerConfettiBurst() {
+                if (!levelUpConfetti) return;
+
+                const colors = ["#9FAF9A", "#B09D85", "#CFC8BE", "#7E8F7A"];
+                levelUpConfetti.innerHTML = "";
+
+                for (let i = 0; i < 16; i++) {
+                    const piece = document.createElement("span");
+                    piece.className = "biblo-confetti-piece";
+
+                    const size = 4 + Math.floor(Math.random() * 5);
+                    const left = 8 + Math.random() * 84;
+                    const dx = -36 + Math.random() * 72;
+                    const rot = -180 + Math.random() * 360;
+                    const duration = 850 + Math.floor(Math.random() * 500);
+                    const delay = Math.floor(Math.random() * 120);
+
+                    piece.style.width = size + "px";
+                    piece.style.height = size * 1.6 + "px";
+                    piece.style.left = left + "%";
+                    piece.style.backgroundColor = colors[i % colors.length];
+                    piece.style.setProperty("--dx", dx + "px");
+                    piece.style.setProperty("--rot", rot + "deg");
+                    piece.style.animationDuration = duration + "ms";
+                    piece.style.animationDelay = delay + "ms";
+
+                    levelUpConfetti.appendChild(piece);
+                }
+
+                setTimeout(() => {
+                    if (levelUpConfetti) {
+                        levelUpConfetti.innerHTML = "";
+                    }
+                }, 1700);
+            }
+
+            function showLevelUpModal(oldLevel, newLevel) {
+                if (!levelUpModal) return Promise.resolve();
+
+                if (levelUpOld) levelUpOld.textContent = String(oldLevel);
+                if (levelUpNew) levelUpNew.textContent = String(newLevel);
+                if (levelUpPetName) levelUpPetName.textContent = "{{ $currentPetName ?? 'Pet kamu' }}";
+
+                levelUpModal.classList.remove("hidden");
+                levelUpModal.classList.add("flex");
+                triggerConfettiBurst();
+
+                return new Promise((resolve) => {
+                    let settled = false;
+                    const done = (action) => {
+                        if (settled) return;
+                        settled = true;
+                        levelUpModal.classList.add("hidden");
+                        levelUpModal.classList.remove("flex");
+                        resolve(action);
+                    };
+
+                    const cleanupAndDone = (action) => {
+                        if (levelUpViewPetBtn && viewPetHandler) {
+                            levelUpViewPetBtn.removeEventListener("click", viewPetHandler);
+                        }
+                        if (levelUpContinueReadingBtn && continueReadingHandler) {
+                            levelUpContinueReadingBtn.removeEventListener("click", continueReadingHandler);
+                        }
+                        done(action);
+                    };
+
+                    const viewPetHandler = () => cleanupAndDone("view-pet");
+                    const continueReadingHandler = () => cleanupAndDone("continue-reading");
+
+                    if (levelUpViewPetBtn) {
+                        levelUpViewPetBtn.addEventListener("click", viewPetHandler);
+                    }
+                    if (levelUpContinueReadingBtn) {
+                        levelUpContinueReadingBtn.addEventListener("click", continueReadingHandler);
+                    }
+                });
+            }
+
+            function calculatePagesRead() {
                 const lastPages = Math.round((lastSavedProgress / 100) * totalPages);
                 const currentPages = Math.round((currentProgress / 100) * totalPages);
 
-                return Math.max(0, currentPages - lastPages);
+                const percentageBasedPages = Math.max(0, currentPages - lastPages);
+                return Math.max(accumulatedPagesRead, percentageBasedPages);
             }
-            async function saveReadingLog() {
-                console.log("SAVE READING LOG DIPANGGIL"); // 🔥 DEBUG
 
+            async function saveReadingLog() {
                 const pagesRead = calculatePagesRead();
 
-                console.log("pagesRead:", pagesRead); // 🔥 DEBUG
-
-                if (pagesRead <= 0) return;
+                if (pagesRead <= 0) return { action: 'none' };
 
                 try {
-                    await fetch("{{ route('reading-log.store') }}", {
+                    const response = await fetch("{{ route('reading-log.store') }}", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -135,9 +222,25 @@
                         })
                     });
 
-                    console.log("SUCCESS SIMPAN"); // 🔥 DEBUG
+                    if (!response.ok) {
+                        throw new Error("Failed to persist reading log");
+                    }
+
+                    const payload = await response.json();
+                    let action = 'none';
+                    if (payload?.leveled_up) {
+                        action = await showLevelUpModal(payload.old_level, payload.new_level);
+                    }
+
+                    // Reset accumulator after successful save to avoid duplicate logs.
+                    accumulatedPagesRead = 0;
+                    lastSavedProgress = currentProgress;
+                    hasProgressChanged = false;
+
+                    return { action };
                 } catch (error) {
                     console.error("Failed to save reading log:", error);
+                    return { action: 'none' };
                 }
             }
 
@@ -152,8 +255,16 @@
                         console.log("ADA PERUBAHAN");
 
                         saveReadingLog()
-                            .then(() => {
-                                console.log("SELESAI SAVE");
+                            .then((result) => {
+                                if (result?.action === 'view-pet') {
+                                    window.location.href = "{{ route('mypet') }}";
+                                    return;
+                                }
+
+                                if (result?.action === 'continue-reading') {
+                                    return;
+                                }
+
                                 window.location.href = backBtn.href;
                             })
                             .catch((err) => {
@@ -271,6 +382,14 @@
             rendition.on("relocated", async function (location) {
                 updateProgressUI(location);
 
+                const displayedPage = Number(location?.start?.displayed?.page ?? 0);
+                if (Number.isFinite(displayedPage) && displayedPage > 0) {
+                    if (previousDisplayedPage !== null && displayedPage > previousDisplayedPage) {
+                        accumulatedPagesRead += (displayedPage - previousDisplayedPage);
+                    }
+                    previousDisplayedPage = displayedPage;
+                }
+
                 const percentage = book.locations
                     ? book.locations.percentageFromCfi(location.start.cfi)
                     : 0;
@@ -298,6 +417,27 @@
                 } catch (error) {
                     console.error("Progress save failed:", error);
                 }
+            });
+
+            // Fallback when user leaves page without clicking custom back button.
+            window.addEventListener("pagehide", function () {
+                const pagesRead = calculatePagesRead();
+                if (!hasProgressChanged || pagesRead <= 0) return;
+
+                fetch("{{ route('reading-log.store') }}", {
+                    method: "POST",
+                    keepalive: true,
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document
+                            .querySelector('meta[name="csrf-token"]')
+                            .getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        book_id: {{ $book->id }},
+                        pages_read: pagesRead
+                    })
+                });
             });
 
 

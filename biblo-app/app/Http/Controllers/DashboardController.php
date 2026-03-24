@@ -100,6 +100,9 @@ class DashboardController extends Controller
                 return (int) (($completion->task->coin_reward ?? 0) + ($completion->task->xp_reward ?? 0));
             });
 
+        $petTotalPagesRead = (int) ReadingLog::where('user_id', $user->id)->sum('pages_read');
+        $petLevel = intdiv($petTotalPagesRead * 5, 100) + 1;
+
         return view('dashboard', compact(
             'books',
             'tasks',
@@ -111,7 +114,8 @@ class DashboardController extends Controller
             'goalProgressPercent',
             'booksCompleted',
             'totalPagesRead',
-            'pointsEarned'
+            'pointsEarned',
+            'petLevel'
         ));
     }
 }

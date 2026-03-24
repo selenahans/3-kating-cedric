@@ -15,6 +15,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\ExploreController;
+use App\Http\Controllers\MyPetController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
@@ -179,9 +180,7 @@ Route::middleware('auth')->group(function () {
     | OTHER APP PAGES
     |--------------------------------------------------------------------------
     */
-    Route::get('/mypet', function () {
-        return view('mypet');
-    })->name('mypet');
+    Route::get('/mypet', [MyPetController::class, 'index'])->name('mypet');
 
     Route::get('/shop', function () {
         return view('shop');
