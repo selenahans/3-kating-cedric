@@ -1,9 +1,9 @@
 .biblo-topbar {
-    @apply sticky top-0 bg-white/80 backdrop-blur-md border-b border-[#CFC8BE]/20 px-8 py-4 z-50 flex items-center justify-between transition-all duration-300 rounded-[32px] md:rounded-[40px];
+    @apply sticky top-0 z-50 flex items-center justify-between gap-4 bg-white/80 backdrop-blur-md border-b border-[#CFC8BE]/20 px-8 py-4 rounded-[40px] transition-all duration-300;
 }
 
 .search-wrapper {
-    @apply relative w-full max-w-md hidden md:block;
+    @apply relative hidden xl:block w-64;
 }
 
 .search-input {
@@ -21,11 +21,27 @@
 .user-nav-profile {
     @apply flex items-center gap-3 pl-4 border-l border-[#CFC8BE]/30 ml-4;
 }
-.biblo-topbar {
-    @apply sticky top-0 bg-white/80 backdrop-blur-md border-b border-[#CFC8BE]/20 px-8 py-4 z-50 flex items-center justify-between transition-all duration-300;
+
+@media (max-width: 1023px) {
+    .biblo-topbar {
+        @apply px-4 py-3 rounded-[28px] gap-3;
+    }
+
+    .icon-btn {
+        @apply p-2;
+    }
+
+    .user-nav-profile {
+        @apply ml-2 pl-2 gap-2 border-l-0;
+    }
 }
 
-/* Tambahkan ini untuk merapikan search saat ada judul */
-.search-wrapper {
-    @apply relative w-64 hidden xl:block; /* Ukuran lebih kecil agar muat dengan judul */
+@media (max-width: 767px) {
+    .biblo-topbar {
+        @apply px-3 py-2.5 rounded-2xl;
+    }
+
+    .user-nav-profile {
+        @apply ml-0 pl-0;
+    }
 }

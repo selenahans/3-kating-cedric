@@ -1,6 +1,6 @@
 /* Sidebar Container */
 .biblo-sidebar {
-    @apply fixed left-0 top-0 h-screen w-64 bg-white border-r border-[#CFC8BE]/20 flex flex-col justify-between py-10 px-6 z-[100] transition-transform duration-300 -translate-x-full lg:translate-x-0;
+    @apply fixed left-0 top-0 h-screen w-[84vw] max-w-[18rem] lg:w-64 lg:max-w-none bg-white border-r border-[#CFC8BE]/20 flex flex-col justify-between py-8 px-4 sm:px-5 lg:py-10 lg:px-6 z-[100] transition-transform duration-300 -translate-x-full lg:translate-x-0 overflow-y-auto;
 }
 
 body.sidebar-mobile-open {
@@ -22,7 +22,7 @@ body.sidebar-mobile-open .biblo-sidebar {
 
 /* Base Link Style */
 .sidebar-link {
-    @apply flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300;
+    @apply flex items-center gap-3 lg:gap-4 px-3 lg:px-4 py-3 lg:py-3.5 rounded-2xl transition-all duration-300;
 }
 
 /* Link State: Inactive */
@@ -59,7 +59,7 @@ body.sidebar-mobile-open .biblo-sidebar {
 
 /* Logout Button */
 .btn-logout {
-    @apply w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-50 rounded-xl transition-all;
+    @apply w-full flex items-center gap-3 px-3 lg:px-4 py-3 text-sm font-bold text-red-400 hover:bg-red-50 rounded-xl transition-all;
 }
 
 .btn-logout svg {
@@ -118,6 +118,16 @@ body.sidebar-mobile-open .biblo-sidebar {
 }
 .logo-mini {
     display: none;
+}
+
+@media (max-width: 1023px) {
+    .sidebar-nav-group {
+        @apply space-y-1.5;
+    }
+
+    .sidebar-user-card {
+        @apply p-2.5;
+    }
 }
 
 @media (min-width: 1024px) {

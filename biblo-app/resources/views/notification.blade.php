@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="max-w-4xl mx-auto space-y-8">
+    <div class="max-w-4xl mx-auto space-y-6 sm:space-y-8">
         
         <section class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -7,8 +7,8 @@
                 <p class="text-biblo-charcoal/50 text-sm mt-1">Pantau aktivitas terbaru dan pembaruan buku favoritmu.</p>
             </div>
             
-            <div class="flex gap-2">
-                <button class="bg-biblo-charcoal text-white px-5 py-2 rounded-full text-xs font-bold hover:bg-biblo-charcoal/90 transition-all">
+            <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                <button class="bg-biblo-charcoal text-white px-4 sm:px-5 py-2 rounded-full text-[11px] sm:text-xs font-bold hover:bg-biblo-charcoal/90 transition-all whitespace-nowrap">
                     Tandai Semua Dibaca
                 </button>
                 <button class="bg-white text-biblo-charcoal border border-biblo-greige/30 p-2 rounded-full hover:bg-biblo-oat transition-colors">
@@ -56,14 +56,14 @@
             @endphp
 
             @foreach($notifications as $notif)
-            <div class="group relative bg-white border {{ $notif['unread'] ? 'border-biblo-moss/30 shadow-sm' : 'border-biblo-greige/10' }} rounded-[2.5rem] p-6 transition-all hover:shadow-md cursor-pointer">
-                <div class="flex gap-5 items-start">
+            <div class="group relative bg-white border {{ $notif['unread'] ? 'border-biblo-moss/30 shadow-sm' : 'border-biblo-greige/10' }} rounded-[24px] sm:rounded-[2.5rem] p-4 sm:p-6 transition-all hover:shadow-md cursor-pointer">
+                <div class="flex gap-3 sm:gap-5 items-start">
                     <div class="flex-shrink-0 w-12 h-12 {{ $notif['unread'] ? 'bg-biblo-moss/10' : 'bg-biblo-greige/20' }} rounded-2xl flex items-center justify-center text-xl">
                         {{ $notif['icon'] }}
                     </div>
 
                     <div class="flex-1">
-                        <div class="flex items-center justify-between mb-1">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1">
                             <h4 class="font-bold text-biblo-charcoal {{ $notif['unread'] ? 'text-base' : 'text-sm' }}">
                                 {{ $notif['title'] }}
                             </h4>
@@ -75,13 +75,13 @@
                     </div>
 
                     @if($notif['unread'])
-                    <div class="absolute right-6 top-1/2 -translate-y-1/2">
+                    <div class="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2">
                         <div class="w-2.5 h-2.5 bg-biblo-moss rounded-full shadow-[0_0_10px_rgba(var(--biblo-moss-rgb),0.5)]"></div>
                     </div>
                     @endif
                 </div>
 
-                <div class="absolute inset-y-0 right-10 flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <div class="hidden sm:flex absolute inset-y-0 right-10 items-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <button class="p-2 text-biblo-charcoal/20 hover:text-red-500">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
                     </button>
@@ -90,7 +90,7 @@
             @endforeach
         </div>
 
-        <section class="mt-12 p-10 bg-biblo-greige/20 rounded-[40px] border border-dashed border-biblo-greige/40">
+        <section class="mt-10 sm:mt-12 p-5 sm:p-8 lg:p-10 bg-biblo-greige/20 rounded-[28px] sm:rounded-[40px] border border-dashed border-biblo-greige/40">
             <div class="text-center">
                 <h3 class="font-bold text-biblo-charcoal">Ingin pemberitahuan lebih spesifik?</h3>
                 <p class="text-sm text-biblo-charcoal/50 mb-6">Atur preferensi genre favoritmu agar kami tahu apa yang harus dikirim.</p>

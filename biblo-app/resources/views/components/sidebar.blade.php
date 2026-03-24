@@ -1,5 +1,4 @@
-<aside class="biblo-sidebar transition-transform duration-300 fixed lg:static z-[100] h-screen"
-    :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+<aside class="biblo-sidebar transition-transform duration-300 fixed lg:static z-[100] h-screen">
     <div class="space-y-12">
         {{-- <div class="sidebar-brand px-4 flex items-center justify-between gap-3">
             <a href="/" class="sidebar-brand-logo">
@@ -38,7 +37,7 @@
 
             <button type="button"
                 class="lg:hidden p-2 rounded-xl text-[#3F453F]/60 hover:text-[#3F453F] hover:bg-[#F2EFEA] transition-colors"
-                @click="sidebarOpen = false" aria-label="Tutup sidebar">
+                onclick="toggleSidebar(false)" aria-label="Tutup sidebar">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"></line>

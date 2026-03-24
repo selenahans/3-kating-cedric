@@ -1,24 +1,24 @@
 <x-app-layout title="My Profile" active="profile">
     {{-- Menambahkan padding horizontal (px-4) agar responsif di mobile --}}
-    <div class="max-w-3xl mx-auto space-y-12 pb-20 px-4 md:px-0">
+    <div class="max-w-3xl mx-auto space-y-8 md:space-y-12 pb-20 px-2 sm:px-4 md:px-0">
 
         <section
-            class="relative bg-white border border-biblo-greige/20 rounded-[60px] p-8 md:p-12 shadow-sm overflow-hidden mt-6">
+            class="relative bg-white border border-biblo-greige/20 rounded-[30px] sm:rounded-[44px] md:rounded-[60px] p-5 sm:p-8 md:p-12 shadow-sm overflow-hidden mt-4 sm:mt-6">
             {{-- Decorative Accent --}}
             <div class="absolute -top-20 -right-20 w-72 h-72 bg-biblo-sage/10 rounded-full blur-3xl opacity-60"></div>
 
-            <div class="relative z-10 flex flex-col md:flex-row items-center gap-10">
+            <div class="relative z-10 flex flex-col md:flex-row items-center gap-6 sm:gap-10">
 
                 <div class="relative group">
                     <div
-                        class="w-36 h-36 md:w-44 md:h-44 rounded-[45px] overflow-hidden border-4 border-biblo-oat shadow-inner bg-biblo-oat/50 flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]">
+                        class="w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-[30px] sm:rounded-[45px] overflow-hidden border-4 border-biblo-oat shadow-inner bg-biblo-oat/50 flex items-center justify-center transition-transform duration-500 group-hover:scale-[1.02]">
                         <img src="https://ui-avatars.com/api/?name=Selena+Hans&background=E8E4D9&color=4A4A4A&size=256"
                             alt="Selena Hans" class="w-full h-full object-cover">
                     </div>
 
                     {{-- Badge Edit Foto: Dibuat lebih kontras dan jelas --}}
                     <button
-                        class="absolute -bottom-1 -right-1 bg-biblo-clay text-white w-12 h-12 flex items-center justify-center rounded-[22px] shadow-[0_8px_20px_-4px_rgba(196,114,101,0.4)] border-[3px] border-white hover:bg-biblo-charcoal hover:scale-110 transition-all duration-300 z-20">
+                        class="absolute -bottom-1 -right-1 bg-biblo-clay text-white w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-[18px] sm:rounded-[22px] shadow-[0_8px_20px_-4px_rgba(196,114,101,0.4)] border-[3px] border-white hover:bg-biblo-charcoal hover:scale-110 transition-all duration-300 z-20">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
                             class="drop-shadow-sm">
@@ -31,7 +31,7 @@
 
                 <div class="text-center md:text-left space-y-1">
                     <p class="text-[10px] font-black uppercase tracking-[0.3em] text-biblo-moss mb-2">Member Profile</p>
-                    <h1 class="text-5xl font-extrabold text-biblo-charcoal tracking-tighter leading-none">
+                    <h1 class="text-3xl sm:text-5xl font-extrabold text-biblo-charcoal tracking-tighter leading-none">
                         Selena <span class="text-biblo-clay">Hans</span>
                     </h1>
                     <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 pt-4">
@@ -57,15 +57,15 @@
 
         {{-- SECTION 1: READING STATS DENGAN WADAH DAN CORNER ROUNDED --}}
         <section
-            class="p-8 md:p-10 border border-biblo-greige/20 rounded-[40px] shadow-sm bg-white overflow-hidden group hover:shadow-2xl hover:shadow-biblo-sage/5 transition-all">
-            <div class="flex justify-between items-end mb-10 px-4">
+            class="p-5 sm:p-8 md:p-10 border border-biblo-greige/20 rounded-[28px] sm:rounded-[40px] shadow-sm bg-white overflow-hidden group hover:shadow-2xl hover:shadow-biblo-sage/5 transition-all">
+            <div class="flex flex-wrap justify-between items-end gap-2 mb-8 sm:mb-10 px-0 sm:px-4">
                 <h3 class="text-xl font-extrabold text-biblo-charcoal uppercase tracking-tighter">Reading Stats</h3>
                 <span
                     class="text-[11px] font-black text-biblo-moss uppercase tracking-[0.2em] group-hover:text-biblo-clay">This
                     Month</span>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 px-4 md:px-0">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 px-0 sm:px-4 md:px-0">
                 @php
                     $stats = [
                         ['label' => 'Books Read', 'val' => '12', 'icon' => '📚'],
@@ -77,9 +77,9 @@
 
                 @foreach($stats as $stat)
                     <div
-                        class="bg-biblo-oat border border-biblo-greige/10 p-6 rounded-3xl text-center group-hover:scale-105 transition-transform duration-500 hover:shadow-md">
+                        class="bg-biblo-oat border border-biblo-greige/10 p-4 sm:p-6 rounded-2xl sm:rounded-3xl text-center group-hover:scale-105 transition-transform duration-500 hover:shadow-md">
                         <p class="text-[28px] mb-3 group-hover:scale-125 transition-transform">{{ $stat['icon'] }}</p>
-                        <p class="text-3xl font-extrabold text-biblo-charcoal leading-none tracking-tighter">
+                        <p class="text-2xl sm:text-3xl font-extrabold text-biblo-charcoal leading-none tracking-tighter">
                             {{ $stat['val'] }}</p>
                         <p class="text-[9px] font-black text-biblo-charcoal/40 uppercase tracking-[0.2em] mt-3">
                             {{ $stat['label'] }}</p>
@@ -93,7 +93,7 @@
             <h3 class="text-[10px] font-black text-biblo-moss/60 px-4 uppercase tracking-[0.2em] leading-none mb-1">
                 Account Settings</h3>
 
-            <div class="bg-white border border-biblo-greige/20 rounded-[45px] p-2 overflow-hidden space-y-1">
+            <div class="bg-white border border-biblo-greige/20 rounded-[28px] sm:rounded-[45px] p-2 overflow-hidden space-y-1">
                 @php
                     $settings = [
                         ['label' => 'Edit Profile', 'icon' => 'user-3', 'color' => 'text-biblo-charcoal'],
@@ -105,7 +105,7 @@
 
                 @foreach($settings as $setting)
                     <a href="#"
-                        class="flex items-center justify-between p-6 hover:bg-biblo-oat/40 rounded-[30px] transition-all group">
+                        class="flex items-center justify-between p-4 sm:p-6 hover:bg-biblo-oat/40 rounded-[20px] sm:rounded-[30px] transition-all group">
                         <div class="flex items-center gap-5">
                             {{-- Ikon SVG Modern --}}
                             <div

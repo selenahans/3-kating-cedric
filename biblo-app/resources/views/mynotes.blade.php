@@ -1,49 +1,49 @@
 <x-app-layout title="My Notes" active="notes">
-    <div class="max-w-5xl mx-auto space-y-10">
+    <div class="max-w-5xl mx-auto space-y-8 md:space-y-10">
 
-        <header class="flex items-center justify-between w-full gap-12 mb-12">
+        <header class="flex flex-col lg:flex-row items-start lg:items-center justify-between w-full gap-6 lg:gap-12 mb-8 md:mb-12">
             <div class="flex-shrink-0">
                 <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-moss/60 mb-1">Knowledge Archive</p>
-                <h1 class="text-6xl font-extrabold text-biblo-charcoal tracking-tighter leading-none">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-biblo-charcoal tracking-tighter leading-none">
                     My <span class="text-biblo-clay/50 italic font-medium">Notes</span>
                 </h1>
             </div>
             
-            <div class="flex items-center gap-4 flex-1 justify-end">
-                <div class="relative flex-1 max-w-2xl group"> 
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto lg:flex-1 lg:justify-end">
+                <div class="relative w-full sm:flex-1 sm:max-w-2xl group"> 
                     <span class="absolute left-5 top-1/2 -translate-y-1/2 text-lg opacity-40 group-focus-within:opacity-100 transition-opacity">🔍</span>
                     <input type="text" placeholder="Search from your library..." 
-                           class="w-full bg-white border border-biblo-greige/20 pl-14 pr-6 py-4 rounded-[24px] shadow-sm focus:outline-none focus:ring-2 focus:ring-biblo-sage/20 transition-all text-sm font-bold text-biblo-charcoal placeholder:text-biblo-charcoal/20">
+                           class="w-full bg-white border border-biblo-greige/20 pl-14 pr-6 py-3 sm:py-4 rounded-[20px] sm:rounded-[24px] shadow-sm focus:outline-none focus:ring-2 focus:ring-biblo-sage/20 transition-all text-sm font-bold text-biblo-charcoal placeholder:text-biblo-charcoal/20">
                 </div>
                 
-                <button class="flex-shrink-0 bg-biblo-charcoal text-white h-[56px] px-10 rounded-[22px] shadow-xl shadow-biblo-charcoal/10 text-[11px] font-black uppercase tracking-[0.2em] hover:bg-biblo-moss hover:-translate-y-1 active:translate-y-0 transition-all flex items-center justify-center">
+                <button class="w-full sm:w-auto flex-shrink-0 bg-biblo-charcoal text-white h-12 sm:h-[56px] px-6 sm:px-10 rounded-[18px] sm:rounded-[22px] shadow-xl shadow-biblo-charcoal/10 text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] hover:bg-biblo-moss hover:-translate-y-1 active:translate-y-0 transition-all flex items-center justify-center">
                     FILTER
                 </button>
             </div>
         </header>
 
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 text-biblo-charcoal">
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 text-biblo-charcoal">
 
             {{-- DYNAMIC NOTES LIST --}}
             <div class="lg:col-span-2 space-y-6">
                 @forelse($notes as $note)
-                    <div class="bg-white p-8 rounded-[45px] border border-biblo-greige/20 shadow-sm relative overflow-hidden">
+                    <div class="bg-white p-5 sm:p-6 lg:p-8 rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] border border-biblo-greige/20 shadow-sm relative overflow-hidden">
                         {{-- We use the dynamic color code from your DB for the glow effect! --}}
                         <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20" style="background-color: {{ $note->color_code ?? '#B5EAD7' }};"></div>
 
-                        <div class="flex items-start justify-between mb-8 relative z-10">
-                            <div class="flex items-center gap-5">
-                                <div class="w-16 h-16 bg-biblo-oat rounded-[24px] flex items-center justify-center text-3xl shadow-inner border border-biblo-greige/10">
+                        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6 sm:mb-8 relative z-10">
+                            <div class="flex items-start sm:items-center gap-3 sm:gap-5">
+                                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-biblo-oat rounded-[18px] sm:rounded-[24px] flex items-center justify-center text-2xl sm:text-3xl shadow-inner border border-biblo-greige/10">
                                     📘
                                 </div>
                                 <div>
-                                    <h2 class="text-2xl font-extrabold tracking-tight">{{ $note->book->title }}</h2>
+                                    <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">{{ $note->book->title }}</h2>
                                     <p class="text-[11px] font-black text-biblo-charcoal/40 uppercase tracking-[0.1em]">
                                         {{ $note->book->author }} • {{ $note->created_at->format('M d, Y') }}
                                     </p>
                                 </div>
                             </div>
-                            <div class="bg-biblo-sage/10 text-biblo-moss px-4 py-1.5 rounded-full text-[10px] font-black uppercase">
+                            <div class="bg-biblo-sage/10 text-biblo-moss px-4 py-1.5 rounded-full text-[10px] font-black uppercase self-start">
                                 Highlight
                             </div>
                         </div>
@@ -52,7 +52,7 @@
                             <div class="space-y-3">
                                 <p class="text-[9px] font-black text-biblo-charcoal/30 uppercase tracking-[0.2em]">The Insight</p>
                                 <div class="relative">
-                                    <p class="text-xl md:text-2xl font-bold leading-relaxed tracking-tight">
+                                    <p class="text-lg sm:text-xl md:text-2xl font-bold leading-relaxed tracking-tight">
                                         "{{ $note->highlighted_text }}"
                                     </p>
                                 </div>
@@ -60,7 +60,7 @@
 
                             {{-- Only show the reflection box if the user actually typed a note! --}}
                             @if($note->note_content)
-                                <div class="bg-biblo-oat/50 rounded-[32px] p-6 border border-biblo-greige/10">
+                                <div class="bg-biblo-oat/50 rounded-[24px] sm:rounded-[32px] p-4 sm:p-6 border border-biblo-greige/10">
                                     <div class="flex items-center gap-2 mb-3">
                                         <span class="text-sm">✍️</span>
                                         <p class="text-[10px] font-black text-biblo-charcoal/60 uppercase tracking-widest">Personal Reflection</p>
@@ -82,7 +82,7 @@
 
             {{-- DYNAMIC STATS SIDEBAR --}}
             <div class="space-y-6">
-                <div class="bg-biblo-charcoal rounded-[45px] p-8 text-white relative overflow-hidden flex flex-col h-full">
+                <div class="bg-biblo-charcoal rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] p-5 sm:p-6 lg:p-8 text-white relative overflow-hidden flex flex-col h-full">
                     <h3 class="text-lg font-extrabold mb-6">Reading Stats</h3>
 
                     <div class="space-y-6 flex-grow">

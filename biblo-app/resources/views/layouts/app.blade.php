@@ -15,23 +15,20 @@
     @vite(['resources/css/app.css', 'resources/css/sidebar.css', 'resources/css/topbar.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased" x-data="{ sidebarOpen: true }">
+<body class="font-sans antialiased">
     <div class="flex min-h-screen bg-biblo-oat">
 
-        <x-sidebar active="home" ::class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'" />
+        <x-sidebar active="home" />
 
-        <div id="sidebarOverlay" x-show="sidebarOpen" @click="sidebarOpen = false"
-            class="fixed inset-0 z-[90] bg-black/40 transition-opacity duration-300 lg:hidden"
-            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+        <div id="sidebarOverlay"
+            class="fixed inset-0 z-[90] bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden">
         </div>
 
-        <main class="flex-1 p-6 md:p-10 transition-all duration-300">
+        <main class="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 transition-all duration-300">
             <div class="flex-1">
                 <x-topbar :title="$title ?? 'Explore'" />
 
-                <main class="p-8 md:p-10 lg:p-12 overflow-y-auto">
+                <main class="p-4 sm:p-6 md:p-8 lg:p-12 overflow-y-auto">
                     {{ $slot }}
                 </main>
             </div>

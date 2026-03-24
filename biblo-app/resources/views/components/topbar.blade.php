@@ -1,5 +1,5 @@
 <header class="biblo-topbar">
-    <button type="button" class="icon-btn ml-2" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <button type="button" class="icon-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -22,16 +22,14 @@
         <img src="{{ asset('images/logo/biblo.webp') }}" class="h-6 w-auto" alt="Logo">
     </div>
 
-    <div class="flex items-center gap-3">
-        <a href="{{ url('/notification') }}" class="inline-flex">
-            <button class="icon-btn group">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                </svg>
-                <span class="notification-dot"></span>
-            </button>
+    <div class="flex items-center gap-2 sm:gap-3">
+        <a href="{{ url('/notification') }}" class="icon-btn group inline-flex" aria-label="Buka notifikasi">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notification-dot"></span>
         </a>
 
         <div class="user-nav-profile">

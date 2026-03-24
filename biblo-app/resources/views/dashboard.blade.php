@@ -1,19 +1,19 @@
 <x-app-layout title="Dashboard" active="home">
     {{-- Wrapper utama yang sudah fix alignment-nya --}}
-    <div class="w-full space-y-12">
+    <div class="w-full space-y-8 md:space-y-10 lg:space-y-12">
 
         {{-- TOP STATS HEADER --}}
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div
-                class="lg:col-span-2 bg-biblo-charcoal rounded-[40px] p-8 text-white relative overflow-hidden flex flex-col justify-between min-h-[240px]">
+                class="lg:col-span-2 bg-biblo-charcoal rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] p-5 sm:p-6 lg:p-8 text-white relative overflow-hidden flex flex-col justify-between min-h-[220px] sm:min-h-[240px]">
                 <div class="relative z-10">
-                    <h1 class="text-3xl font-extrabold mb-2">Selamat Pagi, {{ Auth::user()->name ?? 'sel' }}! 👋</h1>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold mb-2">Selamat Pagi, {{ Auth::user()->name ?? 'sel' }}! 👋</h1>
                     <p class="text-biblo-greige/60 text-sm">Barnaby sedang menunggumu untuk membacakan cerita baru.</p>
                 </div>
 
                 <div class="relative z-10 flex flex-wrap gap-4 mt-6">
                     <div
-                        class="bg-white/10 backdrop-blur-md rounded-2xl p-4 flex items-center gap-3 border border-white/5">
+                        class="bg-white/10 backdrop-blur-md rounded-2xl p-3 sm:p-4 flex items-center gap-3 border border-white/5 w-full sm:w-auto">
                         <span class="text-2xl">🔥</span>
                         <div>
                             <p class="text-[10px] font-black uppercase tracking-widest text-white/40 leading-none">Day
@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     <div
-                        class="bg-white/10 backdrop-blur-md rounded-2xl p-4 flex items-center gap-3 border border-white/5">
+                        class="bg-white/10 backdrop-blur-md rounded-2xl p-3 sm:p-4 flex items-center gap-3 border border-white/5 w-full sm:w-auto">
                         {{-- Container Ikon Gambar --}}
                         <div class="w-8 h-8 flex-shrink-0">
                             <img src="{{ asset('images/boo-pet.webp') }}" alt="Pet Icon"
@@ -46,7 +46,7 @@
 
             {{-- Target Hari Ini --}}
             <div
-                class="bg-white rounded-[40px] p-8 shadow-sm flex flex-col justify-between border border-biblo-greige/10">
+                class="bg-white rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] p-5 sm:p-6 lg:p-8 shadow-sm flex flex-col justify-between border border-biblo-greige/10">
                 <div>
                     <h3 class="font-bold text-lg mb-4 text-biblo-charcoal">Target Hari Ini</h3>
                     <div class="flex items-end gap-2 mb-2">
@@ -68,7 +68,7 @@
             <div class="flex gap-6 overflow-x-auto no-scrollbar pb-4">
                 @foreach($tasks as $task)
                     <div
-                        class="min-w-[300px] md:min-w-[320px] h-[260px] bg-white rounded-[30px] p-6 shadow-sm border border-biblo-greige/10 flex flex-col justify-between flex-shrink-0">
+                        class="min-w-[260px] sm:min-w-[290px] md:min-w-[320px] min-h-[250px] bg-white rounded-[24px] sm:rounded-[30px] p-4 sm:p-6 shadow-sm border border-biblo-greige/10 flex flex-col justify-between flex-shrink-0">
                         <div>
                             <h4 class="font-bold text-biblo-charcoal">{{ $task->title }}</h4>
                             <p class="text-xs text-biblo-charcoal/40 mt-2 line-clamp-2">{{ $task->description }}</p>
@@ -96,7 +96,7 @@
         {{-- GRID UTAMA --}}
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {{-- Recap --}}
-            <div class="lg:col-span-4 bg-white rounded-[40px] p-8 shadow-sm border border-biblo-greige/10">
+            <div class="lg:col-span-4 bg-white rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] p-5 sm:p-6 lg:p-8 shadow-sm border border-biblo-greige/10">
                 <h3 class="font-bold text-lg mb-6">Recap Februari</h3>
                 <div class="space-y-4 text-biblo-charcoal">
                     <div class="flex justify-between items-center bg-biblo-oat/30 p-4 rounded-2xl">
@@ -132,8 +132,8 @@
             </div>
 
             {{-- Continue Reading --}}
-            <div class="lg:col-span-8 bg-white rounded-[40px] p-8 shadow-sm border border-biblo-greige/10">
-                <div class="flex justify-between items-center mb-6">
+            <div class="lg:col-span-8 bg-white rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] p-5 sm:p-6 lg:p-8 shadow-sm border border-biblo-greige/10">
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
                     <h3 class="font-bold text-lg text-biblo-charcoal">Lanjutkan Membaca</h3>
                     <a href="{{ route('mylibrary') }}"
                         class="text-xs font-bold text-biblo-moss hover:underline uppercase tracking-widest">Lihat
@@ -141,13 +141,13 @@
                 </div>
 
                 @if(isset($currentBook))
-                    <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
                         <div class="w-32 h-44 bg-biblo-greige rounded-[2rem] flex-shrink-0 overflow-hidden shadow-lg">
                             <img src="{{ asset($currentBook->cover_image) }}"
                                 onerror="this.src='https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1974&auto=format&fit=crop'"
                                 class="w-full h-full object-cover">
                         </div>
-                        <div class="flex-1 w-full">
+                        <div class="flex-1 w-full text-center md:text-left">
                             <span
                                 class="text-[10px] font-black text-biblo-moss uppercase tracking-widest">{{ $currentBook->category->name ?? 'Book' }}</span>
                             <h4 class="text-2xl font-extrabold text-biblo-charcoal mt-1">{{ $currentBook->title }}</h4>
@@ -180,14 +180,14 @@
         </div>
         {{-- DYNAMIC RECOMMENDATIONS GRID --}}
         <section class="w-full">
-            <div class="flex items-center justify-between mb-6 px-2">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-6 px-1 sm:px-2">
                 <h3 class="font-bold text-xl text-biblo-charcoal">Recommended For You</h3>
                 <a href="{{ route('explore') }}"
                     class="text-xs font-black text-biblo-moss uppercase tracking-widest hover:underline">See All</a>
             </div>
 
             {{-- Grid System: 2 kolom di HP, 4 kolom di Desktop --}}
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                 @foreach($books as $book)
                     {{-- Batasan Maksimal 4 Buku --}}
                     @if($loop->iteration > 4)
@@ -197,7 +197,7 @@
                     <a href="{{ route('book.detail', $book->id) }}" class="group cursor-pointer block">
                         {{-- Container Cover dengan Radius Besar sesuai Gambar --}}
                         <div
-                            class="aspect-[3/4] bg-biblo-greige rounded-[2.5rem] mb-4 overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-500 relative border border-biblo-greige/10">
+                            class="aspect-[3/4] bg-biblo-greige rounded-[1.5rem] sm:rounded-[2rem] lg:rounded-[2.5rem] mb-3 sm:mb-4 overflow-hidden shadow-md group-hover:shadow-2xl transition-all duration-500 relative border border-biblo-greige/10">
 
                             <img src="{{ asset($book->cover_image) }}"
                                 onerror="this.src='https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=1974&auto=format&fit=crop'"
