@@ -112,14 +112,16 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <button type="button" data-feed-item="apple"
-                            class="bg-white/10 hover:bg-white/20 border border-white/10 p-4 rounded-3xl transition-all flex flex-col items-center gap-2">
-                            <span class="text-2xl">🍎</span>
+                            class="bg-white/10 hover:bg-white/20 border border-white/10 p-4 rounded-3xl transition-all flex flex-col items-center gap-2 {{ $appleQty > 0 ? '' : 'opacity-40 cursor-not-allowed' }}"
+                            @if($appleQty <= 0) disabled @endif>
+                            <span class="text-2xl" @if($appleQty <= 0) style="filter: grayscale(100%);" @endif>🍎</span>
                             <span class="text-[10px] font-black uppercase tracking-tighter">Organic Apple</span>
                             <span class="text-[9px] text-biblo-sage font-bold">Qty: <span id="apple-qty">{{ $appleQty ?? 0 }}</span></span>
                         </button>
                         <button type="button" data-feed-item="honey"
-                            class="bg-white/10 hover:bg-white/20 border border-white/10 p-4 rounded-3xl transition-all flex flex-col items-center gap-2">
-                            <span class="text-2xl">🍯</span>
+                            class="bg-white/10 hover:bg-white/20 border border-white/10 p-4 rounded-3xl transition-all flex flex-col items-center gap-2 {{ $honeyQty > 0 ? '' : 'opacity-40 cursor-not-allowed' }}"
+                            @if($honeyQty <= 0) disabled @endif>
+                            <span class="text-2xl" @if($honeyQty <= 0) style="filter: grayscale(100%);" @endif>🍯</span>
                             <span class="text-[10px] font-black uppercase tracking-tighter">Sweet Honey</span>
                             <span class="text-[9px] text-biblo-sage font-bold">Qty: <span id="honey-qty">{{ $honeyQty ?? 0 }}</span></span>
                         </button>

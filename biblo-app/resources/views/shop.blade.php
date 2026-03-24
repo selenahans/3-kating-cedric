@@ -70,7 +70,7 @@
                             <span class="text-xs">🪙</span>
                         </div>
                         
-                        <button class="bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest">
+                        <button class="purchase-btn bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}" data-item-price="{{ $item['price'] }}">
                             Purchase
                         </button>
                     </div>
@@ -114,7 +114,7 @@
                             <span class="text-xs">🪙</span>
                         </div>
                         
-                        <button class="bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest">
+                        <button class="purchase-btn bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}" data-item-price="{{ $item['price'] }}">
                             Purchase
                         </button>
                     </div>
@@ -158,9 +158,15 @@
                             <span class="text-xs">🪙</span>
                         </div>
                         
-                        <button class="bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest">
-                            {{ $item['price'] === 0 ? 'Owned' : 'Purchase' }}
-                        </button>
+                        @if($item['price'] === 0)
+                            <button class="bg-biblo-moss/20 text-biblo-moss text-[10px] font-black px-5 py-2.5 rounded-xl cursor-default uppercase tracking-widest">
+                                Owned
+                            </button>
+                        @else
+                            <button class="purchase-btn bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}" data-item-price="{{ $item['price'] }}">
+                                Purchase
+                            </button>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -170,36 +176,168 @@
 
     </div>
 
+    {{-- Purchase Confirmation Modal --}}
+    <div id="purchase-modal"
+        class="fixed inset-0 z-[99] bg-biblo-charcoal/30 backdrop-blur-sm hidden items-center justify-center px-4">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl transform transition-all">
+            <h3 class="font-extrabold text-2xl text-biblo-charcoal mb-2" id="modal-item-name">Item</h3>
+            <p class="text-biblo-charcoal/60 mb-6 text-sm">Apakah kamu yakin ingin membeli item ini?</p>
+            
+            <div class="bg-biblo-oat/20 rounded-2xl p-4 mb-6 flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-widest text-biblo-charcoal/60 mb-1">Harga</p>
+                    <p class="text-2xl font-extrabold text-biblo-charcoal" id="modal-item-price">0 🪙</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-biblo-charcoal/60 mb-1">Saldo Koin</p>
+                    <p class="text-2xl font-extrabold text-biblo-sage" id="modal-current-coins">0 🪙</p>
+                </div>
+            </div>
+
+            <p id="modal-error-message" class="text-red-500 text-sm font-bold mb-4 hidden"></p>
+
+            <div class="flex gap-3">
+                <button id="purchase-cancel-btn"
+                    class="flex-1 py-3 rounded-xl font-bold text-sm text-biblo-charcoal bg-biblo-greige/20 hover:bg-biblo-greige/40 transition-all">
+                    Batal
+                </button>
+                <button id="purchase-confirm-btn"
+                    class="flex-1 py-3 rounded-xl font-bold text-sm text-white bg-biblo-moss hover:bg-[#7e8f7a] transition-all">
+                    Ya, Beli
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const categoryBtns = document.querySelectorAll('.category-btn');
             const categorySections = document.querySelectorAll('.category-section');
+            const purchaseModal = document.getElementById('purchase-modal');
+            const purchaseCancelBtn = document.getElementById('purchase-cancel-btn');
+            const purchaseConfirmBtn = document.getElementById('purchase-confirm-btn');
+            const modalItemName = document.getElementById('modal-item-name');
+            const modalItemPrice = document.getElementById('modal-item-price');
+            const modalCurrentCoins = document.getElementById('modal-current-coins');
+            const modalErrorMessage = document.getElementById('modal-error-message');
+            const yourBalanceEl = document.querySelector('.text-xl.font-extrabold.text-biblo-charcoal');
+            
+            let pendingPurchase = null;
 
+            // Tab switching
             categoryBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     const category = this.dataset.category;
 
-                    // Remove active state from all buttons
                     categoryBtns.forEach(b => {
                         b.classList.remove('bg-biblo-charcoal', 'text-white', 'border-biblo-charcoal', 'shadow-lg', 'shadow-biblo-charcoal/20');
                         b.classList.add('bg-white', 'text-biblo-charcoal/60', 'border-biblo-greige/20');
                     });
 
-                    // Add active state to clicked button
                     this.classList.remove('bg-white', 'text-biblo-charcoal/60', 'border-biblo-greige/20');
                     this.classList.add('bg-biblo-charcoal', 'text-white', 'border-biblo-charcoal', 'shadow-lg', 'shadow-biblo-charcoal/20');
 
-                    // Hide all sections
                     categorySections.forEach(section => {
                         section.style.display = 'none';
                     });
 
-                    // Show selected section
                     const selectedSection = document.getElementById(category + '-section');
                     if (selectedSection) {
                         selectedSection.style.display = '';
                     }
                 });
+            });
+
+            // Purchase button handling
+            const purchaseButtons = document.querySelectorAll('.purchase-btn');
+            
+            purchaseButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const itemName = this.dataset.itemName;
+                    const itemPrice = parseInt(this.dataset.itemPrice);
+                    const currentCoinsText = yourBalanceEl?.textContent || '0';
+                    const currentCoins = parseInt(currentCoinsText.match(/\d+/)?.[0] || 0);
+
+                    pendingPurchase = {
+                        itemName: itemName,
+                        itemPrice: itemPrice
+                    };
+
+                    modalItemName.textContent = itemName;
+                    modalItemPrice.textContent = itemPrice + ' 🪙';
+                    modalCurrentCoins.textContent = currentCoins + ' 🪙';
+                    modalErrorMessage.classList.add('hidden');
+                    modalErrorMessage.textContent = '';
+
+                    purchaseModal.classList.remove('hidden');
+                    purchaseModal.classList.add('flex');
+                });
+            });
+
+            // Cancel purchase
+            purchaseCancelBtn.addEventListener('click', function() {
+                purchaseModal.classList.add('hidden');
+                purchaseModal.classList.remove('flex');
+                pendingPurchase = null;
+                modalErrorMessage.classList.add('hidden');
+            });
+
+            // Confirm purchase
+            purchaseConfirmBtn.addEventListener('click', async function() {
+                if (!pendingPurchase) return;
+
+                const itemName = pendingPurchase.itemName;
+
+                try {
+                    // Get item ID from database by name
+                    const response = await fetch("{{ route('shop.purchase') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            item_name: itemName
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        modalErrorMessage.textContent = data.message || 'Pembelian gagal.';
+                        modalErrorMessage.classList.remove('hidden');
+                        return;
+                    }
+
+                    // Update coin balance
+                    if (yourBalanceEl) {
+                        const newCoins = data.coins;
+                        yourBalanceEl.innerHTML = newCoins + ' <span class="text-sm font-bold text-biblo-clay">🪙</span>';
+                    }
+
+                    // Show success and close modal after 1 second
+                    modalItemName.textContent = '✅ Berhasil dibeli!';
+                    purchaseConfirmBtn.disabled = true;
+                    purchaseCancelBtn.disabled = true;
+
+                    setTimeout(() => {
+                        purchaseModal.classList.add('hidden');
+                        purchaseModal.classList.remove('flex');
+                        pendingPurchase = null;
+                        purchaseConfirmBtn.disabled = false;
+                        purchaseCancelBtn.disabled = false;
+                        // Optionally refresh page to update inventory on mypet
+                        // window.location.reload();
+                    }, 1500);
+
+                } catch (error) {
+                    console.error('Purchase error:', error);
+                    modalErrorMessage.textContent = 'Terjadi kesalahan. Coba lagi.';
+                    modalErrorMessage.classList.remove('hidden');
+                }
             });
         });
     </script>

@@ -16,6 +16,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\MyPetController;
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
@@ -187,6 +188,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/shop', function () {
         return view('shop');
     })->name('shop');
+    Route::post('/shop/purchase', [ShopController::class, 'purchase'])->name('shop.purchase');
 
     Route::get('/app', function () {
         return view('layouts.app');
