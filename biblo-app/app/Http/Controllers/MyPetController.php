@@ -8,6 +8,13 @@ use Illuminate\View\View;
 
 class MyPetController extends Controller
 {
+    private function minimumCoinsForLevel(int $level): int
+    {
+        $normalizedLevel = max(1, $level);
+        // Level 1 gets 100. From level 2 onward, reward is 10 * level.
+        return 100 + (int) (10 * ((($normalizedLevel * ($normalizedLevel + 1)) / 2) - 1));
+    }
+
     public function index(Request $request): View
     {
         $user = $request->user();
@@ -31,6 +38,12 @@ class MyPetController extends Controller
             $level >= 4 => 'Teen',
             default => 'Baby',
         };
+
+        $minimumCoins = $this->minimumCoinsForLevel($level);
+        if ((int) ($user->coins ?? 0) < $minimumCoins) {
+            $user->coins = $minimumCoins;
+            $user->save();
+        }
 
         $petStats = [
             ['label' => 'Kenyang', 'val' => $kenyangPercent . '%', 'color' => 'bg-biblo-clay', 'width' => $kenyangPercent . '%'],

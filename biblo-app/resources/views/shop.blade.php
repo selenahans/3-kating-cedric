@@ -11,7 +11,7 @@
                 <div class="bg-white border border-biblo-greige/30 px-4 sm:px-6 py-3 rounded-2xl shadow-sm flex items-center justify-between gap-3 w-full md:w-auto">
                     <div>
                         <p class="text-[9px] font-black text-biblo-charcoal/40 uppercase tracking-widest leading-none">Your Balance</p>
-                        <p class="text-xl font-extrabold text-biblo-charcoal">120 <span class="text-sm font-bold text-biblo-clay">🪙</span></p>
+                        <p class="text-xl font-extrabold text-biblo-charcoal">{{ $currentCoins ?? 0 }} <span class="text-sm font-bold text-biblo-clay">🪙</span></p>
                     </div>
                     <div class="w-[1px] h-8 bg-biblo-greige/20 mx-1"></div>
                     <a href="#" class="w-8 h-8 bg-biblo-sage/10 text-biblo-sage rounded-full flex items-center justify-center hover:bg-biblo-sage hover:text-white transition-all">

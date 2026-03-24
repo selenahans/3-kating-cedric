@@ -138,8 +138,7 @@
                     <p class="text-[10px] font-bold text-white/40 leading-relaxed italic mb-4">
                         "Give {{ $currentPetName ?? 'your pet' }} treats earned from finishing book chapters to keep them happy!"
                     </p>
-                    {{-- href="{{ route('shop') }}" --}}
-                    <a
+                    <a href="{{ route('shop') }}"
                         class="block text-center bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">
                         Go to Shop
                     </a>
