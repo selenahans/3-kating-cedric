@@ -126,16 +126,6 @@
                     <h3 class="text-lg font-extrabold mb-6">Reading Stats</h3>
 
                     <div class="space-y-6 flex-grow">
-                        <div>
-                            <div class="flex justify-between text-[10px] font-black uppercase tracking-tighter mb-2">
-                                <span class="text-white/40">Knowledge Gain</span>
-                                <span class="text-biblo-sage">+12% This Week</span>
-                            </div>
-                            <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-                                <div class="bg-biblo-sage h-full rounded-full shadow-[0_0_10px_rgba(181,234,215,0.4)]" style="width: 65%"></div>
-                            </div>
-                        </div>
-
                         <div class="grid grid-cols-2 gap-4">
                             <div class="bg-white/5 border border-white/10 p-4 rounded-3xl text-center">
                                 <p class="text-2xl mb-1">📝</p>

@@ -22,9 +22,9 @@
                 <a href="{{ route('login') }}" class="text-[11px] font-black uppercase tracking-[0.2em] text-biblo-greige hover:text-white transition-colors duration-300" id="nav-login">
                     Masuk
                 </a>
-                <button class="bg-biblo-moss text-white px-7 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-biblo-charcoal hover:-translate-y-1 transition-all shadow-xl shadow-biblo-moss/20">
+                <a href="{{ route('register') }}" class="bg-biblo-moss text-white px-7 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-biblo-charcoal hover:-translate-y-1 transition-all shadow-xl shadow-biblo-moss/20">
                     Mulai Membaca
-                </button>
+                </a>
             </div>
         </div>
 

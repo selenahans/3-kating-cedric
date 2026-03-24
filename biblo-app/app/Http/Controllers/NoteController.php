@@ -22,75 +22,20 @@ class NoteController extends Controller
             'color_code' => ['nullable', 'string', 'max:20'],
         ]);
 
-        $userId = $request->user()->id;
-        $isDummyCfi = Str::startsWith($validated['cfi_range'], 'dummy-page-');
-
-        if ($isDummyCfi) {
-            $note = HighlightNote::where('user_id', $userId)
-                ->where('book_id', $validated['book_id'])
-                ->where('highlighted_text', $validated['highlighted_text'])
-                ->latest('id')
-                ->first();
-        } else {
-            $note = HighlightNote::where('user_id', $userId)
-                ->where('book_id', $validated['book_id'])
-                ->where('cfi_range', $validated['cfi_range'])
-                ->first();
-        }
-
-        if ($note) {
-            $note->fill([
-                'highlighted_text' => $validated['highlighted_text'],
-                'note_content' => $validated['note_content'] ?? $note->note_content,
-                'color_code' => $validated['color_code'] ?? $note->color_code,
-            ]);
-            $note->save();
-        } else {
-            $note = HighlightNote::create([
-                'user_id' => $userId,
-                'book_id' => $validated['book_id'],
-                'cfi_range' => $validated['cfi_range'],
-                'highlighted_text' => $validated['highlighted_text'],
-                'note_content' => $validated['note_content'] ?? null,
-                'color_code' => $validated['color_code'] ?? '#FDE047',
-            ]);
-        }
+        $note = HighlightNote::create([
+            'user_id' => $request->user()->id,
+            'book_id' => $validated['book_id'],
+            'cfi_range' => $validated['cfi_range'],
+            'highlighted_text' => $validated['highlighted_text'],
+            'note_content' => $validated['note_content'] ?? null,
+            'color_code' => $validated['color_code'] ?? '#FDE047',
+        ]);
 
         return response()->json([
             'success' => true,
             'id' => $note->id,
             'message' => 'Highlight dan note berhasil disimpan.',
         ]);
-    }
-
-    public function update(Request $request, HighlightNote $note): RedirectResponse
-    {
-        if ($note->user_id !== $request->user()->id) {
-            abort(403);
-        }
-
-        $validated = $request->validate([
-            'note_content' => ['nullable', 'string'],
-            'color_code' => ['nullable', 'string', 'max:20'],
-        ]);
-
-        $note->update([
-            'note_content' => $validated['note_content'] ?? null,
-            'color_code' => $validated['color_code'] ?? $note->color_code,
-        ]);
-
-        return back()->with('status', 'Catatan berhasil diperbarui.');
-    }
-
-    public function destroy(Request $request, HighlightNote $note): RedirectResponse
-    {
-        if ($note->user_id !== $request->user()->id) {
-            abort(403);
-        }
-
-        $note->delete();
-
-        return back()->with('status', 'Catatan berhasil dihapus.');
     }
 
     public function index(Request $request): View
@@ -126,5 +71,35 @@ class NoteController extends Controller
         })->count();
 
         return view('mynotes', compact('notes', 'totalHighlights', 'totalNotes', 'search', 'sort'));
+    }
+    public function destroy(Request $request, HighlightNote $note): RedirectResponse
+    {
+        if ($note->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        $note->delete();
+
+        return back()->with('status', 'Catatan berhasil dihapus.');
+    }
+
+    public function update(Request $request, HighlightNote $note): RedirectResponse
+    {
+        // 🔒 सुरक्षा: ensure user owns the note
+        if ($note->user_id !== $request->user()->id) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'note_content' => ['nullable', 'string'],
+            'color_code' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $note->update([
+            'note_content' => $validated['note_content'] ?? $note->note_content,
+            'color_code' => $validated['color_code'] ?? $note->color_code,
+        ]);
+
+        return back()->with('status', 'Catatan berhasil diperbarui.');
     }
 }

@@ -5,8 +5,7 @@
 @section('content')
 
     {{-- Navbar --}}
-    <x-read.navbar :title="$book->title" :currentPage="$currentDummyPage" :totalPages="$dummyTotalPages"
-        :backUrl="route('book.detail', $book)" />
+    <x-read.navbar :title="$book->title" :currentPage="1" :totalPages="$book->total_pages" :backUrl="route('book.detail', $book)" />
 
     {{-- Cleaned Content Area --}}
     <main class="pb-44 px-6 bg-biblo-cream/10">
@@ -81,292 +80,131 @@
         document.addEventListener("DOMContentLoaded", function () {
             const loading = document.getElementById("loading");
             const viewer = document.getElementById("viewer");
-            const totalDummyPages = {{ $dummyTotalPages }};
-            let currentDummyPage = {{ $currentDummyPage }};
-            const bookSourceUrl = @json($bookSourceUrl);
-            let epubBook = null;
-            let rendition = null;
-            let isDummyMode = false;
 
-            const DUMMY_PAGES = [
-                "Di awal cerita, suasana diperkenalkan perlahan dan tokoh utama mulai tampil dengan konflik kecil yang memancing rasa penasaran.",
-                "Relasi antar tokoh mulai terbentuk. Masing-masing karakter menunjukkan sikap yang berbeda dan menambah ketegangan cerita.",
-                "Bab ini memperlihatkan perubahan sudut pandang tokoh terhadap keadaan sekitarnya, membuat alur terasa semakin hidup.",
-                "Konflik utama mulai terlihat jelas. Pilihan yang diambil tokoh memunculkan konsekuensi yang tidak terduga.",
-                "Cerita bergerak lebih cepat. Tokoh utama menghadapi tantangan emosional sekaligus sosial yang menguji prinsipnya.",
-                "Nuansa narasi menjadi lebih dalam dengan dialog-dialog penting yang mengubah hubungan antar tokoh.",
-                "Puncak ketegangan mulai terasa. Keputusan besar diambil dan efeknya mulai menyebar ke semua karakter.",
-                "Setelah konflik memuncak, cerita memberi ruang refleksi dan memperlihatkan perkembangan karakter secara signifikan.",
-                "Bab mendekati akhir mempertemukan kembali benang-benang cerita yang sebelumnya terpisah.",
-                "Penutup membawa resolusi yang kuat. Perjalanan tokoh terasa utuh dengan makna yang lebih matang."
-            ];
+            const url = "{{ asset('storage/' . $book->file_path) }}";
 
-            function clampPage(page) {
-                return Math.max(1, Math.min(totalDummyPages, page));
-            }
+            let book = ePub(url);
+            let rendition = book.renderTo("viewer", {
+                width: "100%",
+                height: "100%",
+                flow: "paginated",
+                spread: "none",
+                allowScriptedContent: true
+            });
 
-            function updateProgressUI(page) {
-                const safePage = clampPage(page);
-                const progress = Math.round((safePage / totalDummyPages) * 100);
+            rendition.display();
 
-                const progressBar = document.getElementById('progress-bar');
-                const progressText = document.getElementById('progress-text');
-                const pageText = document.getElementById('reader-current-page');
-
-                if (progressBar) progressBar.style.width = `${progress}%`;
-                if (progressText) progressText.textContent = `${progress}% Completed`;
-                if (pageText) pageText.textContent = String(safePage);
-            }
-
-            async function persistProgress(page) {
-                try {
-                    await fetch("{{ route('reading.update-progress', $book) }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            page: clampPage(page),
-                            current_location: String(clampPage(page))
-                        })
-                    });
-                } catch (error) {
-                    console.error('Failed to update progress:', error);
-                }
-            }
-
-            function renderDummyPage(page) {
-                const safePage = clampPage(page);
-                const pageText = DUMMY_PAGES[safePage - 1] ?? DUMMY_PAGES[0];
-
-                viewer.innerHTML = `
-                    <article class="h-full w-full overflow-y-auto p-8 sm:p-10 text-biblo-charcoal">
-                        <h2 class="text-2xl font-extrabold mb-6">${@json($book->title)} - Page ${safePage}</h2>
-                        <p class="text-base leading-8 mb-6">${pageText}</p>
-                        <p class="text-base leading-8">Ini adalah konten bacaan dummy agar reader tetap bisa dipakai saat file EPUB asli belum tersedia di server.</p>
-                    </article>
-                `;
-            }
-
-            function registerDummyHighlightHandler() {
-                if (!viewer) return;
-
-                viewer.onmouseup = function () {
-                    if (!isDummyMode) return;
-
-                    const selection = window.getSelection();
-                    const selectedText = selection ? selection.toString().trim() : '';
-
-                    if (selectedText === '') return;
-
-                    currentSelection = {
-                        cfi: `dummy-page-${currentDummyPage}-${Date.now()}`,
-                        text: selectedText
-                    };
-
-                    highlightPreview.innerText = `"${selectedText}"`;
-                    openActionModal();
-                };
-            }
-
-            function activateDummyReader() {
-                isDummyMode = true;
+            book.ready.then(() => {
                 loading.style.display = "none";
-                currentDummyPage = clampPage(currentDummyPage);
-                renderDummyPage(currentDummyPage);
-                registerDummyHighlightHandler();
-                updateProgressUI(currentDummyPage);
-                persistProgress(currentDummyPage);
-            }
+                registerHighlightHandler();
+            });
 
-            async function initReader() {
-                if (!bookSourceUrl) {
-                    activateDummyReader();
-                    return;
-                }
-
-                try {
-                    epubBook = ePub(bookSourceUrl);
-                    rendition = epubBook.renderTo("viewer", {
-                        width: "100%",
-                        height: "100%",
-                        flow: "paginated",
-                        spread: "none",
-                        allowScriptedContent: true
-                    });
-
-                    rendition.display();
-
-                    await epubBook.ready;
-                    loading.style.display = "none";
-                    updateProgressUI(currentDummyPage);
-                    registerHighlightHandler();
-                } catch (error) {
-                    console.error('EPUB failed to load, switching to dummy reader:', error);
-                    activateDummyReader();
-                }
-            }
-
-            initReader();
-
-            document.getElementById("next").onclick = async (event) => {
-                event.preventDefault();
-                currentDummyPage = clampPage(currentDummyPage + 1);
-
-                if (!isDummyMode && rendition) {
-                    rendition.next();
-                } else {
-                    renderDummyPage(currentDummyPage);
-                }
-
-                updateProgressUI(currentDummyPage);
-                await persistProgress(currentDummyPage);
+            // --- Navigation (OLD SIMPLE VERSION) ---
+            document.getElementById("next").onclick = (e) => {
+                e.preventDefault();
+                rendition.next();
             };
 
-            document.getElementById("prev").onclick = async (event) => {
-                event.preventDefault();
-                currentDummyPage = clampPage(currentDummyPage - 1);
-
-                if (!isDummyMode && rendition) {
-                    rendition.prev();
-                } else {
-                    renderDummyPage(currentDummyPage);
-                }
-
-                updateProgressUI(currentDummyPage);
-                await persistProgress(currentDummyPage);
+            document.getElementById("prev").onclick = (e) => {
+                e.preventDefault();
+                rendition.prev();
             };
 
-            // --- HIGHLIGHT & NOTES LOGIC ---
+            rendition.on("relocated", function (location) {
+                const current = location.start.displayed.page;
+                const total = location.start.displayed.total;
 
+                // Update navbar dynamically
+                document.getElementById("reader-current-page").textContent = current;
+            });
+
+            // --- HIGHLIGHT & NOTES LOGIC (NEW) ---
             let currentSelection = null;
-            const highlightActionModal = document.getElementById('highlight-action-modal');
             const noteModal = document.getElementById('note-modal');
             const noteInput = document.getElementById('note-input');
             const highlightPreview = document.getElementById('highlighted-text-preview');
 
-            function clearIframeSelection() {
-                if (rendition) {
-                    rendition.getContents().forEach(c => c.window.getSelection().removeAllRanges());
-                }
+            function registerHighlightHandler() {
+                if (!rendition) return;
+
+                rendition.on("selected", function (cfiRange, contents) {
+                    book.getRange(cfiRange).then(function (range) {
+                        const selectedText = range.toString();
+
+                        if (selectedText.trim() !== "") {
+                            currentSelection = {
+                                cfiRange: cfiRange,
+                                text: selectedText
+                            };
+
+                            highlightPreview.innerText = `"${selectedText}"`;
+                            noteModal.classList.remove('hidden');
+                            noteModal.classList.add('flex');
+                        }
+                    });
+                });
             }
 
-            function openActionModal() {
-                highlightActionModal.classList.remove('hidden');
-                highlightActionModal.classList.add('flex');
-            }
-
-            function closeActionModal() {
-                highlightActionModal.classList.add('hidden');
-                highlightActionModal.classList.remove('flex');
-            }
-
-            function openNoteModal() {
-                noteModal.classList.remove('hidden');
-                noteModal.classList.add('flex');
-            }
-
-            function closeNoteModal() {
+            // Cancel note
+            document.getElementById('cancel-note-btn').onclick = function () {
                 noteModal.classList.add('hidden');
                 noteModal.classList.remove('flex');
-            }
-
-            function resetSelectionState() {
-                currentSelection = null;
                 noteInput.value = "";
-                closeActionModal();
-                closeNoteModal();
-                clearIframeSelection();
-            }
+                currentSelection = null;
 
-            async function saveCurrentSelection(noteText = "") {
+                if (rendition) {
+                    rendition.getContents().forEach(c =>
+                        c.window.getSelection().removeAllRanges()
+                    );
+                }
+            };
+
+            // Save note
+            document.getElementById('save-note-btn').onclick = async function () {
                 if (!currentSelection) return;
 
-                const cfi = currentSelection.cfi;
+                const cfi = currentSelection.cfiRange;
                 const text = currentSelection.text;
 
-                if (rendition && !isDummyMode) {
-                    rendition.annotations.highlight(cfi, {}, (e) => {
-                        console.log("Highlight clicked", e);
-                    });
+                // Highlight in reader
+                rendition.annotations.highlight(cfi, {}, (e) => {
+                    console.log("Highlight clicked", e);
+                });
+
+                // Reset UI
+                noteModal.classList.add('hidden');
+                noteModal.classList.remove('flex');
+                noteInput.value = "";
+
+                if (rendition) {
+                    rendition.getContents().forEach(c =>
+                        c.window.getSelection().removeAllRanges()
+                    );
                 }
 
+                // Send to backend (optional, keep yours if already working)
                 try {
-                    const response = await fetch("{{ route('notes.store') }}", {
-                        method: 'POST',
+                    await fetch("{{ route('notes.store') }}", {
+                        method: "POST",
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
                         },
                         body: JSON.stringify({
                             book_id: {{ $book->id }},
                             cfi_range: cfi,
                             highlighted_text: text,
-                            note_content: noteText,
-                            color_code: '#FDE047'
+                            note_content: noteInput.value,
+                            color_code: "#FDE047"
                         })
                     });
-
-                    if (!response.ok) throw new Error("Failed to save note");
-                    console.log("Highlight saved successfully!");
                 } catch (error) {
-                    console.error("Error saving note:", error);
-                    alert("Failed to save note to database.");
-                } finally {
-                    resetSelectionState();
-                }
-            }
-
-            // 1. Listen for text selection
-            function registerHighlightHandler() {
-                if (!rendition || isDummyMode) {
-                    return;
+                    console.error("Failed to save note:", error);
                 }
 
-                rendition.on("selected", function (cfiRange, contents) {
-                // Get the actual text the user highlighted
-                epubBook.getRange(cfiRange).then(function (range) {
-                    const selectedText = range.toString();
-
-                    if (selectedText.trim() !== "") {
-                        currentSelection = {
-                            cfi: cfiRange,
-                            text: selectedText
-                        };
-
-                        // Show action chooser first
-                        highlightPreview.innerText = `"${selectedText}"`;
-                        openActionModal();
-                    }
-                });
-            });
-            }
-
-            // 2. Handle Cancel
-            document.getElementById('cancel-action-btn').onclick = function () {
-                resetSelectionState();
-            };
-
-            document.getElementById('highlight-only-btn').onclick = async function () {
-                await saveCurrentSelection("");
-            };
-
-            document.getElementById('add-note-btn').onclick = function () {
-                closeActionModal();
-                openNoteModal();
-            };
-
-            document.getElementById('cancel-note-btn').onclick = function () {
-                resetSelectionState();
-            };
-
-            // 3. Handle Save Note
-            document.getElementById('save-note-btn').onclick = async function () {
-                if (!currentSelection) return;
-
-                const noteText = noteInput.value;
-                await saveCurrentSelection(noteText);
+                currentSelection = null;
             };
         });
     </script>

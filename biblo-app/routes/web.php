@@ -59,7 +59,7 @@ Route::get('/email/verify/{id}/{hash}', function (Request $request, $id) {
         $user->markEmailAsVerified();
     }
 
-    return redirect()->route('login')
+    return redirect()->route('onboarding')
         ->with('status', 'Email berhasil diverifikasi. Silakan login.');
 })->middleware('signed')->name('verification.verify');
 

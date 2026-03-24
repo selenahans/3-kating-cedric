@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class BookController extends Controller
 {
-    private const DUMMY_TOTAL_PAGES = 10;
 
     public function show(Book $book)
     {
@@ -76,41 +75,23 @@ class BookController extends Controller
                 'book_id' => $book->id,
             ],
             [
-                'current_location' => '1',
+                'current_location' => null, // CFI, not page
                 'progress_percentage' => 0,
                 'is_favorite' => false,
                 'status' => 'reading',
             ]
         );
 
-        $currentDummyPage = (int) $progress->current_location;
-        if ($currentDummyPage < 1 || $currentDummyPage > self::DUMMY_TOTAL_PAGES) {
-            $currentDummyPage = 1;
-        }
-
-        $requestedPage = $request->integer('page');
-        if ($requestedPage >= 1 && $requestedPage <= self::DUMMY_TOTAL_PAGES) {
-            $currentDummyPage = $requestedPage;
-        }
-
-        // Keep status in sync for older records that might already be at 100%.
-        if ($currentDummyPage >= self::DUMMY_TOTAL_PAGES || (float) $progress->progress_percentage >= 100) {
-            $progress->current_location = (string) self::DUMMY_TOTAL_PAGES;
-            $progress->progress_percentage = 100;
-            $progress->status = 'completed';
-            $progress->save();
-            $currentDummyPage = self::DUMMY_TOTAL_PAGES;
-        }
-
         $storagePath = storage_path('app/public/' . $book->file_path);
+
         $bookSourceUrl = File::exists($storagePath)
             ? route('book.stream', $book)
             : null;
 
-        $dummyTotalPages = self::DUMMY_TOTAL_PAGES;
-
-        return view('book.read', compact('book', 'progress', 'bookSourceUrl', 'dummyTotalPages', 'currentDummyPage'));
+        return view('book.read', compact('book', 'progress', 'bookSourceUrl'));
     }
+
+
 
     public function stream(Book $book): BinaryFileResponse|Response
     {
@@ -132,14 +113,9 @@ class BookController extends Controller
     public function updateProgress(Request $request, Book $book): JsonResponse
     {
         $validated = $request->validate([
-            'page' => ['nullable', 'integer', 'min:1', 'max:' . self::DUMMY_TOTAL_PAGES],
-            'current_location' => ['nullable', 'string', 'max:255'],
+            'current_location' => ['required', 'string', 'max:1000'], // CFI
+            'progress_percentage' => ['required', 'numeric', 'min:0', 'max:100'],
         ]);
-
-        $page = $validated['page'] ?? (int) ($validated['current_location'] ?? 1);
-        $page = max(1, min(self::DUMMY_TOTAL_PAGES, $page));
-
-        $progressPercentage = round(($page / self::DUMMY_TOTAL_PAGES) * 100, 2);
 
         $progress = UserBookProgress::updateOrCreate(
             [
@@ -147,15 +123,14 @@ class BookController extends Controller
                 'book_id' => $book->id,
             ],
             [
-                'current_location' => (string) $page,
-                'progress_percentage' => $progressPercentage,
-                'status' => $page >= self::DUMMY_TOTAL_PAGES ? 'completed' : 'reading',
+                'current_location' => $validated['current_location'],
+                'progress_percentage' => $validated['progress_percentage'],
+                'status' => $validated['progress_percentage'] >= 100 ? 'completed' : 'reading',
             ]
         );
 
         return response()->json([
             'success' => true,
-            'page' => $page,
             'progress_percentage' => $progress->progress_percentage,
             'status' => $progress->status,
         ]);
