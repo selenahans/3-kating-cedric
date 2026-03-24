@@ -57,10 +57,6 @@
             }
         }
 
-        /* Custom Checkbox/Radio */
-        input:checked+div {
-            @apply border-biblo-moss bg-biblo-moss/10 ring-2 ring-biblo-moss/20 text-biblo-moss;
-        }
     </style>
 </head>
 
@@ -76,8 +72,7 @@
             <div id="dot-2" class="h-1.5 w-4 rounded-full bg-biblo-greige transition-all duration-300"></div>
             <div id="dot-3" class="h-1.5 w-4 rounded-full bg-biblo-greige transition-all duration-300"></div>
         </div>
-        {{-- action="{{ route('onboarding.store') }}" --}}
-        <form method="POST" id="onboardingForm">
+        <form method="POST" id="onboardingForm" action="{{ route('onboarding.store') }}">
             @csrf
 
             <div id="step-1" class="step-content active text-center">
@@ -104,25 +99,25 @@
                 </p>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <label class="cursor-pointer">
-                        <input type="radio" name="target" value="5" class="sr-only" checked>
-                        <div class="bg-white border-2 border-gray-100 rounded-3xl p-6 transition-all hover:scale-105">
+                    <label for="target-5" class="cursor-pointer">
+                        <input id="target-5" type="radio" name="target" value="5" class="sr-only peer" checked>
+                        <div class="bg-white border-2 border-gray-100 rounded-3xl p-6 transition-all hover:scale-105 peer-checked:border-biblo-moss peer-checked:bg-biblo-moss/10 peer-checked:ring-2 peer-checked:ring-biblo-moss/20 peer-checked:text-biblo-moss">
                             <span class="block text-2xl mb-2">🌤️</span>
                             <span class="block font-bold text-biblo-charcoal">5 Lembar</span>
                             <span class="text-[10px] text-biblo-charcoal/40 font-bold uppercase">Santai</span>
                         </div>
                     </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="target" value="15" class="sr-only">
-                        <div class="bg-white border-2 border-gray-100 rounded-3xl p-6 transition-all hover:scale-105">
+                    <label for="target-15" class="cursor-pointer">
+                        <input id="target-15" type="radio" name="target" value="15" class="sr-only peer">
+                        <div class="bg-white border-2 border-gray-100 rounded-3xl p-6 transition-all hover:scale-105 peer-checked:border-biblo-moss peer-checked:bg-biblo-moss/10 peer-checked:ring-2 peer-checked:ring-biblo-moss/20 peer-checked:text-biblo-moss">
                             <span class="block text-2xl mb-2">🔥</span>
                             <span class="block font-bold text-biblo-charcoal">15 Lembar</span>
                             <span class="text-[10px] text-biblo-charcoal/40 font-bold uppercase">Sedang</span>
                         </div>
                     </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="target" value="30" class="sr-only">
-                        <div class="bg-white border-2 border-gray-100 rounded-3xl p-6 transition-all hover:scale-105">
+                    <label for="target-30" class="cursor-pointer">
+                        <input id="target-30" type="radio" name="target" value="30" class="sr-only peer">
+                        <div class="bg-white border-2 border-gray-100 rounded-3xl p-6 transition-all hover:scale-105 peer-checked:border-biblo-moss peer-checked:bg-biblo-moss/10 peer-checked:ring-2 peer-checked:ring-biblo-moss/20 peer-checked:text-biblo-moss">
                             <span class="block text-2xl mb-2">⚡</span>
                             <span class="block font-bold text-biblo-charcoal">30 Lembar</span>
                             <span class="text-[10px] text-biblo-charcoal/40 font-bold uppercase">Ambisius</span>
