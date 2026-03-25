@@ -77,9 +77,27 @@ class MyPetController extends Controller
 
         $appleQty = 0;
         $honeyQty = 0;
+        $petImage = asset('images/boo-pet.webp');
+        $activeSkinName = 'Default';
         if (Schema::hasTable('items') && Schema::hasTable('user_inventory') && Schema::hasColumn('user_inventory', 'quantity')) {
             $appleItem = Item::where('name', 'Organic Apple')->first();
             $honeyItem = Item::where('name', 'Sweet Honey')->first();
+
+            if (Schema::hasColumn('user_inventory', 'is_equipped')) {
+                $equippedSkin = UserInventory::with('item')
+                    ->where('user_id', $user->id)
+                    ->where('is_equipped', true)
+                    ->whereHas('item', function ($query) {
+                        $query->where('type', 'skin');
+                    })
+                    ->first();
+
+                $skinImagePath = $equippedSkin?->item?->image_path;
+                if (!empty($skinImagePath) && is_file(public_path($skinImagePath))) {
+                    $petImage = asset($skinImagePath);
+                    $activeSkinName = (string) ($equippedSkin?->item?->name ?? 'Default');
+                }
+            }
 
             if ($appleItem) {
                 $appleQty = (int) UserInventory::where('user_id', $user->id)
@@ -120,6 +138,8 @@ class MyPetController extends Controller
             'petStats' => $petStats,
             'appleQty' => $appleQty,
             'honeyQty' => $honeyQty,
+            'petImage' => $petImage,
+            'activeSkinName' => $activeSkinName,
             'canFeed' => $kenyangPercent < 90,
             'nextGateLevel' => $nextGateLevel,
             'gateTasks' => $gateTasks,

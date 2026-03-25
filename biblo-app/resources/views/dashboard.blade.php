@@ -27,7 +27,7 @@
                         class="bg-white/10 backdrop-blur-md rounded-2xl p-3 sm:p-4 flex items-center gap-3 border border-white/5 w-full sm:w-auto">
                         {{-- Container Ikon Gambar --}}
                         <div class="w-8 h-8 flex-shrink-0">
-                            <img src="{{ asset('images/boo-pet.webp') }}" alt="Pet Icon"
+                            <img src="{{ $petImage ?? asset('images/boo-pet.webp') }}" alt="Pet Icon"
                                 class="w-full h-full object-contain">
                         </div>
 
@@ -41,7 +41,7 @@
                 </div>
                 <div
                     class="absolute right-0 bottom-[-20px] w-40 md:w-60 opacity-20 select-none pointer-events-none z-0">
-                    <img src="{{ asset('images/boo-pet.webp') }}" alt="{{ $currentPetName ?? 'Pet' }} Mascot"
+                    <img src="{{ $petImage ?? asset('images/boo-pet.webp') }}" alt="{{ $currentPetName ?? 'Pet' }} Mascot"
                         class="w-full h-auto object-contain">
                 </div>
             </div>

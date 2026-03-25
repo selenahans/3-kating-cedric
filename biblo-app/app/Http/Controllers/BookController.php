@@ -3,11 +3,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\ReadingLog;
+use App\Models\UserInventory;
+use App\Models\Item;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use App\Models\UserBookProgress;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Models\HighlightNote;
@@ -112,7 +115,24 @@ class BookController extends Controller
             ->where('book_id', $book->id)
             ->get();
 
-        return view('book.read', compact('book', 'progress', 'bookSourceUrl', 'notes', 'currentLocation', 'isHungry'));
+        // Resolve equipped skin image
+        $petImage = asset('images/boo-pet.webp');
+        if (Schema::hasTable('items') && Schema::hasTable('user_inventory') && Schema::hasColumn('user_inventory', 'is_equipped')) {
+            $equippedSkin = UserInventory::with('item')
+                ->where('user_id', $user->id)
+                ->where('is_equipped', true)
+                ->whereHas('item', function ($query) {
+                    $query->where('type', 'skin');
+                })
+                ->first();
+
+            $skinImagePath = $equippedSkin?->item?->image_path;
+            if (!empty($skinImagePath) && is_file(public_path($skinImagePath))) {
+                $petImage = asset($skinImagePath);
+            }
+        }
+
+        return view('book.read', compact('book', 'progress', 'bookSourceUrl', 'notes', 'currentLocation', 'isHungry', 'petImage'));
     }
 
 

@@ -187,10 +187,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/mypet/feed', [MyPetController::class, 'feed'])->name('mypet.feed');
     Route::get('/mypet/status', [MyPetController::class, 'getStatus'])->name('mypet.status');
 
-    Route::get('/shop', function () {
-        return view('shop');
-    })->name('shop');
+    Route::get('/shop', [ShopController::class, 'index'])->name('shop');
     Route::post('/shop/purchase', [ShopController::class, 'purchase'])->name('shop.purchase');
+    Route::post('/shop/equip-skin', [ShopController::class, 'equipSkin'])->name('shop.equip-skin');
 
     /*
     |--------------------------------------------------------------------------

@@ -5,7 +5,7 @@
 @section('content')
 
     {{-- Navbar --}}
-    <x-read.navbar :title="$book->title" :currentPage="1" :totalPages="$book->total_pages" :backUrl="route('book.detail', $book)" />
+    <x-read.navbar :title="$book->title" :currentPage="1" :totalPages="$book->total_pages" :backUrl="route('book.detail', $book)" :petImage="$petImage" />
 
     {{-- Cleaned Content Area --}}
     <main class="pb-44 px-6 bg-biblo-cream/10">

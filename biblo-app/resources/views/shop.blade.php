@@ -125,24 +125,13 @@
 
         {{-- SKINS SECTION --}}
         <section id="skins-section" class="category-section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" style="display: none;">
-            @php
-                $skinsItems = [
-                    ['name' => 'Classic White', 'price' => 0, 'icon' => '🐦', 'desc' => 'The default, pure white skin.', 'color' => 'bg-slate-50'],
-                    ['name' => 'Golden Eagle', 'price' => 100, 'icon' => '🦅', 'desc' => 'Powerful golden eagle appearance.', 'color' => 'bg-yellow-50'],
-                    ['name' => 'Sunset Orange', 'price' => 75, 'icon' => '🧡', 'desc' => 'Warm orange sunset vibes.', 'color' => 'bg-orange-50'],
-                    ['name' => 'Ocean Blue', 'price' => 80, 'icon' => '🌊', 'desc' => 'Cool blue like the ocean.', 'color' => 'bg-blue-50'],
-                    ['name' => 'Forest Green', 'price' => 70, 'icon' => '🌲', 'desc' => 'Natural forest green tone.', 'color' => 'bg-emerald-50'],
-                    ['name' => 'Midnight Purple', 'price' => 90, 'icon' => '🌙', 'desc' => 'Mysterious purple darkness.', 'color' => 'bg-purple-50'],
-                ];
-            @endphp
-
             @foreach($skinsItems as $item)
             <div class="bg-white border border-biblo-greige/20 rounded-[28px] sm:rounded-[40px] p-5 sm:p-6 hover:shadow-2xl hover:shadow-biblo-charcoal/5 transition-all group relative overflow-hidden">
                 <div class="absolute -top-10 -right-10 w-32 h-32 {{ $item['color'] }} rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
 
                 <div class="relative z-10">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 {{ $item['color'] }} rounded-2xl sm:rounded-3xl flex items-center justify-center text-3xl sm:text-4xl mb-5 sm:mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform">
-                        {{ $item['icon'] }}
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 {{ $item['color'] }} rounded-2xl sm:rounded-3xl flex items-center justify-center mb-5 sm:mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform overflow-hidden">
+                        <img src="{{ asset($item['image_path']) }}" alt="{{ $item['name'] }} skin" class="w-full h-full object-cover">
                     </div>
 
                     <div class="space-y-1 mb-5 sm:mb-6">
@@ -157,10 +146,14 @@
                             <span class="text-sm font-black text-biblo-charcoal">{{ $item['price'] }}</span>
                             <span class="text-xs">🪙</span>
                         </div>
-                        
-                        @if($item['price'] === 0)
+
+                        @if(!empty($item['equipped']))
                             <button class="bg-biblo-moss/20 text-biblo-moss text-[10px] font-black px-5 py-2.5 rounded-xl cursor-default uppercase tracking-widest">
-                                Owned
+                                Equipped
+                            </button>
+                        @elseif(!empty($item['owned']))
+                            <button class="equip-skin-btn bg-biblo-charcoal hover:bg-biblo-moss text-white text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}">
+                                Equip
                             </button>
                         @else
                             <button class="purchase-btn bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}" data-item-price="{{ $item['price'] }}">
@@ -221,8 +214,41 @@
             const modalCurrentCoins = document.getElementById('modal-current-coins');
             const modalErrorMessage = document.getElementById('modal-error-message');
             const yourBalanceEl = document.querySelector('.text-xl.font-extrabold.text-biblo-charcoal');
-            
+
             let pendingPurchase = null;
+
+            const bindEquipHandlers = () => {
+                document.querySelectorAll('.equip-skin-btn').forEach(btn => {
+                    btn.addEventListener('click', async function(e) {
+                        e.preventDefault();
+                        const itemName = this.dataset.itemName;
+
+                        try {
+                            const response = await fetch("{{ route('shop.equip-skin') }}", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document
+                                        .querySelector('meta[name="csrf-token"]')
+                                        .getAttribute('content')
+                                },
+                                body: JSON.stringify({ item_name: itemName })
+                            });
+
+                            const data = await response.json();
+                            if (!response.ok || !data.success) {
+                                alert(data.message || 'Gagal equip skin.');
+                                return;
+                            }
+
+                            window.location.reload();
+                        } catch (error) {
+                            console.error('Equip skin error:', error);
+                            alert('Terjadi kesalahan saat equip skin.');
+                        }
+                    });
+                });
+            };
 
             // Tab switching
             categoryBtns.forEach(btn => {
@@ -324,13 +350,16 @@
                     purchaseCancelBtn.disabled = true;
 
                     setTimeout(() => {
+                        if (data.item_type === 'skin') {
+                            window.location.reload();
+                            return;
+                        }
+
                         purchaseModal.classList.add('hidden');
                         purchaseModal.classList.remove('flex');
                         pendingPurchase = null;
                         purchaseConfirmBtn.disabled = false;
                         purchaseCancelBtn.disabled = false;
-                        // Optionally refresh page to update inventory on mypet
-                        // window.location.reload();
                     }, 1500);
 
                 } catch (error) {
@@ -339,6 +368,8 @@
                     modalErrorMessage.classList.remove('hidden');
                 }
             });
+
+            bindEquipHandlers();
         });
     </script>
 </x-app-layout>

@@ -8,7 +8,10 @@ use App\Models\TaskCompletion;
 use App\Models\UserBookProgress;
 use App\Models\ReadingLog;
 use App\Models\HighlightNote;
+use App\Models\UserInventory;
+use App\Models\Item;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -118,6 +121,23 @@ class DashboardController extends Controller
         $petTotalPagesRead = (int) ReadingLog::where('user_id', $user->id)->sum('pages_read');
         $petLevel = intdiv($petTotalPagesRead * 5, 100) + 1;
 
+        // Resolve equipped skin image
+        $petImage = asset('images/boo-pet.webp');
+        if (Schema::hasTable('items') && Schema::hasTable('user_inventory') && Schema::hasColumn('user_inventory', 'is_equipped')) {
+            $equippedSkin = UserInventory::with('item')
+                ->where('user_id', $user->id)
+                ->where('is_equipped', true)
+                ->whereHas('item', function ($query) {
+                    $query->where('type', 'skin');
+                })
+                ->first();
+
+            $skinImagePath = $equippedSkin?->item?->image_path;
+            if (!empty($skinImagePath) && is_file(public_path($skinImagePath))) {
+                $petImage = asset($skinImagePath);
+            }
+        }
+
         return view('dashboard', compact(
             'books',
             'tasks',
@@ -130,7 +150,8 @@ class DashboardController extends Controller
             'booksCompleted',
             'totalPagesRead',
             'pointsEarned',
-            'petLevel'
+            'petLevel',
+            'petImage'
         ));
     }
 }

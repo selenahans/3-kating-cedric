@@ -1,4 +1,4 @@
-@props(['title', 'currentPage', 'totalPages', 'backUrl' => null])
+@props(['title', 'currentPage', 'totalPages', 'backUrl' => null, 'petImage' => null])
 
 <nav class="fixed top-0 inset-x-0 z-50 bg-[#FDFBF8]/80 backdrop-blur-md border-b border-biblo-greige/20">
     <div class="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -21,7 +21,7 @@
                 Page <span id="reader-current-page" class="text-biblo-charcoal">{{ $currentPage }}</span> / {{ $totalPages }}
             </span>
             <button class="hover:rotate-45 transition-transform duration-500">
-                <img src="{{ asset('images/boo-pet.webp') }}" class="h-6 w-6 object-contain" alt="Settings">
+                <img src="{{ $petImage ?? asset('images/boo-pet.webp') }}" class="h-6 w-6 object-contain" alt="Settings">
             </button>
         </div>
     </div>

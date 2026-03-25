@@ -29,7 +29,7 @@
         <div class="absolute -bottom-2 w-24 h-4 bg-biblo-charcoal/10 rounded-[100%] blur-md group-hover:scale-110 transition-transform duration-700"></div>
 
         <div class="w-32 h-32 md:w-40 md:h-40 animate-bounce-slow cursor-pointer hover:scale-110 transition-transform duration-500 flex items-center justify-center relative z-10">
-            <img src="{{ asset('images/boo-pet.webp') }}" alt="{{ $currentPetName ?? 'Pet' }}" class="w-full h-full object-contain">
+            <img src="{{ $petImage ?? asset('images/boo-pet.webp') }}" alt="{{ $currentPetName ?? 'Pet' }}" class="w-full h-full object-contain">
         </div>
 
         <div class="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/80 backdrop-blur-md border border-white/50 px-3 sm:px-4 py-1.5 rounded-2xl shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
