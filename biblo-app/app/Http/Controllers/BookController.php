@@ -15,6 +15,7 @@ use App\Models\UserBookProgress;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Models\HighlightNote;
 use App\Models\UserPet;
+use Carbon\Carbon;
 
 class BookController extends Controller
 {
@@ -62,15 +63,73 @@ class BookController extends Controller
         $previewChapters = array_slice($chapters, 0, 5);
 
         $isFavorite = false;
+        $milestoneAchievements = [
+            [
+                'threshold' => 30,
+                'name' => 'Bronze Reader',
+                'icon' => '🥉',
+                'unlocked' => false,
+                'unlocked_at' => null,
+            ],
+            [
+                'threshold' => 60,
+                'name' => 'Silver Reader',
+                'icon' => '🥈',
+                'unlocked' => false,
+                'unlocked_at' => null,
+            ],
+            [
+                'threshold' => 100,
+                'name' => 'Gold Finisher',
+                'icon' => '🥇',
+                'unlocked' => false,
+                'unlocked_at' => null,
+            ],
+        ];
+
         if (Auth::check()) {
             $progress = UserBookProgress::where('user_id', Auth::id())
                 ->where('book_id', $book->id)
                 ->first();
 
             $isFavorite = $progress ? $progress->is_favorite : false;
+
+            $progressPercent = (float) ($progress->progress_percentage ?? 0);
+            $totalPages = max(1, (int) ($book->total_pages ?? 0));
+
+            $logs = ReadingLog::where('user_id', Auth::id())
+                ->where('book_id', $book->id)
+                ->orderBy('created_at')
+                ->get(['pages_read', 'created_at']);
+
+            foreach ($milestoneAchievements as &$milestone) {
+                $threshold = (int) $milestone['threshold'];
+                $milestone['unlocked'] = $progressPercent >= $threshold;
+
+                if (!$milestone['unlocked']) {
+                    continue;
+                }
+
+                $targetPages = (int) ceil(($threshold / 100) * $totalPages);
+                $runningPages = 0;
+
+                foreach ($logs as $log) {
+                    $runningPages += max(0, (int) $log->pages_read);
+
+                    if ($runningPages >= $targetPages) {
+                        $milestone['unlocked_at'] = Carbon::parse($log->created_at)->format('d M Y');
+                        break;
+                    }
+                }
+
+                if (empty($milestone['unlocked_at']) && $progress?->updated_at) {
+                    $milestone['unlocked_at'] = Carbon::parse($progress->updated_at)->format('d M Y');
+                }
+            }
+            unset($milestone);
         }
 
-        return view('book.detail', compact('book', 'progress', 'recommendations', 'previewChapters', 'isFavorite'));
+        return view('book.detail', compact('book', 'progress', 'recommendations', 'previewChapters', 'isFavorite', 'milestoneAchievements'));
     }
 
     public function read(Request $request, Book $book)

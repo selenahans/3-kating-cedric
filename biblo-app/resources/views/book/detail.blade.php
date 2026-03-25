@@ -19,17 +19,6 @@
                             onerror="this.src='https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=2112&auto=format&fit=crop'"
                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                             alt="{{ $book->title }}">
-
-                        <div
-                            class="absolute bottom-6 right-6 bg-white/90 backdrop-blur-md px-5 py-3 rounded-[2rem] shadow-xl border border-white/20 flex items-center gap-3 animate-bounce-slow">
-                            <span class="text-xl">🌱</span>
-                            <div>
-                                <p
-                                    class="text-[10px] font-black text-biblo-moss uppercase tracking-tighter leading-none">
-                                    Pet Growth</p>
-                                <p class="text-xs font-bold text-biblo-charcoal">+150 XP</p>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 gap-4">
@@ -61,6 +50,45 @@
                                 <span>🔖</span> Save to Library
                             </a>
                         @endauth
+
+                        @php
+                            $bookProgress = (int) round($progress->progress_percentage ?? 0);
+                            $defaultMilestones = [
+                                ['threshold' => 30, 'name' => 'Bronze Reader', 'icon' => '🥉', 'unlocked' => false, 'unlocked_at' => null],
+                                ['threshold' => 60, 'name' => 'Silver Reader', 'icon' => '🥈', 'unlocked' => false, 'unlocked_at' => null],
+                                ['threshold' => 100, 'name' => 'Gold Finisher', 'icon' => '🥇', 'unlocked' => false, 'unlocked_at' => null],
+                            ];
+                        @endphp
+
+                        <div class="mt-2 bg-white border border-biblo-greige/20 rounded-[2rem] p-5 sm:p-6 space-y-4">
+                            <div class="flex items-center justify-between gap-3">
+                                <h4 class="text-xs font-black uppercase tracking-widest text-biblo-charcoal/70">Task Per Buku</h4>
+                                <span class="text-[10px] font-bold text-biblo-charcoal/40">Progress {{ $bookProgress }}%</span>
+                            </div>
+
+                            @foreach(($milestoneAchievements ?? $defaultMilestones) as $milestone)
+                                @php
+                                    $achieved = (bool) ($milestone['unlocked'] ?? false);
+                                @endphp
+
+                                <div class="rounded-2xl px-4 py-3 flex items-center justify-between {{ $achieved ? 'bg-biblo-moss/10 border border-biblo-moss/20' : 'bg-biblo-oat/40 border border-biblo-greige/20' }}">
+                                    <div>
+                                        <p class="text-sm font-bold {{ $achieved ? 'text-biblo-charcoal' : 'text-biblo-charcoal/60' }}">
+                                            {{ $milestone['name'] ?? 'Reader Badge' }} • Baca {{ $milestone['threshold'] ?? 0 }}%
+                                        </p>
+                                        <p class="text-[10px] font-bold uppercase tracking-wider {{ $achieved ? 'text-biblo-moss' : 'text-biblo-charcoal/35' }}">
+                                            {{ $achieved ? 'Achievement Unlocked' : 'Belum Tercapai' }}
+                                        </p>
+                                        @if($achieved && !empty($milestone['unlocked_at']))
+                                            <p class="text-[10px] font-semibold text-biblo-charcoal/50 mt-1">
+                                                Tercapai pada {{ $milestone['unlocked_at'] }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                    <span class="text-lg {{ $achieved ? '' : 'opacity-40' }}">{{ $milestone['icon'] ?? '🏅' }}</span>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -170,21 +198,4 @@
         </section>
     </div>
 
-    <style>
-        @keyframes bounce-slow {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        .animate-bounce-slow {
-            animation: bounce-slow 3s ease-in-out infinite;
-        }
-    </style>
 </x-app-layout>
