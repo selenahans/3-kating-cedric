@@ -1,55 +1,80 @@
 <section class="space-y-6">
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Delete Account') }}
+    <header class="mb-8">
+        <h2 class="text-2xl font-black text-red-600 mb-1">
+            {{ __('Hapus Akun') }}
         </h2>
-
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
+        <p class="text-sm text-biblo-charcoal/60 font-medium">
+            {{ __('Tindakan ini tidak bisa dibatalkan. Semua data Anda akan dihapus secara permanen.') }}
         </p>
     </header>
 
-    <x-danger-button
+    <div class="p-5 bg-red-50 border-2 border-red-200 rounded-2xl">
+        <p class="text-sm text-red-700 font-semibold">
+            ⚠️ {{ __('Perhatian: Semua data, buku, catatan, dan progres membaca Anda akan dihapus selamanya dan tidak bisa dipulihkan.') }}
+        </p>
+    </div>
+
+    <button
+        type="button"
         x-data=""
         x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-danger-button>
+        class="px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all hover:shadow-lg active:scale-95"
+    >
+        {{ __('Hapus Akun Saya') }}
+    </button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
-        <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
-            @csrf
-            @method('delete')
-
-            <h2 class="text-lg font-medium text-gray-900">
-                {{ __('Are you sure you want to delete your account?') }}
+        <div class="p-6 sm:p-8">
+            <h2 class="text-2xl font-black text-biblo-charcoal mb-3">
+                {{ __('Yakin ingin menghapus akun?') }}
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600">
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
-            </p>
-
-            <div class="mt-6">
-                <x-input-label for="password" value="{{ __('Password') }}" class="sr-only" />
-
-                <x-text-input
-                    id="password"
-                    name="password"
-                    type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
-                />
-
-                <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
+            <div class="space-y-4 mb-8 text-biblo-charcoal/70 text-sm">
+                <p>
+                    {{ __('Tindakan ini akan:') }}
+                </p>
+                <ul class="list-disc list-inside space-y-2 ml-2">
+                    <li>{{ __('Menghapus profil dan semua data pribadi Anda') }}</li>
+                    <li>{{ __('Menghapus semua catatan membaca dan highlight') }}</li>
+                    <li>{{ __('Menghapus pet dan inventory Anda') }}</li>
+                    <li>{{ __('Tidak bisa dipulihkan lagi') }}</li>
+                </ul>
             </div>
 
-            <div class="mt-6 flex justify-end">
-                <x-secondary-button x-on:click="$dispatch('close')">
-                    {{ __('Cancel') }}
-                </x-secondary-button>
+            <form method="post" action="{{ route('profile.destroy') }}" class="space-y-6">
+                @csrf
+                @method('delete')
 
-                <x-danger-button class="ms-3">
-                    {{ __('Delete Account') }}
-                </x-danger-button>
-            </div>
-        </form>
+                <div>
+                    <label for="password" class="text-sm font-bold text-biblo-charcoal/70 uppercase tracking-wider block mb-2">Masukkan Password untuk Konfirmasi</label>
+                    <x-text-input
+                        id="password"
+                        name="password"
+                        type="password"
+                        class="block w-full border-biblo-greige/30 focus:border-red-500 focus:ring-red-500/20 rounded-xl"
+                        placeholder="{{ __('Password Anda') }}"
+                        required
+                    />
+                    <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button
+                        type="button"
+                        x-on:click="$dispatch('close')"
+                        class="px-6 py-3 bg-biblo-oat text-biblo-charcoal font-bold rounded-xl hover:bg-biblo-greige transition-all"
+                    >
+                        {{ __('Batal') }}
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all hover:shadow-lg active:scale-95"
+                    >
+                        {{ __('Ya, Hapus Akun Saya') }}
+                    </button>
+                </div>
+            </form>
+        </div>
     </x-modal>
 </section>
