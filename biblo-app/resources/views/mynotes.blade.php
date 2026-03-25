@@ -28,37 +28,37 @@
             </div>
         </header>
 
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 text-biblo-charcoal">
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 text-biblo-charcoal">
 
             {{-- DYNAMIC NOTES LIST --}}
-            <div class="lg:col-span-2 space-y-6">
+            <div class="lg:col-span-9 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                 @forelse($notes as $note)
-                    <div class="bg-white p-5 sm:p-6 lg:p-8 rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] border border-biblo-greige/20 shadow-sm relative overflow-hidden">
+                    <div class="bg-white p-4 sm:p-5 rounded-[24px] sm:rounded-[28px] border border-biblo-greige/20 shadow-sm relative overflow-hidden h-full flex flex-col">
                         {{-- We use the dynamic color code from your DB for the glow effect! --}}
                         <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-3xl opacity-20" style="background-color: {{ $note->color_code ?? '#B5EAD7' }};"></div>
 
-                        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6 sm:mb-8 relative z-10">
-                            <div class="flex items-start sm:items-center gap-3 sm:gap-5">
-                                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-biblo-oat rounded-[18px] sm:rounded-[24px] flex items-center justify-center text-2xl sm:text-3xl shadow-inner border border-biblo-greige/10">
+                        <div class="flex items-start justify-between gap-3 mb-4 relative z-10">
+                            <div class="flex items-start gap-3 min-w-0">
+                                <div class="w-11 h-11 bg-biblo-oat rounded-2xl flex items-center justify-center text-xl shadow-inner border border-biblo-greige/10 flex-shrink-0">
                                     📘
                                 </div>
-                                <div>
-                                    <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">{{ $note->book->title }}</h2>
-                                    <p class="text-[11px] font-black text-biblo-charcoal/40 uppercase tracking-[0.1em]">
+                                <div class="min-w-0">
+                                    <h2 class="text-lg font-extrabold tracking-tight truncate">{{ $note->book->title }}</h2>
+                                    <p class="text-[10px] font-black text-biblo-charcoal/40 uppercase tracking-[0.1em] truncate">
                                         {{ $note->book->author }} • {{ $note->created_at->format('M d, Y') }}
                                     </p>
                                 </div>
                             </div>
-                            <div class="bg-biblo-sage/10 text-biblo-moss px-4 py-1.5 rounded-full text-[10px] font-black uppercase self-start">
+                            <div class="bg-biblo-sage/10 text-biblo-moss px-3 py-1 rounded-full text-[9px] font-black uppercase self-start flex-shrink-0">
                                 Highlight
                             </div>
                         </div>
 
-                        <div class="space-y-8 relative z-10">
-                            <div class="space-y-3">
+                        <div class="space-y-4 relative z-10 flex-grow flex flex-col">
+                            <div class="space-y-2">
                                 <p class="text-[9px] font-black text-biblo-charcoal/30 uppercase tracking-[0.2em]">The Insight</p>
                                 <div class="relative">
-                                    <p class="text-lg sm:text-xl md:text-2xl font-bold leading-relaxed tracking-tight">
+                                    <p class="text-lg font-bold leading-relaxed tracking-tight line-clamp-4">
                                         "{{ $note->highlighted_text }}"
                                     </p>
                                 </div>
@@ -66,18 +66,18 @@
 
                             {{-- Only show the reflection box if the user actually typed a note! --}}
                             @if($note->note_content)
-                                <div class="bg-biblo-oat/50 rounded-[24px] sm:rounded-[32px] p-4 sm:p-6 border border-biblo-greige/10">
-                                    <div class="flex items-center gap-2 mb-3">
+                                <div class="bg-biblo-oat/50 rounded-2xl p-4 border border-biblo-greige/10">
+                                    <div class="flex items-center gap-2 mb-2">
                                         <span class="text-sm">✍️</span>
                                         <p class="text-[10px] font-black text-biblo-charcoal/60 uppercase tracking-widest">Personal Reflection</p>
                                     </div>
-                                    <p class="text-sm font-medium leading-relaxed text-biblo-charcoal/80">
+                                    <p class="text-sm font-medium leading-relaxed text-biblo-charcoal/80 line-clamp-4">
                                         {{ $note->note_content }}
                                     </p>
                                 </div>
                             @endif
 
-                            <details class="bg-white/70 border border-biblo-greige/20 rounded-2xl p-4">
+                            <details class="bg-white/70 border border-biblo-greige/20 rounded-xl p-3 mt-auto">
                                 <summary class="cursor-pointer text-xs font-black uppercase tracking-[0.12em] text-biblo-charcoal/60">
                                     Edit Note
                                 </summary>
@@ -90,7 +90,7 @@
                                         class="w-full bg-white border border-biblo-greige/30 rounded-xl p-3 text-sm focus:ring-2 focus:ring-biblo-sage/20 focus:outline-none"
                                         placeholder="Tulis atau ubah isi catatan...">{{ old('note_content', $note->note_content) }}</textarea>
 
-                                    <div class="flex items-center justify-between gap-3">
+                                    <div class="flex items-center justify-between gap-3 flex-wrap">
                                         <input type="color" name="color_code" value="{{ $note->color_code ?? '#FDE047' }}"
                                             class="h-10 w-16 rounded-lg border border-biblo-greige/30 bg-white p-1">
                                         <button type="submit"
@@ -113,7 +113,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="text-center py-20">
+                    <div class="text-center py-20 md:col-span-2 xl:col-span-3">
                         <p class="text-biblo-charcoal/40 font-bold">You haven't highlighted any text or saved any notes yet.</p>
                         <p class="text-sm text-biblo-charcoal/30 mt-2">Open a book in your library and start highlighting!</p>
                     </div>
@@ -121,7 +121,7 @@
             </div>
 
             {{-- DYNAMIC STATS SIDEBAR --}}
-            <div class="space-y-6">
+            <div class="space-y-6 lg:col-span-3">
                 <div class="bg-biblo-charcoal rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] p-5 sm:p-6 lg:p-8 text-white relative overflow-hidden flex flex-col h-full">
                     <h3 class="text-lg font-extrabold mb-6">Reading Stats</h3>
 
@@ -144,9 +144,10 @@
                         <p class="text-[10px] font-bold text-white/40 leading-relaxed italic mb-4">
                             "Reviewing your notes helps Lumi grow smarter and unlocks new evolutions!"
                         </p>
-                        <button class="w-full bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">
+                        <a href="{{ route('notes.export-pdf') }}"
+                            class="inline-flex items-center justify-center px-6 bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">
                             Export PDF
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>

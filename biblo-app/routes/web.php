@@ -140,6 +140,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/notes/save', [NoteController::class, 'store'])->name('notes.store');
     Route::get('/mynotes', [NoteController::class, 'index'])->name('notes.index');
+    Route::get('/mynotes/export-pdf', [NoteController::class, 'exportPdf'])->name('notes.export-pdf');
     Route::patch('/mynotes/{note}', [NoteController::class, 'update'])->name('notes.update');
     Route::delete('/mynotes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
 
