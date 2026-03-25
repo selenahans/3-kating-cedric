@@ -3,6 +3,12 @@ import forms from "@tailwindcss/forms";
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    safelist: [
+        // Achievement gradient colors for book milestones (very soft Biblo tones)
+        'from-amber-50', 'via-amber-100', 'to-amber-50',
+        'from-blue-50', 'via-slate-100', 'to-blue-50',
+        'from-orange-100', 'via-amber-100', 'to-orange-100',
+    ],
     content: [
         "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
         "./storage/framework/views/*.php",

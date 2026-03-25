@@ -44,23 +44,28 @@
         <section class="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div
                 class="flex items-center gap-1 bg-biblo-oat p-1.5 rounded-3xl border border-biblo-greige/20 shadow-sm overflow-x-auto no-scrollbar w-full md:w-auto">
-                <a href="{{ route('mylibrary', array_filter(['status' => null, 'q' => $search ?: null, 'sort' => $sort ?: null])) }}"
-                    class="{{ empty($status) ? 'bg-biblo-charcoal text-white shadow-lg' : 'text-biblo-charcoal/60 hover:bg-biblo-greige/20' }} px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold transition-all whitespace-nowrap">
+                <a href="{{ route('mylibrary', array_filter(['view' => 'books', 'status' => null, 'q' => $search ?: null, 'sort' => $sort ?: null])) }}"
+                    class="{{ $view === 'books' && empty($status) ? 'bg-biblo-charcoal text-white shadow-lg' : 'text-biblo-charcoal/60 hover:bg-biblo-greige/20' }} px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold transition-all whitespace-nowrap">
                     All Books
                 </a>
-                <a href="{{ route('mylibrary', array_filter(['status' => 'reading', 'q' => $search ?: null, 'sort' => $sort ?: null])) }}"
-                    class="{{ $status === 'reading' ? 'bg-biblo-charcoal text-white shadow-lg' : 'text-biblo-charcoal/60 hover:bg-biblo-greige/20' }} px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold transition-all whitespace-nowrap">
+                <a href="{{ route('mylibrary', array_filter(['view' => 'books', 'status' => 'reading', 'q' => $search ?: null, 'sort' => $sort ?: null])) }}"
+                    class="{{ $view === 'books' && $status === 'reading' ? 'bg-biblo-charcoal text-white shadow-lg' : 'text-biblo-charcoal/60 hover:bg-biblo-greige/20' }} px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold transition-all whitespace-nowrap">
                     Reading
                 </a>
-                <a href="{{ route('mylibrary', array_filter(['status' => 'completed', 'q' => $search ?: null, 'sort' => $sort ?: null])) }}"
-                    class="{{ $status === 'completed' ? 'bg-biblo-charcoal text-white shadow-lg' : 'text-biblo-charcoal/60 hover:bg-biblo-greige/20' }} px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold transition-all whitespace-nowrap">
+                <a href="{{ route('mylibrary', array_filter(['view' => 'books', 'status' => 'completed', 'q' => $search ?: null, 'sort' => $sort ?: null])) }}"
+                    class="{{ $view === 'books' && $status === 'completed' ? 'bg-biblo-charcoal text-white shadow-lg' : 'text-biblo-charcoal/60 hover:bg-biblo-greige/20' }} px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold transition-all whitespace-nowrap">
                     Finished
+                </a>
+                <a href="{{ route('mylibrary', array_filter(['view' => 'achievements', 'q' => $search ?: null, 'sort' => $sort ?: null])) }}"
+                    class="{{ $view === 'achievements' ? 'bg-biblo-charcoal text-white shadow-lg' : 'text-biblo-charcoal/60 hover:bg-biblo-greige/20' }} px-5 sm:px-8 py-3 rounded-[20px] text-xs font-bold transition-all whitespace-nowrap">
+                    🏆 ({{ $totalAchievements }})
                 </a>
             </div>
 
         </section>
 
         {{-- DYNAMIC BOOKS GRID --}}
+        @if($view === 'books' || empty($view))
         <section class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-10">
             @forelse($books as $book)
                 @php
@@ -106,5 +111,60 @@
                 </div>
             @endforelse
         </section>
+        @endif
+
+        {{-- ACHIEVEMENTS GRID --}}
+        @if($view === 'achievements')
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-8">
+            @forelse($allAchievements as $achievement)
+                @if($achievement->type === 'milestone')
+                    <div class="bg-gradient-to-br {{ $achievement->color }} rounded-2xl sm:rounded-3xl p-5 sm:p-6 text-biblo-charcoal shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group">
+                        <div class="flex items-start justify-between mb-3">
+                            <div>
+                                <p class="text-xs font-bold opacity-60 uppercase tracking-wider">{{ $achievement->book_title }}</p>
+                                <h3 class="text-xl sm:text-2xl font-black mt-1">{{ $achievement->title }}</h3>
+                            </div>
+                            <div class="text-4xl sm:text-5xl group-hover:scale-110 transition-transform">{{ $achievement->icon }}</div>
+                        </div>
+                        <p class="text-sm opacity-70 mb-3">{{ $achievement->description }}</p>
+                        <p class="text-xs font-bold opacity-50 uppercase tracking-wide">Unlocked: {{ $achievement->unlocked_at }}</p>
+                    </div>
+                @else
+                    <div class="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 border-2 border-biblo-moss/40 shadow-md hover:shadow-xl hover:border-biblo-moss hover:scale-105 transition-all duration-300 group">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex-1">
+                                <p class="text-xs font-bold text-biblo-moss uppercase tracking-wider">✓ Task Completed</p>
+                                <h3 class="text-lg sm:text-xl font-black text-biblo-charcoal mt-1">{{ $achievement->title }}</h3>
+                            </div>
+                            <div class="text-3xl sm:text-4xl group-hover:scale-110 transition-transform">{{ $achievement->icon }}</div>
+                        </div>
+                        <p class="text-sm text-biblo-charcoal/70 mb-4">{{ $achievement->description }}</p>
+                        
+                        {{-- Reward Display --}}
+                        <div class="flex items-center gap-3 mb-3 pt-3 border-t border-biblo-greige/30">
+                            @if($achievement->coin_reward > 0)
+                                <span class="inline-flex items-center gap-1 bg-biblo-clay/10 px-3 py-1.5 rounded-lg text-sm font-bold text-biblo-clay">
+                                    💰 +{{ $achievement->coin_reward }}
+                                </span>
+                            @endif
+                            @if($achievement->xp_reward > 0)
+                                <span class="inline-flex items-center gap-1 bg-biblo-moss/10 px-3 py-1.5 rounded-lg text-sm font-bold text-biblo-moss">
+                                    ⚡ +{{ $achievement->xp_reward }} XP
+                                </span>
+                            @endif
+                        </div>
+
+                        <p class="text-xs font-semibold text-biblo-charcoal/50 uppercase tracking-wide">Completed: {{ $achievement->unlocked_at }}</p>
+                    </div>
+                @endif
+            @empty
+                <div class="col-span-full text-center py-16">
+                    <p class="text-4xl mb-4">🏆</p>
+                    <h3 class="text-2xl font-black text-biblo-charcoal mb-2">Mulai kejar achievements!</h3>
+                    <p class="text-biblo-charcoal/60">Baca buku untuk membuka badge Bronze, Silver, dan Gold</p>
+                </div>
+            @endforelse
+        </section>
+        @endif
     </div>
 </x-app-layout>
