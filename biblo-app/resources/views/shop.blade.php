@@ -39,18 +39,13 @@
 
         {{-- FOOD SECTION --}}
         <section id="food-section" class="category-section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @php
-                $foodItems = [
-                    ['name' => 'Organic Apple', 'price' => 10, 'icon' => '🍎', 'desc' => 'A fresh apple to restore hunger.', 'color' => 'bg-orange-50'],
-                    ['name' => 'Sweet Honey', 'price' => 15, 'icon' => '🍯', 'desc' => 'Golden honey for extra energy.', 'color' => 'bg-amber-50'],
-                    ['name' => 'Magical Berry', 'price' => 30, 'icon' => '🫐', 'desc' => 'Mysterious berry with magic energy.', 'color' => 'bg-indigo-50'],
-                    ['name' => 'Crispy Leaf', 'price' => 50, 'icon' => '🌿', 'desc' => 'A nutritious leaf for vitality.', 'color' => 'bg-emerald-50'],
-                ];
-            @endphp
-
-            @foreach($foodItems as $item)
-            <div class="bg-white border border-biblo-greige/20 rounded-[28px] sm:rounded-[40px] p-5 sm:p-6 hover:shadow-2xl hover:shadow-biblo-charcoal/5 transition-all group relative overflow-hidden">
+            @forelse($foodItems as $item)
+            <div class="bg-white border border-biblo-greige/20 rounded-[28px] sm:rounded-[40px] p-5 sm:p-6 hover:shadow-2xl hover:shadow-biblo-charcoal/5 transition-all group relative overflow-hidden {{ $item['locked'] ? 'opacity-60' : '' }}">
                 <div class="absolute -top-10 -right-10 w-32 h-32 {{ $item['color'] }} rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+
+                @if($item['locked'])
+                <div class="absolute inset-0 bg-gradient-to-t from-biblo-charcoal/10 to-transparent z-20 rounded-[28px] sm:rounded-[40px]"></div>
+                @endif
 
                 <div class="relative z-10">
                     <div class="w-16 h-16 sm:w-20 sm:h-20 {{ $item['color'] }} rounded-2xl sm:rounded-3xl flex items-center justify-center text-3xl sm:text-4xl mb-5 sm:mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform">
@@ -62,6 +57,17 @@
                         <p class="text-xs font-medium text-biblo-charcoal/50 leading-relaxed">
                             {{ $item['desc'] }}
                         </p>
+                        @if($item['locked'])
+                        <p class="text-[10px] font-black text-biblo-sage uppercase tracking-widest">
+                            🔒 Available at Level {{ $item['level_gate'] }}
+                        </p>
+                        @else
+                        @if($item['quantity'] > 0)
+                        <p class="text-[10px] font-bold text-biblo-moss">
+                            Owned: {{ $item['quantity'] }}
+                        </p>
+                        @endif
+                        @endif
                     </div>
 
                     <div class="flex items-center justify-between pt-4 border-t border-biblo-greige/10">
@@ -70,13 +76,15 @@
                             <span class="text-xs">🪙</span>
                         </div>
                         
-                        <button class="purchase-btn bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}" data-item-price="{{ $item['price'] }}">
-                            Purchase
+                        <button class="purchase-btn {{ $item['locked'] ? 'bg-biblo-charcoal/20 text-biblo-charcoal/50 cursor-not-allowed' : 'bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal' }} text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}" data-item-price="{{ $item['price'] }}" {{ $item['locked'] ? 'disabled' : '' }}>
+                            {{ $item['locked'] ? 'Locked' : 'Purchase' }}
                         </button>
                     </div>
                 </div>
             </div>
-            @endforeach
+            @empty
+            <p class="text-center col-span-full text-biblo-charcoal/50">No food items available yet.</p>
+            @endforelse
         </section>
 
         {{-- ACCESSORIES SECTION --}}

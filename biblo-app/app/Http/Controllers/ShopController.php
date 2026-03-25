@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\UserInventory;
+use App\Models\ReadingLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -78,12 +79,53 @@ class ShopController extends Controller
         ],
     ];
 
+    private const FOOD_CATALOG = [
+        [
+            'name' => 'Organic Apple',
+            'price' => 10,
+            'desc' => 'Fresh and nutritious',
+            'icon' => '🍎',
+            'color' => 'bg-orange-50',
+            'level_gate' => 1,
+            'image_path' => 'images/items/food-organic-apple.webp',
+        ],
+        [
+            'name' => 'Sweet Honey',
+            'price' => 15,
+            'desc' => 'Golden liquid energy',
+            'icon' => '🍯',
+            'color' => 'bg-amber-50',
+            'level_gate' => 3,
+            'image_path' => 'images/items/food-sweet-honey.webp',
+        ],
+        [
+            'name' => 'Magical Berry',
+            'price' => 30,
+            'desc' => 'Mystical purple berries',
+            'icon' => '🫐',
+            'color' => 'bg-indigo-50',
+            'level_gate' => 6,
+            'image_path' => 'images/items/food-magical-berry.webp',
+        ],
+        [
+            'name' => 'Crispy Leaf',
+            'price' => 50,
+            'desc' => 'Ancient leaf essence',
+            'icon' => '🌿',
+            'color' => 'bg-emerald-50',
+            'level_gate' => 10,
+            'image_path' => 'images/items/food-crispy-leaf.webp',
+        ],
+    ];
+
     public function index(Request $request)
     {
         $user = $request->user();
         $this->ensureSkinItems($user->id);
+        $this->ensureFoodItems();
 
         $catalogByName = collect(self::SKIN_CATALOG)->keyBy('name');
+        $foodCatalogByName = collect(self::FOOD_CATALOG)->keyBy('name');
         $inventoryByItemId = UserInventory::where('user_id', $user->id)
             ->get()
             ->keyBy('item_id');
@@ -108,8 +150,32 @@ class ShopController extends Controller
             })
             ->values();
 
+        $totalPagesRead = ReadingLog::where('user_id', $user->id)->sum('pages_read') ?? 0;
+        $petLevel = intdiv($totalPagesRead * 5, 100) + 1;
+
+        $foodItems = Item::where('type', 'food')
+            ->orderBy('level_gate')
+            ->get()
+            ->map(function (Item $item) use ($inventoryByItemId, $foodCatalogByName, $petLevel) {
+                $inventory = $inventoryByItemId->get($item->id);
+                $catalog = $foodCatalogByName->get($item->name, []);
+
+                return [
+                    'name' => $item->name,
+                    'price' => (int) $item->price,
+                    'icon' => (string) ($catalog['icon'] ?? '🍎'),
+                    'desc' => (string) ($catalog['desc'] ?? 'Pet food item.'),
+                    'color' => (string) ($catalog['color'] ?? 'bg-orange-50'),
+                    'level_gate' => (int) $item->level_gate,
+                    'quantity' => $inventory !== null ? (int) $inventory->quantity : 0,
+                    'locked' => $item->level_gate > $petLevel,
+                ];
+            })
+            ->values();
+
         return view('shop', [
             'skinsItems' => $skinsItems,
+            'foodItems' => $foodItems,
         ]);
     }
 
@@ -161,6 +227,20 @@ class ShopController extends Controller
                 'coins' => $currentCoins,
                 'price' => $item->price,
                 'needed' => $item->price - $currentCoins,
+            ], 422);
+        }
+
+        // Calculate user's pet level based on pages read
+        $totalPagesRead = ReadingLog::where('user_id', $user->id)->sum('pages_read') ?? 0;
+        $petLevel = intdiv($totalPagesRead * 5, 100) + 1;
+
+        // Check level gate requirement
+        if ($item->level_gate && $item->level_gate > $petLevel) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Item ini tersedia saat level ' . $item->level_gate . '. Level kamu sekarang: ' . $petLevel,
+                'required_level' => $item->level_gate,
+                'current_level' => $petLevel,
             ], 422);
         }
 
@@ -314,6 +394,27 @@ class ShopController extends Controller
         if (!$equippedExists && $defaultSkinInventory) {
             $defaultSkinInventory->is_equipped = true;
             $defaultSkinInventory->save();
+        }
+    }
+
+    private function ensureFoodItems(): void
+    {
+        foreach (self::FOOD_CATALOG as $food) {
+            $item = Item::firstOrCreate(
+                ['name' => $food['name']],
+                [
+                    'type' => 'food',
+                    'price' => $food['price'],
+                    'level_gate' => $food['level_gate'],
+                    'image_path' => $food['image_path'],
+                ]
+            );
+
+            $item->type = 'food';
+            $item->price = $food['price'];
+            $item->level_gate = $food['level_gate'];
+            $item->image_path = $food['image_path'];
+            $item->save();
         }
     }
 }
