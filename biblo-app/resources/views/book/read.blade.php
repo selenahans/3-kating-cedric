@@ -5,7 +5,7 @@
 @section('content')
 
     {{-- Navbar --}}
-    <x-read.navbar :title="$book->title" :currentPage="1" :totalPages="$book->total_pages" :backUrl="route('book.detail', $book)" :petImage="$petImage" />
+    <x-read.navbar :title="$book->title" :currentPage="1" :totalPages="($book->total_pages ?? 1)" :backUrl="route('book.detail', $book)" :petImage="$petImage" />
 
     {{-- Cleaned Content Area --}}
     <main class="pb-44 px-6 bg-biblo-cream/10">
@@ -142,10 +142,12 @@
             let selectedColor = "#FDE047"; // default
             const savedCfi = @json($progress->current_location ?? null);
 
-            const totalPages = {{ $book->total_pages }};
+            const totalPages = Math.max(1, Number({{ (int) ($book->total_pages ?? 1) }}));
 
             let lastSavedProgress = {{ $progress->progress_percentage ?? 0 }};
             let currentProgress = lastSavedProgress;
+            let currentTopbarPage = progressToPage(lastSavedProgress);
+            let pendingDirection = 0;
             let hasProgressChanged = false;
             let previousDisplayedPage = null;
             let accumulatedPagesRead = 0;
@@ -165,6 +167,17 @@
             const tasksList = document.getElementById("tasks-list");
             const gateLevel = document.getElementById("gate-level");
             const initialHungry = @json($isHungry ?? false);
+
+            function progressToPage(progress) {
+                const normalized = Math.min(100, Math.max(0, Number(progress) || 0));
+                return Math.min(totalPages, Math.max(1, Math.round((normalized / 100) * totalPages) || 1));
+            }
+
+            function setReaderCurrentPage(pageNumber) {
+                const readerCurrentPage = document.getElementById("reader-current-page");
+                if (!readerCurrentPage) return;
+                readerCurrentPage.textContent = String(Math.min(totalPages, Math.max(1, Number(pageNumber) || 1)));
+            }
 
             async function showHungryAndBlockReader(health = null) {
                 if (hungryPetHealth && health !== null) {
@@ -453,6 +466,9 @@
             book.ready.then(async () => {
                 await book.locations.generate(1000); // 🔥 THIS FIXES EVERYTHING
 
+                // Keep topbar in sync before first relocated event fires.
+                setReaderCurrentPage(currentTopbarPage);
+
                 try {
                     if (savedCfi) {
                         await rendition.display(savedCfi); // 🔥 resume
@@ -460,8 +476,16 @@
                         await rendition.display();
                     }
                 } catch (e) {
-                    console.warn("Invalid CFI, fallback to start");
-                    await rendition.display();
+                    console.warn("Invalid CFI, trying progress-based resume", e);
+
+                    const resumeProgress = Math.min(99, Math.max(0, Number(lastSavedProgress) || 0));
+                    const fallbackCfi = book.locations.cfiFromPercentage(resumeProgress / 100);
+
+                    if (fallbackCfi) {
+                        await rendition.display(fallbackCfi);
+                    } else {
+                        await rendition.display();
+                    }
                 }
 
                 loading.style.display = "none";
@@ -469,11 +493,26 @@
             });
 
             function updateProgressUI(location) {
-                const current = location.start.displayed.page;
                 const percentage = book.locations
                     ? book.locations.percentageFromCfi(location.start.cfi)
                     : 0;
                 const progress = Math.round(percentage * 100);
+                const mappedPage = progressToPage(progress);
+
+                if (pendingDirection !== 0) {
+                    const step = pendingDirection > 0 ? 1 : -1;
+                    currentTopbarPage = Math.min(totalPages, Math.max(1, currentTopbarPage + step));
+                    pendingDirection -= step;
+
+                    // Hard resync only when drift is clearly off.
+                    if (Math.abs(mappedPage - currentTopbarPage) >= 8) {
+                        currentTopbarPage = mappedPage;
+                        pendingDirection = 0;
+                    }
+                } else {
+                    // Initial/direct jumps should still reflect persisted progress.
+                    currentTopbarPage = mappedPage;
+                }
 
                 const progressBar = document.getElementById("progress-bar");
                 const progressText = document.getElementById("progress-text");
@@ -486,7 +525,7 @@
                     progressText.textContent = progress + "% Completed";
                 }
 
-                document.getElementById("reader-current-page").textContent = current;
+                setReaderCurrentPage(currentTopbarPage);
             }
 
             rendition.on("rendered", () => {
@@ -524,6 +563,7 @@
                     showHungryAndBlockReader();
                     return;
                 }
+                pendingDirection += 1;
                 rendition.next();
             };
 
@@ -533,6 +573,7 @@
                     showHungryAndBlockReader();
                     return;
                 }
+                pendingDirection -= 1;
                 rendition.prev();
             };
 

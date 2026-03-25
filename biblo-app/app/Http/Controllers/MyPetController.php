@@ -17,6 +17,20 @@ use Illuminate\View\View;
 
 class MyPetController extends Controller
 {
+    private const FOOD_GAIN_MAP = [
+        'Organic Apple' => 15,
+        'Sweet Honey' => 20,
+        'Magical Berry' => 25,
+        'Crispy Leaf' => 30,
+    ];
+
+    private const FOOD_ICON_MAP = [
+        'Organic Apple' => '🍎',
+        'Sweet Honey' => '🍯',
+        'Magical Berry' => '🫐',
+        'Crispy Leaf' => '🌿',
+    ];
+
     private function minimumCoinsForLevel(int $level): int
     {
         $normalizedLevel = max(1, $level);
@@ -77,11 +91,33 @@ class MyPetController extends Controller
 
         $appleQty = 0;
         $honeyQty = 0;
+        $petFoodItems = [];
         $petImage = asset('images/boo-pet.webp');
         $activeSkinName = 'Default';
         if (Schema::hasTable('items') && Schema::hasTable('user_inventory') && Schema::hasColumn('user_inventory', 'quantity')) {
             $appleItem = Item::where('name', 'Organic Apple')->first();
             $honeyItem = Item::where('name', 'Sweet Honey')->first();
+
+            $foodItems = Item::where('type', 'food')
+                ->orderBy('level_gate')
+                ->orderBy('id')
+                ->get();
+
+            $foodQtyByItemId = UserInventory::where('user_id', $user->id)
+                ->selectRaw('item_id, SUM(quantity) as total_qty')
+                ->groupBy('item_id')
+                ->pluck('total_qty', 'item_id');
+
+            $petFoodItems = $foodItems->map(function (Item $item) use ($foodQtyByItemId) {
+                $qty = (int) ($foodQtyByItemId[$item->id] ?? 0);
+
+                return [
+                    'id' => (int) $item->id,
+                    'name' => (string) $item->name,
+                    'icon' => self::FOOD_ICON_MAP[$item->name] ?? '🍽️',
+                    'qty' => $qty,
+                ];
+            })->values();
 
             if (Schema::hasColumn('user_inventory', 'is_equipped')) {
                 $equippedSkin = UserInventory::with('item')
@@ -140,6 +176,7 @@ class MyPetController extends Controller
             'honeyQty' => $honeyQty,
             'petImage' => $petImage,
             'activeSkinName' => $activeSkinName,
+            'petFoodItems' => $petFoodItems,
             'canFeed' => $kenyangPercent < 90,
             'nextGateLevel' => $nextGateLevel,
             'gateTasks' => $gateTasks,
@@ -152,8 +189,16 @@ class MyPetController extends Controller
     {
         $user = $request->user();
         $validated = $request->validate([
-            'item' => ['required', 'in:apple,honey'],
+            'item' => ['nullable', 'string'],
+            'item_name' => ['nullable', 'string'],
         ]);
+
+        if (!$request->filled('item') && !$request->filled('item_name')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Item makanan belum dipilih.',
+            ], 422);
+        }
 
         if (!Schema::hasTable('items') || !Schema::hasTable('user_inventory') || !Schema::hasColumn('user_inventory', 'quantity')) {
             return response()->json([
@@ -162,13 +207,19 @@ class MyPetController extends Controller
             ], 422);
         }
 
-        $itemMap = [
-            'apple' => ['name' => 'Organic Apple', 'gain' => 15],
-            'honey' => ['name' => 'Sweet Honey', 'gain' => 20],
+        $legacyItemMap = [
+            'apple' => 'Organic Apple',
+            'honey' => 'Sweet Honey',
         ];
 
-        $chosen = $itemMap[$validated['item']];
-        $item = Item::where('name', $chosen['name'])->first();
+        $itemName = (string) ($validated['item_name'] ?? '');
+        if ($itemName === '' && !empty($validated['item']) && isset($legacyItemMap[$validated['item']])) {
+            $itemName = $legacyItemMap[$validated['item']];
+        }
+
+        $item = Item::where('name', $itemName)
+            ->where('type', 'food')
+            ->first();
 
         if (!$item) {
             return response()->json([
@@ -209,7 +260,9 @@ class MyPetController extends Controller
             ], 422);
         }
 
-        DB::transaction(function () use ($user, $item, $chosen, $pet) {
+        $gain = (int) (self::FOOD_GAIN_MAP[$item->name] ?? 15);
+
+        DB::transaction(function () use ($user, $item, $gain, $pet) {
             $row = UserInventory::where('user_id', $user->id)
                 ->where('item_id', $item->id)
                 ->where('quantity', '>', 0)
@@ -220,27 +273,26 @@ class MyPetController extends Controller
             $row->quantity -= 1;
             $row->save();
 
-            $pet->health = min(100, (int) $pet->health + $chosen['gain']);
+            $pet->health = min(100, (int) $pet->health + $gain);
             $pet->save();
         });
 
-        $appleItem = Item::where('name', 'Organic Apple')->first();
-        $honeyItem = Item::where('name', 'Sweet Honey')->first();
-
-        $appleQty = $appleItem
-            ? (int) UserInventory::where('user_id', $user->id)->where('item_id', $appleItem->id)->sum('quantity')
-            : 0;
-
-        $honeyQty = $honeyItem
-            ? (int) UserInventory::where('user_id', $user->id)->where('item_id', $honeyItem->id)->sum('quantity')
-            : 0;
+        $foodQuantities = UserInventory::query()
+            ->join('items', 'items.id', '=', 'user_inventory.item_id')
+            ->where('user_inventory.user_id', $user->id)
+            ->where('items.type', 'food')
+            ->selectRaw('items.name as item_name, SUM(user_inventory.quantity) as total_qty')
+            ->groupBy('items.name')
+            ->pluck('total_qty', 'item_name')
+            ->map(fn ($qty) => (int) $qty)
+            ->all();
 
         return response()->json([
             'success' => true,
             'message' => 'Pet berhasil diberi makan.',
             'kenyang' => (int) $pet->fresh()->health,
-            'apple_qty' => $appleQty,
-            'honey_qty' => $honeyQty,
+            'food_quantities' => $foodQuantities,
+            'item_name' => $item->name,
             'can_feed' => ((int) $pet->fresh()->health) < 90,
         ]);
     }

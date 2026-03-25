@@ -138,20 +138,21 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <button type="button" data-feed-item="apple"
-                            class="bg-white/10 hover:bg-white/20 border border-white/10 p-4 rounded-3xl transition-all flex flex-col items-center gap-2 {{ $appleQty > 0 ? '' : 'opacity-40 cursor-not-allowed' }}"
-                            @if($appleQty <= 0) disabled @endif>
-                            <span class="text-2xl" @if($appleQty <= 0) style="filter: grayscale(100%);" @endif>🍎</span>
-                            <span class="text-[10px] font-black uppercase tracking-tighter">Organic Apple</span>
-                            <span class="text-[9px] text-biblo-sage font-bold">Qty: <span id="apple-qty">{{ $appleQty ?? 0 }}</span></span>
-                        </button>
-                        <button type="button" data-feed-item="honey"
-                            class="bg-white/10 hover:bg-white/20 border border-white/10 p-4 rounded-3xl transition-all flex flex-col items-center gap-2 {{ $honeyQty > 0 ? '' : 'opacity-40 cursor-not-allowed' }}"
-                            @if($honeyQty <= 0) disabled @endif>
-                            <span class="text-2xl" @if($honeyQty <= 0) style="filter: grayscale(100%);" @endif>🍯</span>
-                            <span class="text-[10px] font-black uppercase tracking-tighter">Sweet Honey</span>
-                            <span class="text-[9px] text-biblo-sage font-bold">Qty: <span id="honey-qty">{{ $honeyQty ?? 0 }}</span></span>
-                        </button>
+                        @forelse(($petFoodItems ?? []) as $food)
+                            <button type="button"
+                                data-feed-item-name="{{ $food['name'] }}"
+                                data-qty-target="food-qty-{{ $food['id'] }}"
+                                class="bg-white/10 hover:bg-white/20 border border-white/10 p-4 rounded-3xl transition-all flex flex-col items-center gap-2 {{ ($food['qty'] ?? 0) > 0 ? '' : 'opacity-40 cursor-not-allowed' }}"
+                                @if(($food['qty'] ?? 0) <= 0) disabled @endif>
+                                <span class="text-2xl" @if(($food['qty'] ?? 0) <= 0) style="filter: grayscale(100%);" @endif>{{ $food['icon'] ?? '🍽️' }}</span>
+                                <span class="text-[10px] font-black uppercase tracking-tighter">{{ $food['name'] }}</span>
+                                <span class="text-[9px] text-biblo-sage font-bold">Qty: <span id="food-qty-{{ $food['id'] }}">{{ $food['qty'] ?? 0 }}</span></span>
+                            </button>
+                        @empty
+                            <div class="col-span-2 text-center text-[10px] font-bold text-white/60 py-4">
+                                Belum ada makanan di inventory.
+                            </div>
+                        @endforelse
                     </div>
                 </div>
 
@@ -172,26 +173,22 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const buttons = document.querySelectorAll('[data-feed-item]');
             const taskButtons = document.querySelectorAll('[data-complete-task]');
-            const appleQtyEl = document.getElementById('apple-qty');
-            const honeyQtyEl = document.getElementById('honey-qty');
             const feedStatusEl = document.getElementById('feed-status');
             const kenyangValueEl = document.getElementById('kenyang-value');
             const kenyangBarEl = document.getElementById('kenyang-bar');
             const gateProgressTextEl = document.getElementById('gate-progress-text');
             const statInfoToggles = document.querySelectorAll('[data-stat-info-toggle]');
             const statInfoPanels = document.querySelectorAll('[data-stat-info-panel]');
+            const feedButtons = document.querySelectorAll('[data-feed-item-name]');
 
             let currentKenyang = Number((kenyangValueEl?.textContent || '0').replace('%', '').trim()) || 0;
 
             const updateButtonsState = () => {
-                const appleQty = Number(appleQtyEl?.textContent || 0);
-                const honeyQty = Number(honeyQtyEl?.textContent || 0);
-
-                buttons.forEach((btn) => {
-                    const item = btn.getAttribute('data-feed-item');
-                    const outOfStock = (item === 'apple' ? appleQty : honeyQty) <= 0;
+                feedButtons.forEach((btn) => {
+                    const qtyTargetId = btn.getAttribute('data-qty-target');
+                    const qtyEl = qtyTargetId ? document.getElementById(qtyTargetId) : null;
+                    const outOfStock = (Number(qtyEl?.textContent || 0) || 0) <= 0;
                     const full = currentKenyang >= 90;
                     btn.disabled = outOfStock || full;
                     btn.classList.toggle('opacity-50', btn.disabled);
@@ -206,9 +203,9 @@
                 updateButtonsState();
             };
 
-            buttons.forEach((button) => {
+            feedButtons.forEach((button) => {
                 button.addEventListener('click', async () => {
-                    const item = button.getAttribute('data-feed-item');
+                    const itemName = button.getAttribute('data-feed-item-name');
                     button.disabled = true;
 
                     try {
@@ -218,7 +215,7 @@
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                             },
-                            body: JSON.stringify({ item }),
+                            body: JSON.stringify({ item_name: itemName }),
                         });
 
                         const payload = await response.json();
@@ -233,8 +230,16 @@
                             return;
                         }
 
-                        if (appleQtyEl) appleQtyEl.textContent = String(payload.apple_qty ?? 0);
-                        if (honeyQtyEl) honeyQtyEl.textContent = String(payload.honey_qty ?? 0);
+                        const qtyMap = payload.food_quantities || {};
+                        feedButtons.forEach((btn) => {
+                            const name = btn.getAttribute('data-feed-item-name');
+                            const qtyTargetId = btn.getAttribute('data-qty-target');
+                            const qtyEl = qtyTargetId ? document.getElementById(qtyTargetId) : null;
+                            if (!qtyEl || !name) return;
+
+                            qtyEl.textContent = String(Number(qtyMap[name] ?? qtyEl.textContent ?? 0));
+                        });
+
                         setKenyang(payload.kenyang ?? currentKenyang);
 
                         feedStatusEl.textContent = payload.message || 'Pet berhasil diberi makan.';
