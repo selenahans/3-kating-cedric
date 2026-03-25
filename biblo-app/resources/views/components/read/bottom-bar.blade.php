@@ -8,7 +8,7 @@
         <a href="{{ $prevUrl }}" id="prev"
             class="group flex items-center gap-3 text-biblo-charcoal/60 hover:text-biblo-moss transition-all">
             <span class="text-xl transition-transform group-hover:-translate-x-1">←</span>
-            <span class="text-[11px] font-black uppercase tracking-[0.2em]">Previous Page</span>
+            <span class="text-[11px] font-black uppercase tracking-[0.2em]">Halaman Sebelumnya</span>
         </a>
 
         <div class="hidden md:flex flex-col items-center gap-2">
@@ -18,13 +18,13 @@
             </div>
             <span id="progress-text"
                 class="text-[9px] font-bold text-biblo-moss uppercase tracking-widest">{{ $progress->progress_percentage ?? 0 }}%
-                Completed</span>
+                Selesai</span>
         </div>
 
         {{-- ADDED ID="NEXT" --}}
         <a href="{{ $nextUrl }}" id="next"
             class="group flex items-center gap-3 text-biblo-charcoal/60 hover:text-biblo-moss transition-all">
-            <span class="text-[11px] font-black uppercase tracking-[0.2em]">Next Page</span>
+            <span class="text-[11px] font-black uppercase tracking-[0.2em]">Halaman Berikutnya</span>
             <span class="text-xl transition-transform group-hover:translate-x-1">→</span>
         </a>
     </div>

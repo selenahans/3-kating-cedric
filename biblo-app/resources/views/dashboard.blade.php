@@ -1,4 +1,4 @@
-<x-app-layout title="Dashboard" active="home">
+<x-app-layout title="Beranda" active="home">
     {{-- Wrapper utama yang sudah fix alignment-nya --}}
     <div class="w-full space-y-8 md:space-y-10 lg:space-y-12">
 
@@ -18,8 +18,8 @@
                         class="bg-white/10 backdrop-blur-md rounded-2xl p-3 sm:p-4 flex items-center gap-3 border border-white/5 w-full sm:w-auto">
                         <span class="text-2xl">🔥</span>
                         <div>
-                            <p class="text-[10px] font-black uppercase tracking-widest text-white/40 leading-none">Day
-                                Streak</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-white/40 leading-none">Streak
+                                Harian</p>
                             <p class="text-xl font-bold">{{ $dayStreak }} Hari</p>
                         </div>
                     </div>
@@ -27,13 +27,13 @@
                         class="bg-white/10 backdrop-blur-md rounded-2xl p-3 sm:p-4 flex items-center gap-3 border border-white/5 w-full sm:w-auto">
                         {{-- Container Ikon Gambar --}}
                         <div class="w-8 h-8 flex-shrink-0">
-                            <img src="{{ $petImage ?? asset('images/boo-pet.webp') }}" alt="Pet Icon"
+                            <img src="{{ $petImage ?? asset('images/boo-pet.webp') }}" alt="Ikon Pet"
                                 class="w-full h-full object-contain">
                         </div>
 
                         <div>
                             <p class="text-[10px] font-black uppercase tracking-widest text-white/40 leading-none">
-                                Pet Status
+                                Status Pet
                             </p>
                             <p class="text-xl font-bold">{{ $currentPetName ?? 'Barnaby' }} (Lv. {{ $petLevel ?? 1 }})</p>
                         </div>
@@ -41,7 +41,7 @@
                 </div>
                 <div
                     class="absolute right-0 bottom-[-20px] w-40 md:w-60 opacity-20 select-none pointer-events-none z-0">
-                    <img src="{{ $petImage ?? asset('images/boo-pet.webp') }}" alt="{{ $currentPetName ?? 'Pet' }} Mascot"
+                    <img src="{{ $petImage ?? asset('images/boo-pet.webp') }}" alt="Maskot {{ $currentPetName ?? 'Pet' }}"
                         class="w-full h-auto object-contain">
                 </div>
             </div>
@@ -65,7 +65,7 @@
 
         {{-- TASK HARI INI --}}
         <div class="w-full overflow-hidden">
-            <h3 class="text-lg font-bold mb-6 text-biblo-charcoal">Task untuk Mencapai Level {{ $activeLevelGate ?? 3 }}</h3>
+            <h3 class="text-lg font-bold mb-6 text-biblo-charcoal">Tugas untuk Mencapai Level {{ $activeLevelGate ?? 3 }}</h3>
             <div class="flex gap-6 overflow-x-auto no-scrollbar pb-4">
                 @foreach($tasks as $task)
                     <div
@@ -81,12 +81,12 @@
                                     style="width: {{ ($task->percentage ?? 0) . '%' }}"></div>
                             </div>
                             <div class="flex justify-between text-[10px] font-bold mt-2 uppercase tracking-widest">
-                                <span class="text-biblo-charcoal/40">Progress</span>
+                                <span class="text-biblo-charcoal/40">Progres</span>
                                 <span class="text-biblo-moss">{{ round($task->percentage) }}%</span>
                             </div>
                             {{-- Tambahkan kembali Coin & XP Reward --}}
                             <p class="text-[10px] font-bold text-biblo-charcoal/30 mt-1 uppercase tracking-tighter">
-                                +{{ $task->coin_reward }} coin • +{{ $task->xp_reward }} XP
+                                +{{ $task->coin_reward }} koin • +{{ $task->xp_reward }} XP
                             </p>
                         </div>
                     </div>
@@ -133,7 +133,7 @@
                 </div>
             </div>
 
-            {{-- Continue Reading --}}
+            {{-- Lanjut Baca --}}
             <div
                 class="lg:col-span-8 bg-white rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] p-5 sm:p-6 lg:p-8 shadow-sm border border-biblo-greige/10">
                 <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
@@ -152,7 +152,7 @@
                         </div>
                         <div class="flex-1 w-full text-center md:text-left">
                             <span
-                                class="text-[10px] font-black text-biblo-moss uppercase tracking-widest">{{ $currentBook->category->name ?? 'Book' }}</span>
+                                class="text-[10px] font-black text-biblo-moss uppercase tracking-widest">{{ $currentBook->category->name ?? 'Buku' }}</span>
                             <h4 class="text-2xl font-extrabold text-biblo-charcoal mt-1">{{ $currentBook->title }}</h4>
                             <p class="text-sm text-biblo-charcoal/50 mb-6">{{ $currentBook->author }}</p>
 
@@ -189,9 +189,9 @@
         {{-- DYNAMIC RECOMMENDATIONS GRID --}}
         <section class="w-full">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-6 px-1 sm:px-2">
-                <h3 class="font-bold text-xl text-biblo-charcoal">Recommended For You</h3>
+                <h3 class="font-bold text-xl text-biblo-charcoal">Rekomendasi Untukmu</h3>
                 <a href="{{ route('explore') }}"
-                    class="text-xs font-black text-biblo-moss uppercase tracking-widest hover:underline">See All</a>
+                    class="text-xs font-black text-biblo-moss uppercase tracking-widest hover:underline">Lihat Semua</a>
             </div>
 
             {{-- Grid System: 2 kolom di HP, 4 kolom di Desktop --}}

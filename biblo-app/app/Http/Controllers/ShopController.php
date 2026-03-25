@@ -15,8 +15,9 @@ class ShopController extends Controller
     private const SKIN_CATALOG = [
         [
             'name' => 'Original',
+            'label' => 'Asli',
             'price' => 0,
-            'desc' => 'Default Biblo. Selalu gratis dan bisa digunakan kapan saja.',
+            'desc' => 'Tampilan default Biblo. Selalu gratis dan bisa digunakan kapan saja.',
             'icon' => '✨',
             'preview_color' => 'bg-biblo-oat',
             'image_path' => 'images/skins/biblo-ori.webp',
@@ -25,8 +26,9 @@ class ShopController extends Controller
         ],
         [
             'name' => 'Classic Oat',
+            'label' => 'Oat Klasik',
             'price' => 60,
-            'desc' => 'Warm oat tone Biblo palette.',
+            'desc' => 'Palet oat hangat khas Biblo.',
             'icon' => '🤍',
             'preview_color' => 'bg-biblo-oat',
             'image_path' => 'images/skins/biblo-oat.webp',
@@ -34,8 +36,9 @@ class ShopController extends Controller
         ],
         [
             'name' => 'Sage Bloom',
+            'label' => 'Mekar Sage',
             'price' => 75,
-            'desc' => 'Soft sage tone inspired by Biblo UI.',
+            'desc' => 'Nuansa sage lembut terinspirasi UI Biblo.',
             'icon' => '🌿',
             'preview_color' => 'bg-biblo-sage/30',
             'image_path' => 'images/skins/biblo-sage.webp',
@@ -43,8 +46,9 @@ class ShopController extends Controller
         ],
         [
             'name' => 'Moss Forest',
+            'label' => 'Hutan Moss',
             'price' => 85,
-            'desc' => 'Natural moss palette for a calm look.',
+            'desc' => 'Palet moss alami untuk tampilan menenangkan.',
             'icon' => '🌲',
             'preview_color' => 'bg-biblo-moss/30',
             'image_path' => 'images/skins/biblo-moss.webp',
@@ -52,8 +56,9 @@ class ShopController extends Controller
         ],
         [
             'name' => 'Clay Sunset',
+            'label' => 'Senja Clay',
             'price' => 90,
-            'desc' => 'Warm clay tone with sunset vibes.',
+            'desc' => 'Nuansa clay hangat dengan vibe senja.',
             'icon' => '🧡',
             'preview_color' => 'bg-biblo-clay/30',
             'image_path' => 'images/skins/biblo-clay.webp',
@@ -61,8 +66,9 @@ class ShopController extends Controller
         ],
         [
             'name' => 'Greige Mist',
+            'label' => 'Kabut Greige',
             'price' => 70,
-            'desc' => 'Neutral greige for minimalist style.',
+            'desc' => 'Greige netral untuk gaya minimalis.',
             'icon' => '☁️',
             'preview_color' => 'bg-biblo-greige/30',
             'image_path' => 'images/skins/biblo-greige.webp',
@@ -70,8 +76,9 @@ class ShopController extends Controller
         ],
         [
             'name' => 'Charcoal Night',
+            'label' => 'Malam Charcoal',
             'price' => 100,
-            'desc' => 'Deep charcoal style for bold mood.',
+            'desc' => 'Gaya charcoal pekat untuk mood berani.',
             'icon' => '🌙',
             'preview_color' => 'bg-biblo-charcoal/20',
             'image_path' => 'images/skins/biblo-charcoal.webp',
@@ -82,8 +89,9 @@ class ShopController extends Controller
     private const FOOD_CATALOG = [
         [
             'name' => 'Organic Apple',
+            'label' => 'Apel Organik',
             'price' => 10,
-            'desc' => 'Fresh and nutritious',
+            'desc' => 'Segar dan bergizi',
             'icon' => '🍎',
             'color' => 'bg-orange-50',
             'level_gate' => 1,
@@ -91,8 +99,9 @@ class ShopController extends Controller
         ],
         [
             'name' => 'Sweet Honey',
+            'label' => 'Madu Manis',
             'price' => 15,
-            'desc' => 'Golden liquid energy',
+            'desc' => 'Energi cair berwarna emas',
             'icon' => '🍯',
             'color' => 'bg-amber-50',
             'level_gate' => 3,
@@ -100,8 +109,9 @@ class ShopController extends Controller
         ],
         [
             'name' => 'Magical Berry',
+            'label' => 'Berry Ajaib',
             'price' => 30,
-            'desc' => 'Mystical purple berries',
+            'desc' => 'Buah berry ungu yang mistis',
             'icon' => '🫐',
             'color' => 'bg-indigo-50',
             'level_gate' => 6,
@@ -109,8 +119,9 @@ class ShopController extends Controller
         ],
         [
             'name' => 'Crispy Leaf',
+            'label' => 'Daun Renyah',
             'price' => 50,
-            'desc' => 'Ancient leaf essence',
+            'desc' => 'Esensi daun kuno',
             'icon' => '🌿',
             'color' => 'bg-emerald-50',
             'level_gate' => 10,
@@ -139,9 +150,10 @@ class ShopController extends Controller
 
                 return [
                     'name' => $item->name,
+                    'label' => (string) ($catalog['label'] ?? $item->name),
                     'price' => (int) $item->price,
                     'icon' => (string) ($catalog['icon'] ?? '🎨'),
-                    'desc' => (string) ($catalog['desc'] ?? 'Biblo skin palette.'),
+                    'desc' => (string) ($catalog['desc'] ?? 'Palet skin Biblo.'),
                     'color' => (string) ($catalog['preview_color'] ?? 'bg-biblo-oat'),
                     'image_path' => (string) ($catalog['image_path'] ?? 'images/skins/biblo-ori.webp'),
                     'owned' => $inventory !== null && (int) $inventory->quantity > 0,
@@ -162,9 +174,10 @@ class ShopController extends Controller
 
                 return [
                     'name' => $item->name,
+                    'label' => (string) ($catalog['label'] ?? $item->name),
                     'price' => (int) $item->price,
                     'icon' => (string) ($catalog['icon'] ?? '🍎'),
-                    'desc' => (string) ($catalog['desc'] ?? 'Pet food item.'),
+                    'desc' => (string) ($catalog['desc'] ?? 'Item makanan pet.'),
                     'color' => (string) ($catalog['color'] ?? 'bg-orange-50'),
                     'level_gate' => (int) $item->level_gate,
                     'quantity' => $inventory !== null ? (int) $inventory->quantity : 0,

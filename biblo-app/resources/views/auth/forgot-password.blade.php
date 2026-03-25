@@ -129,13 +129,13 @@
                 </a>
                 <div class="text-[11px] font-bold">
                     <span class="text-biblo-charcoal/40 font-medium">Ingat sandi?</span>
-                    <a href="{{ route('login') }}" class="text-biblo-charcoal font-bold hover:underline ml-1">Sign In</a>
+                    <a href="{{ route('login') }}" class="text-biblo-charcoal font-bold hover:underline ml-1">Masuk</a>
                 </div>
             </div>
 
             <div class="max-w-md mx-auto w-full flex-1 flex flex-col justify-center py-8">
                 <div class="mb-8 text-center md:text-left">
-                    <h1 class="text-4xl font-extrabold text-biblo-charcoal mb-2">Forgot Password</h1>
+                    <h1 class="text-4xl font-extrabold text-biblo-charcoal mb-2">Lupa Kata Sandi</h1>
                     <p class="text-biblo-charcoal/40 text-xs font-semibold leading-relaxed">
                         Masukkan emailmu untuk mendapatkan instruksi reset password melalui email.
                     </p>
@@ -150,7 +150,7 @@
                 <form method="POST" action="{{ route('password.email') }}" class="space-y-6">
                     @csrf
                     <div>
-                        <label>Email Address</label>
+                        <label>Alamat Email</label>
                         <input type="email" name="email" value="{{ old('email') }}" required placeholder="example@gmail.com" class="input-box bg-[#F8F9FA]">
                         @error('email') 
                             <span class="text-[10px] text-red-500 mt-2 block font-bold ml-1">{{ $message }}</span> 
@@ -159,7 +159,7 @@
 
                     <button type="submit" 
                         class="w-full bg-biblo-charcoal hover:bg-black text-white py-4 rounded-2xl font-extrabold text-sm shadow-xl transition-all transform hover:scale-[1.01] active:scale-[0.98]">
-                        Send Reset Link
+                        Kirim Tautan Reset
                     </button>
                 </form>
 
@@ -169,7 +169,7 @@
                 </div>
 
                 <a href="#" class="w-full text-center py-3.5 border border-gray-100 rounded-2xl text-[11px] font-bold text-biblo-charcoal/40 hover:bg-gray-50 transition-all transform hover:translate-y-[-1px]">
-                    Contact Support Center
+                    Hubungi Pusat Bantuan
                 </a>
             </div>
 

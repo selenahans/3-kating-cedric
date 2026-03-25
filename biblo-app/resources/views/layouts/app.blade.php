@@ -36,7 +36,7 @@
 
         <main class="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 transition-all duration-300">
             <div class="flex-1">
-                <x-topbar :title="$title ?? 'Explore'" />
+                <x-topbar :title="$title ?? 'Jelajah'" />
 
                 <main class="p-4 sm:p-6 md:p-8 lg:p-12 overflow-y-auto">
                     {{ $slot }}

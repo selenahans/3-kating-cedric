@@ -1,4 +1,4 @@
-<x-app-layout title="My Profile" active="profile">
+<x-app-layout title="Profil Saya" active="profile">
     <div class="min-h-screen bg-gradient-to-br from-biblo-oat/30 via-transparent to-biblo-greige/10">
         <div class="max-w-3xl mx-auto space-y-6 md:space-y-8 pb-32 px-3 sm:px-4 md:px-0 pt-2">
 
@@ -88,7 +88,7 @@
                             <p class="text-xs font-bold text-biblo-charcoal/60 uppercase tracking-widest">Halaman Hari Ini</p>
                         </div>
 
-                        {{-- Daily Streak --}}
+                        {{-- Streak Harian --}}
                         <div class="bg-gradient-to-br from-biblo-clay/10 to-biblo-moss/10 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-biblo-clay/20 hover:shadow-lg hover:scale-105 transition-all duration-300 group">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="text-3xl sm:text-4xl font-black text-biblo-charcoal group-hover:text-biblo-clay transition-colors">5</div>
@@ -97,7 +97,7 @@
                             <p class="text-xs font-bold text-biblo-charcoal/60 uppercase tracking-widest">Hari Berturut</p>
                         </div>
 
-                        {{-- Hours Spent --}}
+                        {{-- Jam Membaca --}}
                         <div class="bg-gradient-to-br from-biblo-oat/10 to-biblo-greige/10 rounded-2xl sm:rounded-3xl p-5 sm:p-6 border border-biblo-oat/30 hover:shadow-lg hover:scale-105 transition-all duration-300 group">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="text-3xl sm:text-4xl font-black text-biblo-charcoal group-hover:text-biblo-clay transition-colors">18.5</div>
@@ -159,7 +159,7 @@
                         </svg>
                     </a>
 
-                    {{-- Reading Goal Settings --}}
+                    {{-- Pengaturan Target Membaca --}}
                     <a href="#"
                         class="flex items-center justify-between p-5 sm:p-6 bg-white rounded-2xl sm:rounded-3xl border border-biblo-greige/20 hover:border-biblo-clay/50 hover:bg-biblo-clay/5 hover:shadow-md transition-all group">
                         <div class="flex items-center gap-4">

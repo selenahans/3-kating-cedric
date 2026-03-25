@@ -1,22 +1,22 @@
-﻿<x-app-layout title="My Pet" active="pet">
+﻿<x-app-layout title="Petku" active="pet">
     <div class="dashboard-page dashboard-mypet max-w-5xl mx-auto space-y-8 md:space-y-10">
 
         <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
             <div>
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-moss mb-1">Companion Status</p>
-                <h1 class="text-4xl font-extrabold text-biblo-charcoal tracking-tighter">Meet, <span
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-moss mb-1">Status Pendamping</p>
+                <h1 class="text-4xl font-extrabold text-biblo-charcoal tracking-tighter">Kenalan dengan <span
                     class="text-biblo-clay">{{ $currentPetName ?? 'Barnaby' }}</span></h1>
             </div>
             <div class="flex flex-wrap gap-3 w-full md:w-auto">
                 <a
                     class="bg-white border border-biblo-greige/30 px-5 sm:px-6 py-3 rounded-2xl shadow-sm flex items-center gap-2 hover:bg-biblo-oat transition-all group">
                     <span class="text-lg group-hover:rotate-12 transition-transform">📚</span>
-                    <span class="text-xs font-black text-biblo-charcoal uppercase tracking-widest">Library</span>
+                    <span class="text-xs font-black text-biblo-charcoal uppercase tracking-widest">Perpustakaan</span>
                 </a>
                 <div class="bg-white border border-biblo-greige/30 px-5 sm:px-6 py-3 rounded-2xl shadow-sm">
-                    <p class="text-[9px] font-black text-biblo-charcoal/40 uppercase tracking-widest">Growth Level</p>
+                    <p class="text-[9px] font-black text-biblo-charcoal/40 uppercase tracking-widest">Level Pertumbuhan</p>
                     <p class="text-xl font-extrabold text-biblo-charcoal">Lv. {{ $petLevel ?? 1 }} <span
-                            class="text-xs font-bold text-biblo-moss ml-1">{{ $growthTitle ?? 'Baby' }}</span></p>
+                            class="text-xs font-bold text-biblo-moss ml-1">{{ $growthTitle ?? 'Bayi' }}</span></p>
                 </div>
             </div>
         </header>
@@ -83,10 +83,10 @@
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
 
             <div class="lg:col-span-2 space-y-4">
-                <h3 class="text-lg font-extrabold text-biblo-charcoal px-2">Growth Quests</h3>
+                <h3 class="text-lg font-extrabold text-biblo-charcoal px-2">Misi Pertumbuhan</h3>
                 <div class="px-2">
                     <p class="text-[11px] font-bold text-biblo-charcoal/50">
-                        Gate Lv. {{ $nextGateLevel }} - <span id="gate-progress-text">{{ $gateCompletedCount }}/{{ $gateTotalCount }}</span> task selesai
+                        Gerbang Lv. {{ $nextGateLevel }} - <span id="gate-progress-text">{{ $gateCompletedCount }}/{{ $gateTotalCount }}</span> tugas selesai
                     </p>
                 </div>
 
@@ -99,16 +99,16 @@
                                 <div>
                                     <h4 class="font-bold text-sm text-biblo-charcoal">{{ $task['title'] }}</h4>
                                     <p class="text-[11px] text-biblo-charcoal/50 font-bold">{{ $task['description'] }}</p>
-                                    <p class="text-[10px] text-biblo-moss font-black mt-1">+{{ $task['coin_reward'] }} coins & +{{ $task['xp_reward'] }} xp</p>
+                                    <p class="text-[10px] text-biblo-moss font-black mt-1">+{{ $task['coin_reward'] }} koin & +{{ $task['xp_reward'] }} xp</p>
                                 </div>
                             </div>
 
                             @if($task['completed'])
-                                <div class="text-biblo-moss text-xs font-black self-start sm:self-auto" data-task-status>COMPLETED ✅</div>
+                                <div class="text-biblo-moss text-xs font-black self-start sm:self-auto" data-task-status>SELESAI ✅</div>
                             @else
                                 <button type="button" data-complete-task data-task-id="{{ $task['id'] }}"
                                     class="w-full sm:w-auto bg-biblo-charcoal text-white text-[10px] font-black px-6 py-2.5 rounded-xl hover:bg-biblo-moss transition-colors">
-                                    COMPLETE
+                                    SELESAIKAN
                                 </button>
                             @endif
                         </div>
@@ -124,9 +124,9 @@
                 class="bg-biblo-charcoal rounded-[28px] sm:rounded-[36px] lg:rounded-[45px] p-5 sm:p-6 lg:p-8 text-white relative overflow-hidden flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-extrabold">Pet Treats</h3>
+                        <h3 class="text-lg font-extrabold">Makanan Pet</h3>
                         <a class="bg-biblo-clay text-white p-2.5 rounded-xl hover:scale-110 transition-all shadow-lg shadow-biblo-clay/20 group"
-                            title="Buy more treats">
+                            title="Beli makanan lagi">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
                                 stroke-linejoin="round">
@@ -146,7 +146,7 @@
                                 @if(($food['qty'] ?? 0) <= 0) disabled @endif>
                                 <span class="text-2xl" @if(($food['qty'] ?? 0) <= 0) style="filter: grayscale(100%);" @endif>{{ $food['icon'] ?? '🍽️' }}</span>
                                 <span class="text-[10px] font-black uppercase tracking-tighter">{{ $food['name'] }}</span>
-                                <span class="text-[9px] text-biblo-sage font-bold">Qty: <span id="food-qty-{{ $food['id'] }}">{{ $food['qty'] ?? 0 }}</span></span>
+                                <span class="text-[9px] text-biblo-sage font-bold">Jumlah: <span id="food-qty-{{ $food['id'] }}">{{ $food['qty'] ?? 0 }}</span></span>
                             </button>
                         @empty
                             <div class="col-span-2 text-center text-[10px] font-bold text-white/60 py-4">
@@ -159,11 +159,11 @@
                 <div class="mt-8 pt-6 border-t border-white/10">
                     <p id="feed-status" class="text-[10px] font-bold text-biblo-sage/80 mb-3 min-h-[14px]"></p>
                     <p class="text-[10px] font-bold text-white/40 leading-relaxed italic mb-4">
-                        "Give {{ $currentPetName ?? 'your pet' }} treats earned from finishing book chapters to keep them happy!"
+                        "Beri {{ $currentPetName ?? 'pet kamu' }} makanan dari hadiah membaca supaya tetap bahagia!"
                     </p>
                     <a href="{{ route('shop') }}"
                         class="block text-center bg-white/5 hover:bg-white/10 border border-white/10 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all">
-                        Go to Shop
+                        Ke Toko
                     </a>
                 </div>
             </div>
@@ -456,16 +456,16 @@
                         const completeBadge = document.createElement('div');
                         completeBadge.className = 'text-biblo-moss text-xs font-black self-start sm:self-auto';
                         completeBadge.setAttribute('data-task-status', '1');
-                        completeBadge.textContent = 'COMPLETED ✅';
+                        completeBadge.textContent = 'SELESAI ✅';
                         button.replaceWith(completeBadge);
 
                         refreshGateProgress();
 
-                        feedStatusEl.textContent = payload.message || 'Task berhasil diselesaikan.';
+                        feedStatusEl.textContent = payload.message || 'Tugas berhasil diselesaikan.';
                         feedStatusEl.classList.remove('text-biblo-clay/90');
                         feedStatusEl.classList.add('text-biblo-sage/80');
                     } catch (error) {
-                        feedStatusEl.textContent = 'Terjadi error saat menyelesaikan task.';
+                        feedStatusEl.textContent = 'Terjadi kesalahan saat menyelesaikan tugas.';
                         feedStatusEl.classList.remove('text-biblo-sage/80');
                         feedStatusEl.classList.add('text-biblo-clay/90');
                         button.disabled = false;

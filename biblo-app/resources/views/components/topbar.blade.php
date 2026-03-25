@@ -1,5 +1,5 @@
 <header class="biblo-topbar">
-    <button type="button" class="icon-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+    <button type="button" class="icon-btn" onclick="toggleSidebar()" aria-label="Buka atau tutup sidebar">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -53,12 +53,12 @@
 
         <div class="user-nav-profile">
             <div class="text-right hidden sm:block">
-                <p class="text-xs font-bold text-[#3F453F] leading-none">{{ Auth::user()->name ?? 'Reader' }}</p>
+                <p class="text-xs font-bold text-[#3F453F] leading-none">{{ Auth::user()->name ?? 'Pembaca' }}</p>
                 <p class="text-[9px] font-black text-[#7E8F7A] uppercase tracking-tighter mt-1">Pet: {{ $currentPetName ?? 'boo' }}</p>
             </div>
             <div
                 class="w-9 h-9 rounded-xl bg-[#F2EFEA] border border-[#CFC8BE]/20 flex items-center justify-center text-sm">
-                <img src="{{ $currentPetImage ?? asset('images/boo-pet.webp') }}" alt="Pet Equipped" class="w-6 h-6 object-contain">
+                <img src="{{ $currentPetImage ?? asset('images/boo-pet.webp') }}" alt="Pet Aktif" class="w-6 h-6 object-contain">
             </div>
         </div>
 

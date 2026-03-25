@@ -15,7 +15,7 @@
                 <div class="flex flex-col gap-4">
                     <h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-charcoal/30">Layanan</h4>
                     <a href="#" class="text-sm font-semibold hover:text-biblo-moss transition-colors">Perpustakaan</a>
-                    <a href="#" class="text-sm font-semibold hover:text-biblo-moss transition-colors">Pet Shop</a>
+                    <a href="#" class="text-sm font-semibold hover:text-biblo-moss transition-colors">Toko Pet</a>
 
                 </div>
 
@@ -53,11 +53,11 @@
 
         <div class="pt-8 border-t border-biblo-greige/10 flex flex-col md:flex-row justify-between items-center gap-6">
             <p class="text-[11px] text-biblo-charcoal/40 font-bold uppercase tracking-widest text-center md:text-left">
-                © {{ date('Y') }} BIBLO INTERACTIVE. ALL RIGHTS RESERVED.
+                © {{ date('Y') }} BIBLO INTERACTIVE. SEMUA HAK DILINDUNGI.
             </p>
             <div class="flex gap-8 text-[11px] font-bold text-biblo-charcoal/40 uppercase tracking-widest">
-                <a href="#" class="hover:text-biblo-moss transition-colors">Privacy</a>
-                <a href="#" class="hover:text-biblo-moss transition-colors">Terms</a>
+                <a href="#" class="hover:text-biblo-moss transition-colors">Privasi</a>
+                <a href="#" class="hover:text-biblo-moss transition-colors">Syarat</a>
             </div>
         </div>
     </div>

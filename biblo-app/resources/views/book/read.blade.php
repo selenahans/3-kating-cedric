@@ -1,6 +1,6 @@
 @extends('layouts.read')
 
-@section('title', 'Reading: ' . $book->title)
+@section('title', 'Membaca: ' . $book->title)
 
 @section('content')
 
@@ -15,7 +15,7 @@
 
             {{-- Loading State --}}
             <div id="loading" class="text-center py-20 text-biblo-sage font-medium">
-                <div class="animate-pulse">Opening "{{ $book->title }}"...</div>
+                <div class="animate-pulse">Membuka "{{ $book->title }}"...</div>
             </div>
         </div>
     </main>
@@ -34,7 +34,7 @@
                 </button>
                 <button id="add-note-btn"
                     class="py-3 rounded-xl font-bold text-sm text-white bg-biblo-moss hover:bg-[#7e8f7a] transition-all">
-                    Tambah ke Notes
+                    Tambah ke Catatan
                 </button>
             </div>
 
@@ -45,11 +45,11 @@
         </div>
     </div>
 
-    {{-- Note Taking Modal (Hidden by default) --}}
+    {{-- Modal Catatan --}}
     <div id="note-modal"
         class="fixed inset-0 z-[100] bg-biblo-charcoal/40 backdrop-blur-sm hidden items-center justify-center px-4">
         <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl transform transition-all">
-            <h3 class="font-bold text-xl text-biblo-charcoal mb-4">Add a Note</h3>
+            <h3 class="font-bold text-xl text-biblo-charcoal mb-4">Tambah Catatan</h3>
 
             {{-- Shows the text they highlighted --}}
             <div class="bg-biblo-oat/50 p-4 rounded-xl mb-4 border border-biblo-greige/20">
@@ -57,7 +57,7 @@
             </div>
 
             <div class="mb-4">
-                <p class="text-sm font-semibold mb-2 text-biblo-charcoal">Highlight Color</p>
+                <p class="text-sm font-semibold mb-2 text-biblo-charcoal">Warna Highlight</p>
                 <div class="flex gap-2">
                     <button class="color-btn w-6 h-6 rounded-full bg-yellow-300 border-2 border-transparent"
                         data-color="#FDE047"></button>
@@ -71,14 +71,14 @@
             </div>
             <textarea id="note-input" rows="4"
                 class="w-full bg-biblo-cream/20 border border-biblo-greige/30 rounded-xl p-4 text-sm focus:ring-2 focus:ring-biblo-moss focus:border-biblo-moss transition-all"
-                placeholder="Write your thoughts here..."></textarea>
+                placeholder="Tulis catatanmu di sini..."></textarea>
 
             <div class="flex gap-3 mt-6">
                 <button id="cancel-note-btn"
-                    class="flex-1 py-3 rounded-xl font-bold text-sm text-biblo-charcoal bg-biblo-greige/20 hover:bg-biblo-greige/40 transition-all">Cancel</button>
+                    class="flex-1 py-3 rounded-xl font-bold text-sm text-biblo-charcoal bg-biblo-greige/20 hover:bg-biblo-greige/40 transition-all">Batal</button>
                 <button id="save-note-btn"
-                    class="flex-1 py-3 rounded-xl font-bold text-sm text-white bg-biblo-moss hover:bg-[#7e8f7a] transition-all">Save
-                    Note</button>
+                    class="flex-1 py-3 rounded-xl font-bold text-sm text-white bg-biblo-moss hover:bg-[#7e8f7a] transition-all">Simpan
+                    Catatan</button>
             </div>
         </div>
     </div>
@@ -556,7 +556,7 @@
                 }
 
                 if (progressText) {
-                    progressText.textContent = progress + "% Completed";
+                    progressText.textContent = progress + "% Selesai";
                 }
 
                 setReaderCurrentPage(currentTopbarPage);
@@ -578,7 +578,7 @@
                         note.cfi_range,
                         {},
                         (e) => {
-                            alert(note.note_content || "No note");
+                            alert(note.note_content || "Tidak ada catatan");
                         },
                         type,
                         {

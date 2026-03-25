@@ -17,7 +17,7 @@
         {{-- HEADER & FILTERS --}}
         <section class="space-y-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <h1 class="text-3xl font-extrabold tracking-tight text-biblo-charcoal">Explore</h1>
+                <h1 class="text-3xl font-extrabold tracking-tight text-biblo-charcoal">Jelajah</h1>
                 
                 <div class="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar pb-2 -mx-1 px-1">
                     <a href="{{ route('explore', array_merge($baseParams, ['filter' => 'all'])) }}"
@@ -57,7 +57,7 @@
                     @endif
                 </h3>
                 @if(!empty($activeCategory) || !empty($search) || ($filter ?? 'all') !== 'all')
-                    <a href="{{ route('explore') }}" class="text-xs font-bold text-biblo-moss uppercase tracking-widest hover:underline">Reset</a>
+                    <a href="{{ route('explore') }}" class="text-xs font-bold text-biblo-moss uppercase tracking-widest hover:underline">Atur Ulang</a>
                 @endif
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
@@ -86,7 +86,7 @@
 
             <div class="relative z-10">
                 <div class="mb-8 md:mb-10 text-center md:text-left">
-                    <h3 class="text-2xl font-bold text-white">Browse by Genre</h3>
+                    <h3 class="text-2xl font-bold text-white">Jelajah Berdasarkan Genre</h3>
                     <p class="text-white/40 text-sm">Temukan bacaan yang sesuai dengan minat spesifikmu.</p>
                 </div>
 
@@ -125,7 +125,7 @@
         {{-- POPULAR THIS WEEK --}}
         <section>
             <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-                <h3 class="font-bold text-xl">Popular This Week</h3>
+                <h3 class="font-bold text-xl">Populer Minggu Ini</h3>
                 <div class="hidden sm:flex gap-2">
                     <button class="p-2 border border-biblo-greige/20 rounded-xl hover:bg-white transition-all text-biblo-greige hover:text-biblo-charcoal">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -151,8 +151,8 @@
         {{-- NEW ARRIVALS --}}
         <section class="pb-10">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-                <h3 class="font-bold text-xl">New Arrivals</h3>
-                <a href="#" class="text-xs font-bold text-biblo-moss uppercase tracking-widest hover:underline">View More</a>
+                <h3 class="font-bold text-xl">Rilis Terbaru</h3>
+                <a href="#" class="text-xs font-bold text-biblo-moss uppercase tracking-widest hover:underline">Lihat Lainnya</a>
             </div>
             <div class="flex lg:grid lg:grid-cols-5 gap-4 sm:gap-6 overflow-x-auto no-scrollbar">
                 @foreach($newArrivals as $book)
@@ -160,7 +160,7 @@
                     <div class="aspect-[3/4] bg-biblo-greige rounded-[1.5rem] sm:rounded-[2rem] mb-3 sm:mb-4 overflow-hidden shadow-md group-hover:shadow-xl transition-all relative">
                         <img src="{{ asset($book->cover_image) }}" onerror="this.src='https://images.unsplash.com/photo-1543004218-ee141104308e?q=80&w=1974&auto=format&fit=crop'" class="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="{{ $book->title }}">
                         <div class="absolute bottom-4 left-4">
-                            <span class="bg-biblo-moss text-white text-[8px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">New</span>
+                            <span class="bg-biblo-moss text-white text-[8px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">Baru</span>
                         </div>
                     </div>
                     <h5 class="font-bold text-sm truncate px-2 text-biblo-charcoal" title="{{ $book->title }}">{{ $book->title }}</h5>

@@ -58,7 +58,7 @@
                         <rect x="3" y="14" width="7" height="7"></rect>
                     </svg>
                 </div>
-                <span class="sidebar-text text-sm font-bold">Home</span>
+                <span class="sidebar-text text-sm font-bold">Beranda</span>
             </a>
 
             {{-- Explore Link --}}
@@ -71,7 +71,7 @@
                         <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
                     </svg>
                 </div>
-                <span class="sidebar-text text-sm font-bold">Explore</span>
+                <span class="sidebar-text text-sm font-bold">Jelajah</span>
             </a>
 
             {{-- My Library Link --}}
@@ -84,7 +84,7 @@
                         <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
                     </svg>
                 </div>
-                <span class="sidebar-text text-sm font-bold">My Library</span>
+                <span class="sidebar-text text-sm font-bold">Perpustakaan</span>
             </a>
 
             {{-- Notes Link --}}
@@ -97,7 +97,7 @@
                         <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                     </svg>
                 </div>
-                <span class="sidebar-text text-sm font-bold">Notes</span>
+                <span class="sidebar-text text-sm font-bold">Catatan</span>
             </a>
 
             {{-- My Pet Link --}}
@@ -111,7 +111,7 @@
                         </path>
                     </svg>
                 </div>
-                <span class="sidebar-text text-sm font-bold">My Pet</span>
+                <span class="sidebar-text text-sm font-bold">Petku</span>
             </a>
         </nav>
     </div>
@@ -133,7 +133,7 @@
 
             <div class="sidebar-user-info flex-1 overflow-hidden flex items-center">
                 <p class="text-sm font-bold text-biblo-charcoal truncate group-hover:text-biblo-moss transition-colors leading-none">
-                    {{ Auth::user()->name ?? 'Reader' }}
+                    {{ Auth::user()->name ?? 'Pembaca' }}
                 </p>
             </div>
 

@@ -98,7 +98,7 @@
                     </div>
                 @endif
 
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-moss/60 mb-2">Welcome Back</p>
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-moss/60 mb-2">Selamat Datang Kembali</p>
                 <h1 class="text-4xl font-extrabold mb-3 tracking-tight">Selamat Datang</h1>
                 <p class="text-biblo-charcoal/60 mb-10 leading-relaxed font-medium">
                     Masuk untuk melanjutkan membaca koleksi buku favorit Anda.

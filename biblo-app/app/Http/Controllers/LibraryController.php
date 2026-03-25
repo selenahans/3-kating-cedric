@@ -120,9 +120,9 @@ class LibraryController extends Controller
 
             // Convert to achievement objects
             $milestoneLabels = [
-                100 => ['title' => 'Gold Finisher', 'icon' => '🥇', 'color' => 'from-amber-50 via-amber-100 to-amber-50'],
-                60 => ['title' => 'Silver Reader', 'icon' => '🥈', 'color' => 'from-blue-50 via-slate-100 to-blue-50'],
-                30 => ['title' => 'Bronze Reader', 'icon' => '🥉', 'color' => 'from-orange-100 via-amber-100 to-orange-100'],
+                100 => ['title' => 'Penamat Emas', 'icon' => '🥇', 'color' => 'from-amber-50 via-amber-100 to-amber-50'],
+                60 => ['title' => 'Pembaca Perak', 'icon' => '🥈', 'color' => 'from-blue-50 via-slate-100 to-blue-50'],
+                30 => ['title' => 'Pembaca Perunggu', 'icon' => '🥉', 'color' => 'from-orange-100 via-amber-100 to-orange-100'],
             ];
 
             foreach ($milestonesReached as $percentage => $unlockedAt) {
@@ -132,7 +132,7 @@ class LibraryController extends Controller
                     'title' => $label['title'],
                     'icon' => $label['icon'],
                     'color' => $label['color'],
-                    'description' => 'Finished reading ' . $book->title,
+                    'description' => 'Selesai membaca ' . $book->title,
                     'book_title' => $book->title,
                     'book_id' => $book->id,
                     'percentage' => $percentage,
@@ -177,7 +177,7 @@ class LibraryController extends Controller
                 'title' => $task->title,
                 'icon' => $icon,
                 'color' => 'from-biblo-sage to-biblo-moss',
-                'description' => 'Completed: ' . $task->description,
+                'description' => 'Selesai: ' . $task->description,
                 'coin_reward' => $task->coin_reward ?? 0,
                 'xp_reward' => $task->xp_reward ?? 0,
                 'unlocked_at' => Carbon::parse($completion->completed_at)->format('d M Y'),

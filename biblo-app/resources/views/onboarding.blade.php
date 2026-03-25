@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personalizing Your Journey - Biblo</title>
+    <title>Personalisasi Perjalananmu - Biblo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -172,7 +172,7 @@
 
     <p
         class="absolute bottom-8 left-0 right-0 text-center text-[10px] font-black text-biblo-charcoal/20 tracking-widest uppercase">
-        © 2026 BIBLO INTERACTIVE. ALL RIGHTS RESERVED.
+        © 2026 BIBLO INTERACTIVE. SELURUH HAK CIPTA DILINDUNGI.
     </p>
 
     <script>

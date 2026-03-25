@@ -3,7 +3,7 @@
 
         {{-- BREADCRUMBS --}}
         <nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-biblo-charcoal/40">
-            <a href="{{ route('explore') ?? '#' }}" class="hover:text-biblo-moss transition">Explore</a>
+            <a href="{{ route('explore') ?? '#' }}" class="hover:text-biblo-moss transition">Jelajah</a>
             <span>/</span>
             <span class="text-biblo-charcoal truncate max-w-[200px]">{{ $book->title }}</span>
         </nav>
@@ -25,7 +25,7 @@
                         {{-- Redirects to the reader view we built earlier --}}
                         <a href="{{ route('book.read', $book) }}"
                             class="w-full flex items-center justify-center bg-biblo-charcoal text-white py-5 rounded-[2rem] font-bold text-sm tracking-widest uppercase hover:bg-biblo-moss transition-all hover:shadow-xl active:scale-95 shadow-lg shadow-biblo-charcoal/20">
-                            Start Reading
+                            Mulai Membaca
                         </a>
                         @auth
                                         <form action="{{ route('book.toggle-library', $book->id) }}" method="POST" class="w-full">
@@ -36,9 +36,9 @@
                             {{ $isFavorite ? 'bg-biblo-moss text-white border-biblo-moss hover:bg-red-500 hover:border-red-500' : 'bg-white border-biblo-greige/30 text-biblo-charcoal hover:bg-biblo-oat' }}">
 
                                                 @if($isFavorite)
-                                                    <span>✓</span> In Library
+                                                    <span>✓</span> Di Perpustakaan
                                                 @else
-                                                    <span>🔖</span> Save to Library
+                                                    <span>🔖</span> Simpan ke Perpustakaan
                                                 @endif
 
                                             </button>
@@ -47,16 +47,16 @@
                             {{-- Guest users get a regular button that takes them to login --}}
                             <a href="{{ route('login') }}"
                                 class="w-full bg-white border border-biblo-greige/30 text-biblo-charcoal py-5 rounded-[2rem] font-bold text-sm tracking-widest uppercase hover:bg-biblo-oat transition-all flex items-center justify-center gap-2">
-                                <span>🔖</span> Save to Library
+                                <span>🔖</span> Simpan ke Perpustakaan
                             </a>
                         @endauth
 
                         @php
                             $bookProgress = (int) round($progress->progress_percentage ?? 0);
                             $defaultMilestones = [
-                                ['threshold' => 30, 'name' => 'Bronze Reader', 'icon' => '🥉', 'unlocked' => false, 'unlocked_at' => null],
-                                ['threshold' => 60, 'name' => 'Silver Reader', 'icon' => '🥈', 'unlocked' => false, 'unlocked_at' => null],
-                                ['threshold' => 100, 'name' => 'Gold Finisher', 'icon' => '🥇', 'unlocked' => false, 'unlocked_at' => null],
+                                ['threshold' => 30, 'name' => 'Pembaca Perunggu', 'icon' => '🥉', 'unlocked' => false, 'unlocked_at' => null],
+                                ['threshold' => 60, 'name' => 'Pembaca Perak', 'icon' => '🥈', 'unlocked' => false, 'unlocked_at' => null],
+                                ['threshold' => 100, 'name' => 'Penamat Emas', 'icon' => '🥇', 'unlocked' => false, 'unlocked_at' => null],
                             ];
                         @endphp
 
@@ -74,10 +74,10 @@
                                 <div class="rounded-2xl px-4 py-3 flex items-center justify-between {{ $achieved ? 'bg-biblo-moss/10 border border-biblo-moss/20' : 'bg-biblo-oat/40 border border-biblo-greige/20' }}">
                                     <div>
                                         <p class="text-sm font-bold {{ $achieved ? 'text-biblo-charcoal' : 'text-biblo-charcoal/60' }}">
-                                            {{ $milestone['name'] ?? 'Reader Badge' }} • Baca {{ $milestone['threshold'] ?? 0 }}%
+                                            {{ $milestone['name'] ?? 'Lencana Pembaca' }} • Baca {{ $milestone['threshold'] ?? 0 }}%
                                         </p>
                                         <p class="text-[10px] font-bold uppercase tracking-wider {{ $achieved ? 'text-biblo-moss' : 'text-biblo-charcoal/35' }}">
-                                            {{ $achieved ? 'Achievement Unlocked' : 'Belum Tercapai' }}
+                                            {{ $achieved ? 'Pencapaian Terbuka' : 'Belum Tercapai' }}
                                         </p>
                                         @if($achieved && !empty($milestone['unlocked_at']))
                                             <p class="text-[10px] font-semibold text-biblo-charcoal/50 mt-1">
@@ -99,11 +99,11 @@
                     <div class="flex items-center gap-3 mb-4">
                         <span
                             class="bg-[#9FAF9A]/20 text-[#3F453F] text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full">
-                            {{ $book->category->name ?? 'Uncategorized' }}
+                            {{ $book->category->name ?? 'Tanpa Kategori' }}
                         </span>
                         <div class="flex items-center gap-1 text-xs font-bold">
                             <span class="text-yellow-500">⭐</span> 4.8 <span
-                                class="text-biblo-charcoal/30">(Reviews)</span>
+                                class="text-biblo-charcoal/30">(Ulasan)</span>
                         </div>
                     </div>
                     <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight text-biblo-charcoal mb-4">
@@ -116,7 +116,7 @@
                 <div class="flex flex-wrap gap-4">
                     <div
                         class="bg-biblo-oat/50 border border-biblo-greige/10 p-6 rounded-[2.5rem] flex-1 min-w-[140px]">
-                        <p class="text-[10px] font-black text-biblo-charcoal/40 uppercase tracking-widest mb-1">Time</p>
+                        <p class="text-[10px] font-black text-biblo-charcoal/40 uppercase tracking-widest mb-1">Waktu</p>
                         {{-- Rough calculation: ~1.5 mins per page --}}
                         <p class="font-bold text-lg">{{ floor(($book->total_pages * 1.5) / 60) }}h
                             {{ round(($book->total_pages * 1.5) % 60) }}m
@@ -124,15 +124,15 @@
                     </div>
                     <div
                         class="bg-biblo-oat/50 border border-biblo-greige/10 p-6 rounded-[2.5rem] flex-1 min-w-[140px]">
-                        <p class="text-[10px] font-black text-biblo-charcoal/40 uppercase tracking-widest mb-1">Pages
+                        <p class="text-[10px] font-black text-biblo-charcoal/40 uppercase tracking-widest mb-1">Halaman
                         </p>
                         <p class="font-bold text-lg">{{ $book->total_pages }}</p>
                     </div>
                     <div
                         class="bg-biblo-oat/50 border border-biblo-greige/10 p-6 rounded-[2.5rem] flex-1 min-w-[140px]">
-                        <p class="text-[10px] font-black text-biblo-charcoal/40 uppercase tracking-widest mb-1">Language
+                        <p class="text-[10px] font-black text-biblo-charcoal/40 uppercase tracking-widest mb-1">Bahasa
                         </p>
-                        <p class="font-bold text-lg">English</p>
+                        <p class="font-bold text-lg">Indonesia</p>
                     </div>
                 </div>
 
@@ -140,20 +140,20 @@
                 <div class="relative overflow-hidden rounded-[40px] bg-[#3F453F] p-8 md:p-12 shadow-2xl">
                     <div
                         class="pointer-events-none absolute -right-6 -top-6 select-none text-9xl font-black text-white/[0.03]">
-                        ABOUT
+                        TENTANG
                     </div>
                     <div class="relative z-10 space-y-6">
-                        <h3 class="text-xl font-bold text-white">About This Book</h3>
+                        <h3 class="text-xl font-bold text-white">Tentang Buku Ini</h3>
                         <p class="text-white/70 leading-relaxed">
-                            {{ $book->description ?? 'Dive into the pages of ' . $book->title . ', a timeless piece by ' . $book->author . '. This book belongs to the ' . ($book->category->name ?? '') . ' genre and spans ' . $book->total_pages . ' pages of captivating content.' }}
+                            {{ $book->description ?? 'Mari tenggelam dalam halaman-halaman ' . $book->title . ', karya berkesan dari ' . $book->author . '. Buku ini berada dalam genre ' . ($book->category->name ?? '') . ' dan memiliki ' . $book->total_pages . ' halaman yang menarik untuk diikuti.' }}
                         </p>
                     </div>
                 </div>
 
                 {{-- TABLE OF CONTENTS (Static Placeholder) --}}
                 <div class="space-y-6">
-                    <h3 class="font-bold text-xl px-2 text-biblo-charcoal">Table of Contents</h3>
-                    <p class="text-sm text-biblo-charcoal/50 px-2">Preview available upon opening the book.</p>
+                    <h3 class="font-bold text-xl px-2 text-biblo-charcoal">Daftar Isi</h3>
+                    <p class="text-sm text-biblo-charcoal/50 px-2">Pratinjau tersedia setelah buku dibuka.</p>
 
                     <div class="space-y-3 opacity-50 pointer-events-none">
                         @forelse($previewChapters as $chapter)
@@ -165,7 +165,7 @@
                         @empty
                             {{-- Fallback if the XML parsing couldn't find the chapters --}}
                             <div class="p-6 bg-white border border-biblo-greige/10 rounded-[2rem] text-center">
-                                <span class="font-bold text-biblo-charcoal/50">Chapters will load in the reader.</span>
+                                <span class="font-bold text-biblo-charcoal/50">Bab akan dimuat di halaman baca.</span>
                             </div>
                         @endforelse
                     </div>
@@ -176,9 +176,9 @@
         {{-- RECOMMENDATIONS SECTION --}}
         <section class="pt-10">
             <div class="flex items-center justify-between mb-8">
-                <h3 class="font-bold text-2xl text-biblo-charcoal">You May Also Like</h3>
-                <a href="{{ route('explore') }}" class="text-xs font-bold text-biblo-moss uppercase tracking-widest hover:underline">See
-                    All</a>
+                <h3 class="font-bold text-2xl text-biblo-charcoal">Mungkin Kamu Juga Suka</h3>
+                <a href="{{ route('explore') }}" class="text-xs font-bold text-biblo-moss uppercase tracking-widest hover:underline">Lihat
+                    Semua</a>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8">
                 @foreach($recommendations as $rec)

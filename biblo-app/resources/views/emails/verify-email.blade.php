@@ -37,7 +37,7 @@
         <hr style="margin:30px 0; border:none; border-top:1px solid rgba(209, 209, 199, 0.4);">
 
         <p style="font-size:11px; color:#D1D1C7; text-align:center; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">
-            © {{ date('Y') }} Biblo. All rights reserved.
+            © {{ date('Y') }} Biblo. Semua hak dilindungi.
         </p>
 
     </div>

@@ -1,16 +1,16 @@
-<x-app-layout title="Pet Shop" active="pet">
+<x-app-layout title="Toko Pet" active="pet">
     <div class="max-w-5xl mx-auto space-y-8 md:space-y-10 pb-20">
         
         <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
             <div>
                 {{-- <p class="text-[10px] font-black uppercase tracking-[0.2em] text-biblo-moss mb-1">Marketplace</p> --}}
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-biblo-charcoal tracking-tighter">{{ $currentPetName ?? 'Pet' }}'s <span class="text-biblo-clay">Shop</span></h1>
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-biblo-charcoal tracking-tighter">Toko <span class="text-biblo-clay">{{ $currentPetName ?? 'Pet' }}</span></h1>
             </div>
             
             <div class="flex items-center gap-3 w-full md:w-auto">
                 <div class="bg-white border border-biblo-greige/30 px-4 sm:px-6 py-3 rounded-2xl shadow-sm flex items-center justify-between gap-3 w-full md:w-auto">
                     <div>
-                        <p class="text-[9px] font-black text-biblo-charcoal/40 uppercase tracking-widest leading-none">Your Balance</p>
+                        <p class="text-[9px] font-black text-biblo-charcoal/40 uppercase tracking-widest leading-none">Saldo Kamu</p>
                         <p class="text-xl font-extrabold text-biblo-charcoal">{{ $currentCoins ?? 0 }} <span class="text-sm font-bold text-biblo-clay">🪙</span></p>
                     </div>
                     <div class="w-[1px] h-8 bg-biblo-greige/20 mx-1"></div>
@@ -24,9 +24,8 @@
         <nav class="flex overflow-x-auto pb-2 gap-3 no-scrollbar">
             @php
                 $categories = [
-                    ['name' => 'Food', 'icon' => '🍎', 'id' => 'food'],
-                    ['name' => 'Accessories', 'icon' => '🎀', 'id' => 'accessories'],
-                    ['name' => 'Skins', 'icon' => '🎨', 'id' => 'skins'],
+                    ['name' => 'Makanan', 'icon' => '🍎', 'id' => 'food'],
+                    ['name' => 'Skin', 'icon' => '🎨', 'id' => 'skins'],
                 ];
             @endphp
 
@@ -53,18 +52,18 @@
                     </div>
 
                     <div class="space-y-1 mb-5 sm:mb-6">
-                        <h4 class="font-extrabold text-base sm:text-lg text-biblo-charcoal">{{ $item['name'] }}</h4>
+                        <h4 class="font-extrabold text-base sm:text-lg text-biblo-charcoal">{{ $item['label'] ?? $item['name'] }}</h4>
                         <p class="text-xs font-medium text-biblo-charcoal/50 leading-relaxed">
                             {{ $item['desc'] }}
                         </p>
                         @if($item['locked'])
                         <p class="text-[10px] font-black text-biblo-sage uppercase tracking-widest">
-                            🔒 Available at Level {{ $item['level_gate'] }}
+                            🔒 Tersedia di Level {{ $item['level_gate'] }}
                         </p>
                         @else
                         @if($item['quantity'] > 0)
                         <p class="text-[10px] font-bold text-biblo-moss">
-                            Owned: {{ $item['quantity'] }}
+                            Dimiliki: {{ $item['quantity'] }}
                         </p>
                         @endif
                         @endif
@@ -76,59 +75,15 @@
                             <span class="text-xs">🪙</span>
                         </div>
                         
-                        <button class="purchase-btn {{ $item['locked'] ? 'bg-biblo-charcoal/20 text-biblo-charcoal/50 cursor-not-allowed' : 'bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal' }} text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}" data-item-price="{{ $item['price'] }}" {{ $item['locked'] ? 'disabled' : '' }}>
-                            {{ $item['locked'] ? 'Locked' : 'Purchase' }}
+                        <button class="purchase-btn {{ $item['locked'] ? 'bg-biblo-charcoal/20 text-biblo-charcoal/50 cursor-not-allowed' : 'bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal' }} text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}" data-item-label="{{ $item['label'] ?? $item['name'] }}" data-item-price="{{ $item['price'] }}" {{ $item['locked'] ? 'disabled' : '' }}>
+                            {{ $item['locked'] ? 'Terkunci' : 'Beli' }}
                         </button>
                     </div>
                 </div>
             </div>
             @empty
-            <p class="text-center col-span-full text-biblo-charcoal/50">No food items available yet.</p>
+            <p class="text-center col-span-full text-biblo-charcoal/50">Belum ada item makanan.</p>
             @endforelse
-        </section>
-
-        {{-- ACCESSORIES SECTION --}}
-        <section id="accessories-section" class="category-section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" style="display: none;">
-            @php
-                $accessoriesItems = [
-                    ['name' => 'Golden Crown', 'price' => 50, 'icon' => '👑', 'desc' => 'A majestic crown for royalty vibes.', 'color' => 'bg-yellow-50'],
-                    ['name' => 'Flower Crown', 'price' => 35, 'icon' => '🌸', 'desc' => 'Delicate flowers for elegance.', 'color' => 'bg-pink-50'],
-                    ['name' => 'Sparkly Glasses', 'price' => 40, 'icon' => '✨', 'desc' => 'Glamorous glasses that shine.', 'color' => 'bg-purple-50'],
-                    ['name' => 'Rainbow Ribbon', 'price' => 25, 'icon' => '🎀', 'desc' => 'Colorful ribbon for style.', 'color' => 'bg-rose-50'],
-                    ['name' => 'Star Hairpin', 'price' => 30, 'icon' => '⭐', 'desc' => 'Sparkle like a star.', 'color' => 'bg-cyan-50'],
-                    ['name' => 'Moon Pendant', 'price' => 45, 'icon' => '🌙', 'desc' => 'Sleek moon-shaped pendant.', 'color' => 'bg-indigo-50'],
-                ];
-            @endphp
-
-            @foreach($accessoriesItems as $item)
-            <div class="bg-white border border-biblo-greige/20 rounded-[28px] sm:rounded-[40px] p-5 sm:p-6 hover:shadow-2xl hover:shadow-biblo-charcoal/5 transition-all group relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-32 h-32 {{ $item['color'] }} rounded-full blur-3xl opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
-
-                <div class="relative z-10">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 {{ $item['color'] }} rounded-2xl sm:rounded-3xl flex items-center justify-center text-3xl sm:text-4xl mb-5 sm:mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform">
-                        {{ $item['icon'] }}
-                    </div>
-
-                    <div class="space-y-1 mb-5 sm:mb-6">
-                        <h4 class="font-extrabold text-base sm:text-lg text-biblo-charcoal">{{ $item['name'] }}</h4>
-                        <p class="text-xs font-medium text-biblo-charcoal/50 leading-relaxed">
-                            {{ $item['desc'] }}
-                        </p>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-4 border-t border-biblo-greige/10">
-                        <div class="flex items-center gap-1">
-                            <span class="text-sm font-black text-biblo-charcoal">{{ $item['price'] }}</span>
-                            <span class="text-xs">🪙</span>
-                        </div>
-                        
-                        <button class="purchase-btn bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}" data-item-price="{{ $item['price'] }}">
-                            Purchase
-                        </button>
-                    </div>
-                </div>
-            </div>
-            @endforeach
         </section>
 
         {{-- SKINS SECTION --}}
@@ -143,7 +98,7 @@
                     </div>
 
                     <div class="space-y-1 mb-5 sm:mb-6">
-                        <h4 class="font-extrabold text-base sm:text-lg text-biblo-charcoal">{{ $item['name'] }}</h4>
+                        <h4 class="font-extrabold text-base sm:text-lg text-biblo-charcoal">{{ $item['label'] ?? $item['name'] }}</h4>
                         <p class="text-xs font-medium text-biblo-charcoal/50 leading-relaxed">
                             {{ $item['desc'] }}
                         </p>
@@ -157,15 +112,15 @@
 
                         @if(!empty($item['equipped']))
                             <button class="bg-biblo-moss/20 text-biblo-moss text-[10px] font-black px-5 py-2.5 rounded-xl cursor-default uppercase tracking-widest">
-                                Equipped
+                                Dipakai
                             </button>
                         @elseif(!empty($item['owned']))
-                            <button class="equip-skin-btn bg-biblo-charcoal hover:bg-biblo-moss text-white text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}">
-                                Equip
+                            <button class="equip-skin-btn bg-biblo-charcoal hover:bg-biblo-moss text-white text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}" data-item-label="{{ $item['label'] ?? $item['name'] }}">
+                                Pakai
                             </button>
                         @else
-                            <button class="purchase-btn bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}" data-item-price="{{ $item['price'] }}">
-                                Purchase
+                            <button class="purchase-btn bg-biblo-oat hover:bg-biblo-clay hover:text-white text-biblo-charcoal text-[10px] font-black px-5 py-2.5 rounded-xl transition-all uppercase tracking-widest" data-item-name="{{ $item['name'] }}" data-item-label="{{ $item['label'] ?? $item['name'] }}" data-item-price="{{ $item['price'] }}">
+                                Beli
                             </button>
                         @endif
                     </div>
@@ -181,7 +136,7 @@
     <div id="purchase-modal"
         class="fixed inset-0 z-[99] bg-biblo-charcoal/30 backdrop-blur-sm hidden items-center justify-center px-4">
         <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl transform transition-all">
-            <h3 class="font-extrabold text-2xl text-biblo-charcoal mb-2" id="modal-item-name">Item</h3>
+            <h3 class="font-extrabold text-2xl text-biblo-charcoal mb-2" id="modal-item-name">Produk</h3>
             <p class="text-biblo-charcoal/60 mb-6 text-sm">Apakah kamu yakin ingin membeli item ini?</p>
             
             <div class="bg-biblo-oat/20 rounded-2xl p-4 mb-6 flex items-center justify-between">
@@ -245,20 +200,20 @@
 
                             const data = await response.json();
                             if (!response.ok || !data.success) {
-                                alert(data.message || 'Gagal equip skin.');
+                                alert(data.message || 'Gagal memakai skin.');
                                 return;
                             }
 
                             window.location.reload();
                         } catch (error) {
                             console.error('Equip skin error:', error);
-                            alert('Terjadi kesalahan saat equip skin.');
+                            alert('Terjadi kesalahan saat memakai skin.');
                         }
                     });
                 });
             };
 
-            // Tab switching
+                    // Perpindahan kategori
             categoryBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     const category = this.dataset.category;
@@ -289,16 +244,18 @@
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     const itemName = this.dataset.itemName;
+                    const itemLabel = this.dataset.itemLabel || itemName;
                     const itemPrice = parseInt(this.dataset.itemPrice);
                     const currentCoinsText = yourBalanceEl?.textContent || '0';
                     const currentCoins = parseInt(currentCoinsText.match(/\d+/)?.[0] || 0);
 
                     pendingPurchase = {
                         itemName: itemName,
+                        itemLabel: itemLabel,
                         itemPrice: itemPrice
                     };
 
-                    modalItemName.textContent = itemName;
+                    modalItemName.textContent = itemLabel;
                     modalItemPrice.textContent = itemPrice + ' 🪙';
                     modalCurrentCoins.textContent = currentCoins + ' 🪙';
                     modalErrorMessage.classList.add('hidden');
