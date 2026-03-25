@@ -1,4 +1,4 @@
-<x-app-layout title="Edit Profile" active="profile">
+<x-app-layout title="Edit Profil" active="profile">
     <div class="min-h-screen bg-gradient-to-br from-biblo-oat/30 via-transparent to-biblo-greige/10">
         <div class="max-w-3xl mx-auto space-y-6 md:space-y-8 pb-32 px-3 sm:px-4 md:px-0 pt-2">
             

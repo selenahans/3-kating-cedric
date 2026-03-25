@@ -18,7 +18,7 @@
             <div class="flex items-center gap-6 p-5 bg-biblo-oat/20 rounded-2xl border border-biblo-oat/40">
                 <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border-3 border-biblo-oat bg-biblo-oat/50 flex items-center justify-center font-bold text-2xl text-biblo-charcoal/40">
                     @if($user->photo)
-                        <img src="{{ asset('storage/' . $user->photo) }}" class="w-full h-full object-cover" alt="Profile">
+                        <img src="{{ asset('storage/' . $user->photo) }}" class="w-full h-full object-cover" alt="Profil">
                     @else
                         {{ substr($user->name, 0, 1) }}
                     @endif
@@ -29,7 +29,7 @@
                         <span class="px-4 py-2 bg-biblo-moss text-white font-bold rounded-xl hover:bg-biblo-sage transition-colors text-sm">Pilih Foto</span>
                     </label>
                     <input id="photo" name="photo" type="file" accept="image/png, image/jpeg, image/jpg, image/webp" class="hidden" />
-                    <p class="text-xs text-biblo-charcoal/50 mt-2">PNG, JPG, JPEG atau WebP (Max 2MB)</p>
+                    <p class="text-xs text-biblo-charcoal/50 mt-2">PNG, JPG, JPEG atau WebP (Maks. 2MB)</p>
                     <x-input-error class="mt-2" :messages="$errors->get('photo')" />
                 </div>
             </div>

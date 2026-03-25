@@ -37,7 +37,7 @@
 
                 <div class="relative w-64 h-64 md:w-80 md:h-80 organic-shape bg-white/5 backdrop-blur-sm flex items-center justify-center shadow-2xl overflow-hidden border border-white/10">
                     {{-- Ganti src ini dengan image 404-mu nanti --}}
-                    <img src="{{ asset('images/boo-error.webp') }}" alt="Page Not Found"
+                    <img src="{{ asset('images/boo-error.webp') }}" alt="Halaman Tidak Ditemukan"
                         class="w-full h-full object-contain p-12 animate-float-slow">
                 </div>
             </div>
@@ -60,7 +60,7 @@
 
     {{-- Footer Simple --}}
     <footer class="py-12 text-center text-biblo-charcoal/30 text-sm font-medium">
-        &copy; {{ date('Y') }} Biblo — Reading Companion.
+        &copy; {{ date('Y') }} Biblo — Teman Membaca.
     </footer>
 
 </body>

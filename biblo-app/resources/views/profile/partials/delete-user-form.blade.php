@@ -36,7 +36,7 @@
                 <ul class="list-disc list-inside space-y-2 ml-2">
                     <li>{{ __('Menghapus profil dan semua data pribadi Anda') }}</li>
                     <li>{{ __('Menghapus semua catatan membaca dan highlight') }}</li>
-                    <li>{{ __('Menghapus pet dan inventory Anda') }}</li>
+                    <li>{{ __('Menghapus pet dan inventaris Anda') }}</li>
                     <li>{{ __('Tidak bisa dipulihkan lagi') }}</li>
                 </ul>
             </div>

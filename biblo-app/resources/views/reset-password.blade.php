@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Password - Biblo</title>
+    <title>Atur Ulang Kata Sandi - Biblo</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -61,7 +61,7 @@
         <div class="flex flex-col items-center mb-8 text-center">
             <h2 class="text-3xl font-extrabold tracking-tighter text-biblo-moss mb-4">Biblo.</h2>
             <h1 class="text-2xl font-extrabold tracking-tight">
-                Reset Password
+                Atur Ulang Kata Sandi
             </h1>
             <p class="text-sm font-medium text-biblo-charcoal/60 mt-2">
                 Buat password baru untuk akun Anda dan kembali membaca.
@@ -96,7 +96,7 @@
             </div>
 
             <div>
-                <label class="block text-[11px] font-black uppercase tracking-widest text-biblo-charcoal/60 mb-2 ml-1">Password Baru</label>
+                <label class="block text-[11px] font-black uppercase tracking-widest text-biblo-charcoal/60 mb-2 ml-1">Kata Sandi Baru</label>
                 <input
                     type="password"
                     name="password"
@@ -106,7 +106,7 @@
             </div>
 
             <div>
-                <label class="block text-[11px] font-black uppercase tracking-widest text-biblo-charcoal/60 mb-2 ml-1">Konfirmasi Password</label>
+                <label class="block text-[11px] font-black uppercase tracking-widest text-biblo-charcoal/60 mb-2 ml-1">Konfirmasi Kata Sandi</label>
                 <input
                     type="password"
                     name="password_confirmation"
@@ -118,12 +118,12 @@
             <button
                 type="submit"
                 class="w-full bg-biblo-charcoal text-white py-5 mt-4 rounded-[2rem] font-bold text-sm tracking-widest uppercase hover:bg-biblo-moss transition-all hover:shadow-xl active:scale-95 shadow-lg shadow-biblo-charcoal/20">
-                Reset Password
+                Atur Ulang Kata Sandi
             </button>
         </form>
 
         <p class="text-center text-sm font-medium text-biblo-charcoal/60 mt-8">
-            Sudah ingat password?
+            Sudah ingat kata sandi?
             <a href="{{ route('login') }}" class="font-extrabold text-biblo-charcoal hover:text-biblo-moss transition-colors">
                 Masuk di sini
             </a>
