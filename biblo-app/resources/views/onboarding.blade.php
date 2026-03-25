@@ -82,8 +82,9 @@
                     membaca. Siapa namanya?</p>
 
                 <div class="max-w-xs mx-auto">
-                    <input type="text" name="pet_name" placeholder="Panggil dia..."
+                    <input id="pet-name-input" type="text" name="pet_name" placeholder="Panggil dia..."
                         class="w-full bg-white border-2 border-gray-100 rounded-2xl px-6 py-4 text-center font-bold focus:outline-none focus:border-biblo-moss transition-all shadow-sm text-lg">
+                    <p id="pet-name-error" class="hidden mt-3 text-xs font-bold text-red-500">Nama pet wajib diisi dulu ya.</p>
                 </div>
 
                 <button type="button" onclick="nextStep(2)"
@@ -155,15 +156,15 @@
                         </label>
                     @endforeach
                 </div>
-            </div>
 
-            <div class="flex items-center justify-center gap-4 mt-12">
-                <button type="button" onclick="nextStep(2)"
-                    class="text-biblo-charcoal/40 font-bold text-sm hover:text-biblo-charcoal transition">Kembali</button>
-                <button type="submit"
-                    class="bg-biblo-moss text-white px-10 py-4 rounded-2xl font-extrabold shadow-xl hover:bg-biblo-charcoal transition-all">
-                    Mulai Petualangan!
-                </button>
+                <div class="flex items-center justify-center gap-4 mt-12">
+                    <button type="button" onclick="nextStep(2)"
+                        class="text-biblo-charcoal/40 font-bold text-sm hover:text-biblo-charcoal transition">Kembali</button>
+                    <button type="submit"
+                        class="bg-biblo-moss text-white px-10 py-4 rounded-2xl font-extrabold shadow-xl hover:bg-biblo-charcoal transition-all">
+                        Mulai Petualangan!
+                    </button>
+                </div>
             </div>
     </div>
     </form>
@@ -176,6 +177,28 @@
 
     <script>
         function nextStep(step) {
+            const petNameInput = document.getElementById('pet-name-input');
+            const petNameError = document.getElementById('pet-name-error');
+
+            if (step === 2 && petNameInput) {
+                const nameValue = petNameInput.value.trim();
+                if (nameValue.length === 0) {
+                    petNameInput.classList.add('border-red-300');
+                    petNameInput.classList.remove('border-gray-100');
+                    if (petNameError) {
+                        petNameError.classList.remove('hidden');
+                    }
+                    petNameInput.focus();
+                    return;
+                }
+
+                petNameInput.classList.remove('border-red-300');
+                petNameInput.classList.add('border-gray-100');
+                if (petNameError) {
+                    petNameError.classList.add('hidden');
+                }
+            }
+
             // Sembunyikan semua step
             document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
             // Tampilkan step tujuan
