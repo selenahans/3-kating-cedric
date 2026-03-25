@@ -35,7 +35,7 @@
         <div class="user-nav-profile">
             <div class="text-right hidden sm:block">
                 <p class="text-xs font-bold text-[#3F453F] leading-none">{{ Auth::user()->name ?? 'Reader' }}</p>
-                <p class="text-[9px] font-black text-[#7E8F7A] uppercase tracking-tighter mt-1">Pet: Barnaby</p>
+                <p class="text-[9px] font-black text-[#7E8F7A] uppercase tracking-tighter mt-1">Pet: {{ $currentPetName ?? 'boo' }}</p>
             </div>
             <div
                 class="w-9 h-9 rounded-xl bg-[#F2EFEA] border border-[#CFC8BE]/20 flex items-center justify-center text-sm">
