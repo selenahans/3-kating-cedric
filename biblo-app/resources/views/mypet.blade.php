@@ -1,5 +1,5 @@
 ﻿<x-app-layout title="My Pet" active="pet">
-    <div class="max-w-5xl mx-auto space-y-8 md:space-y-10">
+    <div class="dashboard-page dashboard-mypet max-w-5xl mx-auto space-y-8 md:space-y-10">
 
         <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
             <div>

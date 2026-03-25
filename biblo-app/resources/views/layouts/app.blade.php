@@ -8,6 +8,16 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
+    <script>
+        (function () {
+            const stored = localStorage.getItem('biblo-theme');
+            const preferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            if ((stored || preferred) === 'dark') {
+                document.documentElement.classList.add('theme-dark');
+            }
+        })();
+    </script>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

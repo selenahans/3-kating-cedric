@@ -1,5 +1,5 @@
 <x-app-layout title="My Library" active="library">
-    <div class="space-y-8 md:space-y-10 lg:space-y-12">
+    <div class="dashboard-page dashboard-library space-y-8 md:space-y-10 lg:space-y-12">
 
         {{-- TOP STATS SECTION --}}
         <section class="grid grid-cols-1 md:grid-cols-3 gap-6">

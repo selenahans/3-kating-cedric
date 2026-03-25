@@ -22,6 +22,46 @@
     @apply flex items-center gap-3 pl-4 border-l border-[#CFC8BE]/30 ml-4;
 }
 
+.theme-toggle .theme-icon-moon {
+    @apply hidden;
+}
+
+.theme-dark .theme-toggle .theme-icon-sun {
+    @apply hidden;
+}
+
+.theme-dark .theme-toggle .theme-icon-moon {
+    @apply block;
+}
+
+.theme-dark .biblo-topbar {
+    @apply bg-[#2F3531]/80 border-[#475247]/40 text-[#F2EFEA];
+}
+
+.theme-dark .search-input {
+    @apply bg-[#3A433D]/70 text-[#F2EFEA] placeholder:text-[#CFC8BE]/70 focus:ring-[#9FAF9A]/40;
+}
+
+.theme-dark .icon-btn {
+    @apply bg-[#3A433D]/70 text-[#F2EFEA]/80 hover:bg-[#4A564D] hover:text-[#F2EFEA];
+}
+
+.theme-dark .notification-dot {
+    @apply border-[#2F3531];
+}
+
+.theme-dark .user-nav-profile {
+    @apply border-[#556358]/40;
+}
+
+.theme-dark .user-nav-profile p:first-child {
+    color: #f2efea;
+}
+
+.theme-dark .user-nav-profile p:last-child {
+    color: #b9c5b5;
+}
+
 @media (max-width: 1023px) {
     .biblo-topbar {
         @apply px-4 py-3 rounded-[28px] gap-3;

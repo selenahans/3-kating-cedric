@@ -23,10 +23,10 @@
                 @click="sidebarOpen = false"> <svg ...></svg>
             </button>
         </div> --}}
-        <div class="sidebar-brand px-4 flex items-center justify-between h-16 transition-all duration-300">
+        <div class="sidebar-brand px-4 flex items-center justify-between lg:justify-center h-16 transition-all duration-300">
             <a href="/" class="sidebar-brand-logo flex items-center justify-center">
                 <img src="{{ asset('images/logo/biblo.webp') }}"
-                    class="logo-full h-8 w-auto transition-all duration-300" alt="Biblo Full Logo">
+                    class="logo-full h-9 w-auto transition-all duration-300" alt="Biblo Full Logo">
 
                 <div
                     class="logo-mini w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden shadow-sm transition-all duration-300">
@@ -131,15 +131,10 @@
                 @endif
             </div>
 
-            <div class="sidebar-user-info flex-1 overflow-hidden">
-                <p class="text-sm font-bold text-biblo-charcoal truncate group-hover:text-biblo-moss transition-colors">
+            <div class="sidebar-user-info flex-1 overflow-hidden flex items-center">
+                <p class="text-sm font-bold text-biblo-charcoal truncate group-hover:text-biblo-moss transition-colors leading-none">
                     {{ Auth::user()->name ?? 'Reader' }}
                 </p>
-                <div class="flex items-center gap-1">
-                    <p class="text-[10px] font-black text-biblo-sage uppercase tracking-tighter">Gold Reader</p>
-                    {{-- Optional: Add a tiny chevron to indicate it's a link --}}
-                    <span class="text-[8px] opacity-0 group-hover:opacity-100 transition-opacity">→</span>
-                </div>
             </div>
 
         </a>

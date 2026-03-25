@@ -71,6 +71,54 @@ body.sidebar-mobile-open .biblo-sidebar {
     @apply w-64 flex-shrink-0 hidden lg:block;
 }
 
+.theme-dark .biblo-sidebar {
+    @apply bg-[#262d28] border-[#4b584f]/60;
+}
+
+.theme-dark .sidebar-label {
+    color: #b7c3b4;
+}
+
+.theme-dark .sidebar-link-inactive {
+    color: #d6ddd3;
+}
+
+.theme-dark .sidebar-link-inactive:hover {
+    background: #374039;
+    color: #f2efea;
+}
+
+.theme-dark .sidebar-link-inactive .sidebar-icon {
+    color: #95ab93;
+}
+
+.theme-dark .sidebar-link-active {
+    background: #6f8a6b;
+    color: #f2efea;
+    box-shadow: 0 8px 20px rgba(19, 24, 21, 0.35);
+}
+
+.theme-dark .sidebar-user-card {
+    background: #313a34;
+    border-color: #49564d;
+}
+
+.theme-dark .sidebar-user-info p:first-child {
+    color: #f2efea !important;
+}
+
+.theme-dark .sidebar-user-info p:last-child {
+    color: #b7c3b4 !important;
+}
+
+.theme-dark .btn-logout {
+    color: #ff9e9e;
+}
+
+.theme-dark .btn-logout:hover {
+    background: rgba(255, 107, 107, 0.12);
+}
+
 @media (min-width: 1024px) {
     body.sidebar-desktop-collapsed .biblo-sidebar {
         width: 5.5rem;

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="max-w-4xl mx-auto space-y-6 sm:space-y-8">
+    <div class="dashboard-page dashboard-notification max-w-4xl mx-auto space-y-6 sm:space-y-8">
         
         <section class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
