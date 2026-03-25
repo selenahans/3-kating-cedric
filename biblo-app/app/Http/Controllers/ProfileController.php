@@ -139,6 +139,20 @@ class ProfileController extends Controller
         $user = $request->user();
         $validated = $request->validated();
 
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            // Delete old photo if exists
+            if (!empty($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
+            }
+            
+            // Store new photo
+            $validated['photo'] = $request->file('photo')->store('profile-photos', 'public');
+        } else {
+            // Remove photo from validated data if not uploading
+            unset($validated['photo']);
+        }
+
         $user->fill($validated);
 
         if ($user->isDirty('email')) {
