@@ -25,15 +25,15 @@
     <div class="absolute top-10 left-10 w-32 h-32 bg-biblo-sage/20 rounded-full blur-3xl"></div>
     <div class="absolute bottom-10 right-20 w-48 h-48 bg-biblo-clay/10 rounded-full blur-3xl"></div>
 
-    <div class="relative flex flex-col items-center group mb-8 md:mb-20">
+    <div id="pet-showcase" class="relative flex flex-col items-center group mb-8 md:mb-20">
         <div class="absolute -bottom-2 w-24 h-4 bg-biblo-charcoal/10 rounded-[100%] blur-md group-hover:scale-110 transition-transform duration-700"></div>
 
-        <div class="w-32 h-32 md:w-40 md:h-40 animate-bounce-slow cursor-pointer hover:scale-110 transition-transform duration-500 flex items-center justify-center relative z-10">
+        <div id="pet-avatar" class="w-32 h-32 md:w-40 md:h-40 animate-bounce-slow cursor-pointer hover:scale-110 transition-transform duration-500 flex items-center justify-center relative z-10">
             <img src="{{ $petImage ?? asset('images/boo-pet.webp') }}" alt="{{ $currentPetName ?? 'Pet' }}" class="w-full h-full object-contain">
         </div>
 
-        <div class="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/80 backdrop-blur-md border border-white/50 px-3 sm:px-4 py-1.5 rounded-2xl shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-            <p class="text-[9px] sm:text-[10px] font-black text-biblo-charcoal uppercase tracking-tighter">
+        <div id="pet-speech-bubble" class="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap bg-white/80 backdrop-blur-md border border-white/50 px-3 sm:px-4 py-1.5 rounded-2xl shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            <p id="pet-speech-text" class="text-[9px] sm:text-[10px] font-black text-biblo-charcoal uppercase tracking-tighter">
                 "Sudah baca apa hari ini?"
             </p>
             <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white/80 rotate-45 border-r border-b border-white/50"></div>
@@ -171,6 +171,42 @@
         </section>
     </div>
 
+    <style>
+        #pet-avatar.is-eating {
+            transform: scale(1.12) rotate(-2deg);
+            transition: transform 180ms ease;
+        }
+
+        #pet-speech-bubble.force-visible {
+            opacity: 1 !important;
+        }
+
+        .pet-snack-particle {
+            position: absolute;
+            left: 50%;
+            top: 58%;
+            transform: translate(-50%, -50%);
+            animation: petSnackFloat 1100ms ease-out forwards;
+            pointer-events: none;
+            z-index: 40;
+            font-size: 18px;
+        }
+
+        @keyframes petSnackFloat {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.7);
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--x, 0px)), calc(-120% + var(--y, -20px))) scale(1.25);
+            }
+        }
+    </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const taskButtons = document.querySelectorAll('[data-complete-task]');
@@ -181,8 +217,86 @@
             const statInfoToggles = document.querySelectorAll('[data-stat-info-toggle]');
             const statInfoPanels = document.querySelectorAll('[data-stat-info-panel]');
             const feedButtons = document.querySelectorAll('[data-feed-item-name]');
+            const petAvatarEl = document.getElementById('pet-avatar');
+            const petShowcaseEl = document.getElementById('pet-showcase');
+            const petSpeechBubbleEl = document.getElementById('pet-speech-bubble');
+            const petSpeechTextEl = document.getElementById('pet-speech-text');
 
             let currentKenyang = Number((kenyangValueEl?.textContent || '0').replace('%', '').trim()) || 0;
+            let speechTimer = null;
+            let isEatingAnimation = false;
+
+            const idlePhrases = [
+                'Sudah baca apa hari ini?',
+                'Aku siap nemenin kamu baca!',
+                'Yuk tambah progress buku kamu!',
+                'Satu halaman lagi, semangat!',
+                'Hari ini mau baca genre apa?',
+            ];
+
+            const eatingPhrases = [
+                'Nyam nyam, enak banget!',
+                'Makasih makanannya!',
+                'Perutku jadi kenyang!',
+                'Yummy, aku jadi semangat baca!',
+            ];
+
+            const pickRandom = (items) => items[Math.floor(Math.random() * items.length)];
+
+            const setSpeechText = (text) => {
+                if (!petSpeechTextEl) return;
+                petSpeechTextEl.textContent = `"${text}"`;
+            };
+
+            const showSpeechBubbleTemporarily = (duration = 1600) => {
+                if (!petSpeechBubbleEl) return;
+                petSpeechBubbleEl.classList.add('force-visible');
+                window.setTimeout(() => {
+                    petSpeechBubbleEl.classList.remove('force-visible');
+                }, duration);
+            };
+
+            const scheduleIdleSpeech = () => {
+                if (speechTimer) window.clearInterval(speechTimer);
+                speechTimer = window.setInterval(() => {
+                    if (isEatingAnimation) return;
+                    setSpeechText(pickRandom(idlePhrases));
+                }, 7000);
+            };
+
+            const spawnSnackParticles = (count = 5) => {
+                if (!petShowcaseEl) return;
+                for (let i = 0; i < count; i++) {
+                    const particle = document.createElement('span');
+                    particle.className = 'pet-snack-particle';
+                    particle.textContent = ['✨', '🍖', '💚'][i % 3];
+                    particle.style.setProperty('--x', `${(Math.random() * 90) - 45}px`);
+                    particle.style.setProperty('--y', `${-20 - (Math.random() * 35)}px`);
+                    petShowcaseEl.appendChild(particle);
+                    window.setTimeout(() => particle.remove(), 1200);
+                }
+            };
+
+            const triggerEatingEffect = () => {
+                if (!petAvatarEl) return;
+                isEatingAnimation = true;
+                setSpeechText(pickRandom(eatingPhrases));
+                showSpeechBubbleTemporarily(1800);
+
+                let step = 0;
+                const chew = window.setInterval(() => {
+                    petAvatarEl.classList.toggle('is-eating');
+                    step++;
+                    if (step >= 6) {
+                        window.clearInterval(chew);
+                        petAvatarEl.classList.remove('is-eating');
+                        isEatingAnimation = false;
+                        setSpeechText(pickRandom(idlePhrases));
+                    }
+                }, 170);
+
+                spawnSnackParticles(6);
+            };
 
             const updateButtonsState = () => {
                 feedButtons.forEach((btn) => {
@@ -241,6 +355,7 @@
                         });
 
                         setKenyang(payload.kenyang ?? currentKenyang);
+                        triggerEatingEffect();
 
                         feedStatusEl.textContent = payload.message || 'Pet berhasil diberi makan.';
                         feedStatusEl.classList.remove('text-biblo-clay/90');
@@ -361,6 +476,8 @@
 
             updateButtonsState();
             refreshGateProgress();
+            setSpeechText(pickRandom(idlePhrases));
+            scheduleIdleSpeech();
         });
     </script>
 </x-app-layout>
