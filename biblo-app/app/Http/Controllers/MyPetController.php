@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\ReadingLog;
+use App\Models\Task;
+use App\Models\TaskCompletion;
 use App\Models\UserInventory;
 use App\Models\UserPet;
+use App\Services\TaskAutoCompletionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +27,9 @@ class MyPetController extends Controller
     public function index(Request $request): View
     {
         $user = $request->user();
+
+        app(TaskAutoCompletionService::class)->syncForUser((int) $user->id);
+
         $totalPagesRead = (int) ReadingLog::where('user_id', $user->id)->sum('pages_read');
         $pet = UserPet::firstOrCreate(
             ['user_id' => $user->id],
@@ -88,6 +94,26 @@ class MyPetController extends Controller
             }
         }
 
+        // Show tasks for the next gated level-up (3, 6, 9, ...).
+        $nextGateLevel = (int) (ceil(($level + 1) / 3) * 3);
+        $gateTasks = Task::where('level_gate', $nextGateLevel)->get()->map(function (Task $task) use ($user) {
+            $completed = TaskCompletion::where('user_id', $user->id)
+                ->where('task_id', $task->id)
+                ->exists();
+
+            return [
+                'id' => $task->id,
+                'title' => $task->title,
+                'description' => $task->description,
+                'coin_reward' => (int) $task->coin_reward,
+                'xp_reward' => (int) $task->xp_reward,
+                'completed' => $completed,
+            ];
+        });
+
+        $gateCompletedCount = $gateTasks->where('completed', true)->count();
+        $gateTotalCount = $gateTasks->count();
+
         return view('mypet', [
             'petLevel' => $level,
             'growthTitle' => $growthTitle,
@@ -95,6 +121,10 @@ class MyPetController extends Controller
             'appleQty' => $appleQty,
             'honeyQty' => $honeyQty,
             'canFeed' => $kenyangPercent < 90,
+            'nextGateLevel' => $nextGateLevel,
+            'gateTasks' => $gateTasks,
+            'gateCompletedCount' => $gateCompletedCount,
+            'gateTotalCount' => $gateTotalCount,
         ]);
     }
 

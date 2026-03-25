@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\ReadingGoal;
+use App\Models\ReadingLog;
 use App\Models\TaskCompletion;
 use App\Models\UserBookProgress;
 use App\Models\UserNotification;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -156,9 +158,17 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        Auth::logout();
+        // Some relations (e.g. reading_logs.user_id) do not use cascade delete.
+        DB::transaction(function () use ($user) {
+            if (!empty($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
+            }
 
-        $user->delete();
+            ReadingLog::where('user_id', $user->id)->delete();
+            $user->delete();
+        });
+
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

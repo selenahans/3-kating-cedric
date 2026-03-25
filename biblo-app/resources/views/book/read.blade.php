@@ -102,6 +102,31 @@
         </div>
     </div>
 
+    {{-- Level Gate Tasks Modal --}}
+    <div id="level-gate-modal"
+        class="fixed inset-0 z-[98] bg-biblo-charcoal/30 backdrop-blur-sm hidden items-center justify-center px-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl transform transition-all my-8">
+            <div class="text-4xl mb-4 text-center">📋</div>
+            <h3 class="font-bold text-2xl text-biblo-charcoal mb-2 text-center">Selesaikan Tugas Dulu</h3>
+            <p class="text-biblo-charcoal/70 mb-6 text-center">Kamu perlu menyelesaikan semua tugas berikut sebelum naik ke level <span id="gate-level" class="font-bold">3</span>:</p>
+            
+            <div id="tasks-list" class="space-y-3 mb-6 max-h-64 overflow-y-auto">
+                <!-- Tasks akan di-populate via JavaScript -->
+            </div>
+
+            <div class="flex gap-3">
+                <button id="gate-close-btn"
+                    class="flex-1 py-3 rounded-xl font-bold text-sm text-biblo-charcoal bg-biblo-greige/20 hover:bg-biblo-greige/40 transition-all">
+                    Lanjut Baca
+                </button>
+                <a href="{{ route('mypet') }}"
+                    class="flex-1 py-3 rounded-xl font-bold text-sm text-white bg-biblo-moss hover:bg-[#7e8f7a] transition-all text-center">
+                    Cek Tugas
+                </a>
+            </div>
+        </div>
+    </div>
+
     <x-read.level-up-modal />
 
     {{-- ePub.js Library --}}
@@ -134,6 +159,28 @@
             
             const hungryPetModal = document.getElementById("hungry-pet-modal");
             const hungryPetHealth = document.getElementById("hungry-pet-health");
+            
+            const levelGateModal = document.getElementById("level-gate-modal");
+            const gateCloseBtn = document.getElementById("gate-close-btn");
+            const tasksList = document.getElementById("tasks-list");
+            const gateLevel = document.getElementById("gate-level");
+            const initialHungry = @json($isHungry ?? false);
+
+            async function showHungryAndBlockReader(health = null) {
+                if (hungryPetHealth && health !== null) {
+                    hungryPetHealth.textContent = String(health);
+                }
+                if (hungryPetModal) {
+                    hungryPetModal.classList.remove("hidden");
+                    hungryPetModal.classList.add("flex");
+                }
+                if (viewer) {
+                    viewer.classList.add("pointer-events-none", "opacity-60");
+                }
+                if (loading) {
+                    loading.style.display = "none";
+                }
+            }
 
             // Check pet status on page load
             async function checkPetStatus() {
@@ -163,14 +210,14 @@
                             hungryPetModal.classList.remove("hidden");
                             hungryPetModal.classList.add("flex");
                         }
+                        return true;
                     }
+                    return false;
                 } catch (error) {
                     console.error("Failed to check pet status:", error);
+                    return false;
                 }
             }
-            
-            // Check pet status immediately
-            checkPetStatus();
 
             function triggerConfettiBurst() {
                 if (!levelUpConfetti) return;
@@ -279,11 +326,24 @@
                         })
                     });
 
+                    const payload = await response.json();
+
+                    if (!response.ok && payload?.hungry_blocked) {
+                        isHungryNow = true;
+                        await showHungryAndBlockReader(payload?.health ?? null);
+                        return { action: 'none' };
+                    }
+
+                    // Handle level gate blocked
+                    if (!response.ok && payload?.level_blocked) {
+                        showLevelGateModal(payload.level_gate_info);
+                        return { action: 'none' };
+                    }
+
                     if (!response.ok) {
                         throw new Error("Failed to persist reading log");
                     }
 
-                    const payload = await response.json();
                     let action = 'none';
                     if (payload?.leveled_up) {
                         action = await showLevelUpModal(payload.old_level, payload.new_level);
@@ -299,6 +359,38 @@
                     console.error("Failed to save reading log:", error);
                     return { action: 'none' };
                 }
+            }
+
+            function showLevelGateModal(gateInfo) {
+                if (!levelGateModal || !tasksList) return;
+
+                gateLevel.textContent = gateInfo.level_gate;
+                tasksList.innerHTML = '';
+
+                gateInfo.incomplete_tasks.forEach((task, index) => {
+                    const taskEl = document.createElement('div');
+                    taskEl.className = 'bg-biblo-oat/20 p-3 rounded-xl flex gap-3';
+                    taskEl.innerHTML = `
+                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-biblo-clay/20 flex items-center justify-center">
+                            <span class="text-xs font-black">${index + 1}</span>
+                        </div>
+                        <div class="flex-1 text-left">
+                            <p class="font-bold text-xs text-biblo-charcoal">${task.title}</p>
+                            <p class="text-[10px] text-biblo-charcoal/60">${task.description}</p>
+                        </div>
+                    `;
+                    tasksList.appendChild(taskEl);
+                });
+
+                levelGateModal.classList.remove('hidden');
+                levelGateModal.classList.add('flex');
+            }
+
+            if (gateCloseBtn) {
+                gateCloseBtn.addEventListener('click', function() {
+                    levelGateModal.classList.add('hidden');
+                    levelGateModal.classList.remove('flex');
+                });
             }
 
             const backBtn = document.querySelector('#back-btn');
@@ -335,6 +427,19 @@
                     }
                 });
             }
+
+            if (initialHungry) {
+                showHungryAndBlockReader();
+                return;
+            }
+
+            let isHungryNow = false;
+            checkPetStatus().then((hungry) => {
+                if (hungry) {
+                    isHungryNow = true;
+                    showHungryAndBlockReader();
+                }
+            });
 
             let book = ePub(url);
             let rendition = book.renderTo("viewer", {
@@ -415,11 +520,19 @@
             // --- Navigation (OLD SIMPLE VERSION) ---
             document.getElementById("next").onclick = (e) => {
                 e.preventDefault();
+                if (isHungryNow) {
+                    showHungryAndBlockReader();
+                    return;
+                }
                 rendition.next();
             };
 
             document.getElementById("prev").onclick = (e) => {
                 e.preventDefault();
+                if (isHungryNow) {
+                    showHungryAndBlockReader();
+                    return;
+                }
                 rendition.prev();
             };
 

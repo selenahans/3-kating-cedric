@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\TaskCompletion;
 use App\Models\UserBookProgress;
 use App\Models\ReadingLog;
+use App\Models\HighlightNote;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -23,40 +24,54 @@ class DashboardController extends Controller
         
         $books = Book::with('category')->latest()->take(10)->get();
 
-        $completedTaskIdsToday = TaskCompletion::where('user_id', $user->id)
-            ->whereDate('completed_at', today())
-            ->pluck('task_id');
-
         $userId = Auth::id();
-        $tasks = Task::all();
+        // LOCKED REQUIREMENT: dashboard always shows exactly the 3 tasks for reaching level 3.
+        $tasks = Task::where('level_gate', 3)
+            ->orderBy('id')
+            ->take(3)
+            ->get();
+
+        $completedTaskIds = TaskCompletion::where('user_id', $user->id)
+            ->pluck('task_id')
+            ->all();
+
         foreach ($tasks as $task) {
 
             $task->percentage = 0;
 
-            $typeTask = explode('/', $task->type);
-            // 🔥 TASK: READING
-            if ($typeTask[0] == 'reading') {
+            if (in_array($task->id, $completedTaskIds, true)) {
+                $task->percentage = 100;
+                continue;
+            }
 
-                if($typeTask[1] == 'any'){
-                   $pagesToday = ReadingLog::where('user_id', $userId)
-                    ->whereDate('created_at', today())
-                    ->get()
-                    ->groupBy('book_id')
-                    ->map(function ($logs) {
-                        return $logs->sum('pages_read');
-                    })
-                    ->max(); 
-                   $pagesToday = 2; 
-                } else{
-                    $pagesToday = ReadingLog::where('user_id', $userId)
-                    ->whereDate('created_at', today())
-                    ->where('book_id', $typeTask[1])->sum('pages_read');
-                }
+            $taskType = (string) ($task->type ?? '');
+            $targetValue = max(1, (int) ($task->target_value ?? 1));
 
-                $task->percentage = min(
-                    ($pagesToday / $task->target_value) * 100,
-                    100
-                );
+            if ($taskType === 'pages_single') {
+                $maxPagesSingleBook = (int) (ReadingLog::query()
+                    ->fromSub(function ($query) use ($userId) {
+                        $query->from('reading_logs')
+                            ->selectRaw('book_id, SUM(pages_read) as total_pages')
+                            ->where('user_id', $userId)
+                            ->groupBy('book_id');
+                    }, 'book_page_totals')
+                    ->max('total_pages') ?? 0);
+
+                $task->percentage = min((($maxPagesSingleBook / $targetValue) * 100), 100);
+            }
+
+            if ($taskType === 'highlight') {
+                $count = (int) HighlightNote::where('user_id', $userId)->count();
+                $task->percentage = min((($count / $targetValue) * 100), 100);
+            }
+
+            if ($taskType === 'notes') {
+                $count = (int) HighlightNote::where('user_id', $userId)
+                    ->whereNotNull('note_content')
+                    ->where('note_content', '!=', '')
+                    ->count();
+
+                $task->percentage = min((($count / $targetValue) * 100), 100);
             }
         }
 

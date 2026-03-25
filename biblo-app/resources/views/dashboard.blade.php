@@ -66,7 +66,7 @@
 
         {{-- TASK HARI INI --}}
         <div class="w-full overflow-hidden">
-            <h3 class="text-lg font-bold mb-6 text-biblo-charcoal">Task Hari Ini</h3>
+            <h3 class="text-lg font-bold mb-6 text-biblo-charcoal">Task untuk Mencapai Level 3</h3>
             <div class="flex gap-6 overflow-x-auto no-scrollbar pb-4">
                 @foreach($tasks as $task)
                     <div

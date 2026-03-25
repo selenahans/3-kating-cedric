@@ -17,6 +17,7 @@ use App\Http\Controllers\LibraryController;
 use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\MyPetController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
@@ -189,6 +190,14 @@ Route::middleware('auth')->group(function () {
         return view('shop');
     })->name('shop');
     Route::post('/shop/purchase', [ShopController::class, 'purchase'])->name('shop.purchase');
+
+    /*
+    |--------------------------------------------------------------------------
+    | TASKS / QUESTS
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/tasks/level/{levelGate}', [TaskController::class, 'getGateTasks'])->name('tasks.get');
+    Route::post('/tasks/complete', [TaskController::class, 'completeTask'])->name('tasks.complete');
 
     Route::get('/app', function () {
         return view('layouts.app');

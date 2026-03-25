@@ -60,36 +60,39 @@
 
             <div class="lg:col-span-2 space-y-4">
                 <h3 class="text-lg font-extrabold text-biblo-charcoal px-2">Growth Quests</h3>
+                <div class="px-2">
+                    <p class="text-[11px] font-bold text-biblo-charcoal/50">
+                        Gate Lv. {{ $nextGateLevel }} - <span id="gate-progress-text">{{ $gateCompletedCount }}/{{ $gateTotalCount }}</span> task selesai
+                    </p>
+                </div>
 
                 <div class="space-y-3">
-                    <div
-                        class="bg-white p-4 sm:p-5 rounded-[24px] sm:rounded-[32px] border border-biblo-greige/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group hover:shadow-xl hover:shadow-biblo-sage/5 transition-all">
-                        <div class="flex items-center gap-4">
-                            <div
-                                class="w-12 h-12 bg-biblo-sage/10 rounded-2xl flex items-center justify-center text-xl">
-                                📖</div>
-                            <div>
-                                <h4 class="font-bold text-sm text-biblo-charcoal">Read for 20 Minutes</h4>
-                                <p class="text-[11px] text-biblo-charcoal/40 font-bold">+50 EXP & +20 Hunger</p>
+                    @forelse(($gateTasks ?? []) as $task)
+                        <div class="bg-white p-4 sm:p-5 rounded-[24px] sm:rounded-[32px] border border-biblo-greige/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 {{ $task['completed'] ? 'opacity-70' : 'group hover:shadow-xl hover:shadow-biblo-sage/5' }} transition-all"
+                            data-task-card data-task-id="{{ $task['id'] }}" data-task-completed="{{ $task['completed'] ? '1' : '0' }}">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl {{ $task['completed'] ? 'bg-biblo-sage/15' : 'bg-biblo-clay/10' }}">📋</div>
+                                <div>
+                                    <h4 class="font-bold text-sm text-biblo-charcoal">{{ $task['title'] }}</h4>
+                                    <p class="text-[11px] text-biblo-charcoal/50 font-bold">{{ $task['description'] }}</p>
+                                    <p class="text-[10px] text-biblo-moss font-black mt-1">+{{ $task['coin_reward'] }} coins & +{{ $task['xp_reward'] }} xp</p>
+                                </div>
                             </div>
-                        </div>
-                        <button
-                            class="w-full sm:w-auto bg-biblo-charcoal text-white text-[10px] font-black px-6 py-2.5 rounded-xl hover:bg-biblo-moss transition-colors">START</button>
-                    </div>
 
-                    <div
-                        class="bg-white p-4 sm:p-5 rounded-[24px] sm:rounded-[32px] border border-biblo-greige/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 opacity-60">
-                        <div class="flex items-center gap-4">
-                            <div
-                                class="w-12 h-12 bg-biblo-clay/10 rounded-2xl flex items-center justify-center text-xl">
-                                ✍️</div>
-                            <div>
-                                <h4 class="font-bold text-sm text-biblo-charcoal">Write a Chapter Summary</h4>
-                                <p class="text-[11px] text-biblo-charcoal/40 font-bold">+100 EXP & +10 Knowledge</p>
-                            </div>
+                            @if($task['completed'])
+                                <div class="text-biblo-moss text-xs font-black self-start sm:self-auto" data-task-status>COMPLETED ✅</div>
+                            @else
+                                <button type="button" data-complete-task data-task-id="{{ $task['id'] }}"
+                                    class="w-full sm:w-auto bg-biblo-charcoal text-white text-[10px] font-black px-6 py-2.5 rounded-xl hover:bg-biblo-moss transition-colors">
+                                    COMPLETE
+                                </button>
+                            @endif
                         </div>
-                        <div class="text-biblo-moss text-xs font-black self-start sm:self-auto">COMPLETED ✅</div>
-                    </div>
+                    @empty
+                        <div class="bg-white p-4 sm:p-5 rounded-[24px] sm:rounded-[32px] border border-biblo-greige/20">
+                            <p class="text-sm font-bold text-biblo-charcoal/60">Belum ada task untuk gate level berikutnya.</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
 
@@ -146,11 +149,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const buttons = document.querySelectorAll('[data-feed-item]');
+            const taskButtons = document.querySelectorAll('[data-complete-task]');
             const appleQtyEl = document.getElementById('apple-qty');
             const honeyQtyEl = document.getElementById('honey-qty');
             const feedStatusEl = document.getElementById('feed-status');
             const kenyangValueEl = document.getElementById('kenyang-value');
             const kenyangBarEl = document.getElementById('kenyang-bar');
+            const gateProgressTextEl = document.getElementById('gate-progress-text');
 
             let currentKenyang = Number((kenyangValueEl?.textContent || '0').replace('%', '').trim()) || 0;
 
@@ -219,7 +224,78 @@
                 });
             });
 
+            const getTaskProgress = () => {
+                const cards = document.querySelectorAll('[data-task-card]');
+                const total = cards.length;
+                const done = Array.from(cards).filter((card) => card.getAttribute('data-task-completed') === '1').length;
+                return { done, total };
+            };
+
+            const refreshGateProgress = () => {
+                if (!gateProgressTextEl) return;
+                const progress = getTaskProgress();
+                gateProgressTextEl.textContent = `${progress.done}/${progress.total}`;
+            };
+
+            taskButtons.forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const taskId = button.getAttribute('data-task-id');
+                    if (!taskId) return;
+
+                    button.disabled = true;
+                    button.classList.add('opacity-60', 'cursor-not-allowed');
+
+                    try {
+                        const response = await fetch("{{ route('tasks.complete') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            },
+                            body: JSON.stringify({ task_id: Number(taskId) }),
+                        });
+
+                        const payload = await response.json();
+
+                        if (!response.ok || !payload.success) {
+                            feedStatusEl.textContent = payload.message || 'Gagal menyelesaikan task.';
+                            feedStatusEl.classList.remove('text-biblo-sage/80');
+                            feedStatusEl.classList.add('text-biblo-clay/90');
+                            button.disabled = false;
+                            button.classList.remove('opacity-60', 'cursor-not-allowed');
+                            return;
+                        }
+
+                        const card = document.querySelector(`[data-task-card][data-task-id="${taskId}"]`);
+                        if (card) {
+                            card.setAttribute('data-task-completed', '1');
+                            card.classList.add('opacity-70');
+                            card.classList.remove('group');
+                        }
+
+                        const completeBadge = document.createElement('div');
+                        completeBadge.className = 'text-biblo-moss text-xs font-black self-start sm:self-auto';
+                        completeBadge.setAttribute('data-task-status', '1');
+                        completeBadge.textContent = 'COMPLETED ✅';
+                        button.replaceWith(completeBadge);
+
+                        refreshGateProgress();
+
+                        feedStatusEl.textContent = payload.message || 'Task berhasil diselesaikan.';
+                        feedStatusEl.classList.remove('text-biblo-clay/90');
+                        feedStatusEl.classList.add('text-biblo-sage/80');
+                    } catch (error) {
+                        feedStatusEl.textContent = 'Terjadi error saat menyelesaikan task.';
+                        feedStatusEl.classList.remove('text-biblo-sage/80');
+                        feedStatusEl.classList.add('text-biblo-clay/90');
+                        button.disabled = false;
+                        button.classList.remove('opacity-60', 'cursor-not-allowed');
+                    }
+                });
+            });
+
             updateButtonsState();
+            refreshGateProgress();
         });
     </script>
 </x-app-layout>

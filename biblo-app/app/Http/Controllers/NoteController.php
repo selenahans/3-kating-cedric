@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\HighlightNote;
+use App\Services\TaskAutoCompletionService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,6 +31,8 @@ class NoteController extends Controller
             'note_content' => $validated['note_content'] ?? null,
             'color_code' => $validated['color_code'] ?? '#FDE047',
         ]);
+
+        app(TaskAutoCompletionService::class)->syncForUser((int) $request->user()->id);
 
         return response()->json([
             'success' => true,

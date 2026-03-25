@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\UserBookProgress;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use App\Models\HighlightNote;
+use App\Models\UserPet;
 
 class BookController extends Controller
 {
@@ -71,6 +72,21 @@ class BookController extends Controller
 
     public function read(Request $request, Book $book)
     {
+        $user = $request->user();
+        $pet = UserPet::firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'nickname' => $user->name,
+                'type' => 'owl',
+                'xp' => 0,
+                'stage' => 'baby',
+                'health' => 100,
+                'happiness' => 100,
+            ]
+        );
+
+        $isHungry = (int) $pet->health <= 30;
+
         $progress = UserBookProgress::firstOrCreate(
             [
                 'user_id' => Auth::id(),
@@ -96,7 +112,7 @@ class BookController extends Controller
             ->where('book_id', $book->id)
             ->get();
 
-        return view('book.read', compact('book', 'progress', 'bookSourceUrl', 'notes', 'currentLocation'));
+        return view('book.read', compact('book', 'progress', 'bookSourceUrl', 'notes', 'currentLocation', 'isHungry'));
     }
 
 
