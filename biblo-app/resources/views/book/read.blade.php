@@ -454,6 +454,40 @@
                 }
             });
 
+            // Periodic pet health check every 5 seconds during active reading
+            const petHealthCheckInterval = setInterval(async () => {
+                if (isHungryNow) {
+                    // Already blocked, no need to check again
+                    return;
+                }
+
+                try {
+                    const response = await fetch("{{ route('mypet.status') }}", {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
+                        }
+                    });
+
+                    if (!response.ok) {
+                        return;
+                    }
+
+                    const data = await response.json();
+
+                    if (data.is_hungry && !isHungryNow) {
+                        isHungryNow = true;
+                        await showHungryAndBlockReader(data.health);
+                        console.log("Pet became hungry during reading, blocking reader");
+                    }
+                } catch (error) {
+                    console.error("Failed to check pet health periodically:", error);
+                }
+            }, 5000);
+
             let book = ePub(url);
             let rendition = book.renderTo("viewer", {
                 width: "100%",
@@ -556,15 +590,24 @@
             }
 
 
-            // --- Navigation (OLD SIMPLE VERSION) ---
+            // --- Navigation (WITH PRE-FLIGHT PET HEALTH CHECK) ---
             document.getElementById("next").onclick = (e) => {
                 e.preventDefault();
                 if (isHungryNow) {
                     showHungryAndBlockReader();
                     return;
                 }
-                pendingDirection += 1;
-                rendition.next();
+
+                // Pre-flight check before next to catch any state change
+                checkPetStatus().then((hungry) => {
+                    if (hungry && !isHungryNow) {
+                        isHungryNow = true;
+                        showHungryAndBlockReader();
+                        return;
+                    }
+                    pendingDirection += 1;
+                    rendition.next();
+                });
             };
 
             document.getElementById("prev").onclick = (e) => {
@@ -573,8 +616,17 @@
                     showHungryAndBlockReader();
                     return;
                 }
-                pendingDirection -= 1;
-                rendition.prev();
+
+                // Pre-flight check before prev to catch any state change
+                checkPetStatus().then((hungry) => {
+                    if (hungry && !isHungryNow) {
+                        isHungryNow = true;
+                        showHungryAndBlockReader();
+                        return;
+                    }
+                    pendingDirection -= 1;
+                    rendition.prev();
+                });
             };
 
             document.querySelectorAll('.color-btn').forEach(btn => {
