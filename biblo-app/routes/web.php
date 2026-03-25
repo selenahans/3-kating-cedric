@@ -171,10 +171,10 @@ Route::middleware('auth')->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::get('/notification', [NotificationController::class, 'index'])->name('notification.index');
-    Route::patch('/notification/{id}/read', [NotificationController::class, 'markAsRead'])
-        ->name('notification.read');
-    Route::patch('/notification/read-all', [NotificationController::class, 'markAllAsRead'])
-        ->name('notification.read-all');
+    Route::post('/notification/{id}/read', [NotificationController::class, 'markAsRead'])
+        ->name('notification.mark-as-read');
+    Route::post('/notification/read-all', [NotificationController::class, 'markAllAsRead'])
+        ->name('notification.markAllAsRead');
     Route::delete('/notification/{id}', [NotificationController::class, 'destroy'])
         ->name('notification.destroy');
 

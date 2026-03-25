@@ -27,7 +27,7 @@ class NotificationController extends Controller
         return view('notification', compact('notifications', 'totalNotifications', 'unreadCount', 'filter'));
     }
 
-    public function markAsRead(Request $request, int $id): RedirectResponse
+    public function markAsRead(Request $request, int $id)
     {
         $notification = UserNotification::where('user_id', $request->user()->id)
             ->findOrFail($id);
@@ -38,10 +38,14 @@ class NotificationController extends Controller
             $notification->save();
         }
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Notifikasi ditandai sudah dibaca.']);
+        }
+
         return back()->with('success', 'Notifikasi ditandai sudah dibaca.');
     }
 
-    public function markAllAsRead(Request $request): RedirectResponse
+    public function markAllAsRead(Request $request)
     {
         UserNotification::where('user_id', $request->user()->id)
             ->where('is_read', false)
@@ -51,15 +55,23 @@ class NotificationController extends Controller
                 'updated_at' => now(),
             ]);
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Semua notifikasi ditandai sudah dibaca.']);
+        }
+
         return back()->with('success', 'Semua notifikasi ditandai sudah dibaca.');
     }
 
-    public function destroy(Request $request, int $id): RedirectResponse
+    public function destroy(Request $request, int $id)
     {
         $notification = UserNotification::where('user_id', $request->user()->id)
             ->findOrFail($id);
 
         $notification->delete();
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Notifikasi berhasil dihapus.']);
+        }
 
         return back()->with('success', 'Notifikasi berhasil dihapus.');
     }
