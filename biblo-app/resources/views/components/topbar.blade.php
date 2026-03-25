@@ -39,7 +39,7 @@
             </div>
             <div
                 class="w-9 h-9 rounded-xl bg-[#F2EFEA] border border-[#CFC8BE]/20 flex items-center justify-center text-sm">
-                👋
+                <img src="{{ $currentPetImage ?? asset('images/boo-pet.webp') }}" alt="Pet Equipped" class="w-6 h-6 object-contain">
             </div>
         </div>
 

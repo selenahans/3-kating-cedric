@@ -30,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*', function ($view) {
             $unreadNotificationCount = 0;
             $currentPetName = null;
+            $currentPetImage = asset('images/boo-pet.webp');
             $currentCoins = 0;
             $starterAppleQty = 0;
             $starterHoneyQty = 0;
@@ -41,12 +42,28 @@ class AppServiceProvider extends ServiceProvider
                 if (!$user) {
                     $view->with('unreadNotificationCount', $unreadNotificationCount)
                         ->with('currentPetName', $currentPetName)
+                        ->with('currentPetImage', $currentPetImage)
                         ->with('currentCoins', $currentCoins);
                     return;
                 }
 
                 $currentPetName = $user->pet?->nickname;
                 $currentCoins = (int) ($user->coins ?? 0);
+
+                if (Schema::hasTable('items') && Schema::hasTable('user_inventory') && Schema::hasColumn('user_inventory', 'is_equipped')) {
+                    $equippedSkin = UserInventory::with('item')
+                        ->where('user_id', $user->id)
+                        ->where('is_equipped', true)
+                        ->whereHas('item', function ($query) {
+                            $query->where('type', 'skin');
+                        })
+                        ->first();
+
+                    $skinImagePath = $equippedSkin?->item?->image_path;
+                    if (!empty($skinImagePath) && is_file(public_path($skinImagePath))) {
+                        $currentPetImage = asset($skinImagePath);
+                    }
+                }
 
                 if (Schema::hasTable('reading_logs') && Schema::hasTable('users') && Schema::hasColumn('users', 'coins')) {
                     $totalPagesRead = (int) ReadingLog::where('user_id', $user->id)->sum('pages_read');
@@ -114,6 +131,7 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('unreadNotificationCount', $unreadNotificationCount)
                 ->with('currentPetName', $currentPetName)
+                ->with('currentPetImage', $currentPetImage)
                 ->with('currentCoins', $currentCoins)
                 ->with('starterAppleQty', $starterAppleQty)
                 ->with('starterHoneyQty', $starterHoneyQty);

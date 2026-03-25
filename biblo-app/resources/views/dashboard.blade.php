@@ -20,7 +20,7 @@
                         <div>
                             <p class="text-[10px] font-black uppercase tracking-widest text-white/40 leading-none">Day
                                 Streak</p>
-                            <p class="text-xl font-bold">12 Hari</p>
+                            <p class="text-xl font-bold">{{ $dayStreak }} Hari</p>
                         </div>
                     </div>
                     <div
@@ -52,21 +52,20 @@
                 <div>
                     <h3 class="font-bold text-lg mb-4 text-biblo-charcoal">Target Hari Ini</h3>
                     <div class="flex items-end gap-2 mb-2">
-                        <span class="text-4xl font-extrabold text-biblo-moss">12</span>
-                        <span class="text-biblo-charcoal/40 font-bold mb-1">/ 15 Lembar</span>
+                        <span class="text-4xl font-extrabold text-biblo-moss">{{ number_format($todayPagesRead, 0, ',', '.') }}</span>
+                        <span class="text-biblo-charcoal/40 font-bold mb-1">/ {{ number_format($goalPages, 0, ',', '.') }} Lembar</span>
                     </div>
                     <div class="w-full bg-biblo-oat rounded-full h-2.5">
-                        <div class="bg-biblo-moss h-2.5 rounded-full" style="width: 80%"></div>
+                        <div class="bg-biblo-moss h-2.5 rounded-full" style="width: {{ $goalProgressPercent }}%"></div>
                     </div>
                 </div>
-                <p class="text-[11px] font-bold text-biblo-charcoal/40 italic mt-4">3 lembar lagi untuk memberi makan
-                    {{ $currentPetName ?? 'Barnaby' }}!</p>
+                <p class="text-[11px] font-bold text-biblo-charcoal/40 italic mt-4">{{ $dailyGoalMessage }}</p>
             </div>
         </div>
 
         {{-- TASK HARI INI --}}
         <div class="w-full overflow-hidden">
-            <h3 class="text-lg font-bold mb-6 text-biblo-charcoal">Task untuk Mencapai Level 3</h3>
+            <h3 class="text-lg font-bold mb-6 text-biblo-charcoal">Task untuk Mencapai Level {{ $activeLevelGate ?? 3 }}</h3>
             <div class="flex gap-6 overflow-x-auto no-scrollbar pb-4">
                 @foreach($tasks as $task)
                     <div
@@ -100,37 +99,37 @@
             {{-- Recap --}}
             <div
                 class="lg:col-span-4 bg-white rounded-[28px] sm:rounded-[32px] lg:rounded-[40px] p-5 sm:p-6 lg:p-8 shadow-sm border border-biblo-greige/10">
-                <h3 class="font-bold text-lg mb-6">Recap Februari</h3>
+                <h3 class="font-bold text-lg mb-6">Recap {{ $recapMonthLabel }}</h3>
                 <div class="space-y-4 text-biblo-charcoal">
                     <div class="flex justify-between items-center bg-biblo-oat/30 p-4 rounded-2xl">
                         <div class="flex items-center gap-3">
                             <span class="text-biblo-purple">📚</span>
                             <span class="text-sm font-bold">Buku Selesai</span>
                         </div>
-                        <span class="font-extrabold text-lg">4</span>
+                        <span class="font-extrabold text-lg">{{ number_format($monthlyBooksCompleted, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between items-center bg-biblo-oat/30 p-4 rounded-2xl">
                         <div class="flex items-center gap-3">
                             <span class="text-biblo-sage">📄</span>
                             <span class="text-sm font-bold">Total Halaman</span>
                         </div>
-                        <span class="font-extrabold text-lg">482</span>
+                        <span class="font-extrabold text-lg">{{ number_format($monthlyPagesRead, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between items-center bg-biblo-oat/30 p-4 rounded-2xl">
                         <div class="flex items-center gap-3">
                             <span class="text-biblo-clay">✨</span>
                             <span class="text-sm font-bold">Poin Didapat</span>
                         </div>
-                        <span class="font-extrabold text-lg">1.250</span>
+                        <span class="font-extrabold text-lg">{{ number_format($monthlyPointsEarned, 0, ',', '.') }}</span>
                     </div>
                 </div>
 
                 {{-- Tambahkan kembali Grafik Bar Recap --}}
                 <div class="mt-8 h-32 w-full bg-biblo-oat/50 rounded-2xl flex items-end justify-between p-4 gap-2">
-                    <div class="w-full bg-biblo-greige/30 h-[40%] rounded-t-lg"></div>
-                    <div class="w-full bg-biblo-greige/30 h-[70%] rounded-t-lg"></div>
-                    <div class="w-full bg-biblo-moss h-[90%] rounded-t-lg"></div>
-                    <div class="w-full bg-biblo-greige/30 h-[50%] rounded-t-lg"></div>
+                    <div class="w-full bg-biblo-greige/30 rounded-t-lg" style="height: {{ $monthlyPageSegmentHeights[0] ?? 18 }}%"></div>
+                    <div class="w-full bg-biblo-greige/30 rounded-t-lg" style="height: {{ $monthlyPageSegmentHeights[1] ?? 18 }}%"></div>
+                    <div class="w-full bg-biblo-moss rounded-t-lg" style="height: {{ $monthlyPageSegmentHeights[2] ?? 18 }}%"></div>
+                    <div class="w-full bg-biblo-greige/30 rounded-t-lg" style="height: {{ $monthlyPageSegmentHeights[3] ?? 18 }}%"></div>
                 </div>
             </div>
 
