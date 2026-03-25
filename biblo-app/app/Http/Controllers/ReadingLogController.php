@@ -94,7 +94,7 @@ class ReadingLogController extends Controller
             ]
         );
 
-        if ((int) $pet->health <= 30) {
+        if ((int) $pet->health < 30) {
             return response()->json([
                 'success' => false,
                 'message' => 'Pet kamu lapar. Kasih makan dulu sebelum lanjut baca.',

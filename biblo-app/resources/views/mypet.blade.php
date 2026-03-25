@@ -42,14 +42,38 @@
 
     <div class="mt-6 w-full grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 md:absolute md:bottom-6 md:left-6 md:right-6 md:w-auto">
         @foreach(($petStats ?? []) as $stat)
-            <div class="bg-white/40 backdrop-blur-md border border-white/60 p-2.5 sm:p-3 md:p-4 rounded-[1.25rem] sm:rounded-[2rem] shadow-sm flex flex-col justify-between">
+            <div class="relative bg-white/40 backdrop-blur-md border border-white/60 p-2.5 sm:p-3 md:p-4 rounded-[1.25rem] sm:rounded-[2rem] shadow-sm flex flex-col justify-between">
                 <div class="flex justify-between items-center mb-2">
-                    <p class="text-[9px] font-black text-biblo-charcoal/40 uppercase tracking-widest">{{ $stat['label'] }}</p>
+                    <div class="flex items-center gap-1.5">
+                        <p class="text-[9px] font-black text-biblo-charcoal/40 uppercase tracking-widest">{{ $stat['label'] }}</p>
+                        <button type="button"
+                            class="w-4 h-4 rounded-full border border-biblo-charcoal/20 bg-white/70 text-[9px] leading-none font-black text-biblo-charcoal/60 hover:bg-white"
+                            data-stat-info-toggle
+                            data-target-id="stat-info-{{ $loop->index }}"
+                            aria-expanded="false"
+                            aria-controls="stat-info-{{ $loop->index }}"
+                            title="Info {{ $stat['label'] }}">
+                            i
+                        </button>
+                    </div>
                     <p class="text-[10px] font-bold text-biblo-charcoal" @if($stat['label'] === 'Kenyang') id="kenyang-value" @endif>{{ $stat['val'] }}</p>
                 </div>
                 <div class="w-full bg-biblo-charcoal/5 h-1.5 rounded-full overflow-hidden">
                     <div class="{{ $stat['color'] }} h-full rounded-full transition-all duration-1000" @if($stat['label'] === 'Kenyang') id="kenyang-bar" @endif
                         style="width: {{ $stat['width'] }}"></div>
+                </div>
+                <div id="stat-info-{{ $loop->index }}" data-stat-info-panel class="hidden absolute z-30 bottom-full mb-2 left-2 right-2 p-2 rounded-xl bg-white border border-white/90 shadow-lg">
+                    @php
+                        $label = strtolower($stat['label']);
+                        $statInfoText = match ($label) {
+                            'kenyang' => 'Jika tingkat kekenyangan di bawah 30%, pet tidak bisa membaca buku lagi sampai diberi makan.',
+                            'exp' => 'EXP digunakan untuk naik ke level selanjutnya. Semakin penuh bar EXP, semakin dekat ke level berikutnya.',
+                            'happiness' => 'Jika membaca buku dengan genre yang sama terus-menerus, happiness akan menurun.',
+                            'knowledge' => 'Jika kehilangan streak membaca, knowledge akan berkurang sebesar 20%.',
+                            default => 'Informasi untuk stat ini akan diisi nanti.',
+                        };
+                    @endphp
+                    <p class="text-[10px] font-bold text-biblo-charcoal/70">{{ $statInfoText }}</p>
                 </div>
             </div>
         @endforeach
@@ -156,6 +180,8 @@
             const kenyangValueEl = document.getElementById('kenyang-value');
             const kenyangBarEl = document.getElementById('kenyang-bar');
             const gateProgressTextEl = document.getElementById('gate-progress-text');
+            const statInfoToggles = document.querySelectorAll('[data-stat-info-toggle]');
+            const statInfoPanels = document.querySelectorAll('[data-stat-info-panel]');
 
             let currentKenyang = Number((kenyangValueEl?.textContent || '0').replace('%', '').trim()) || 0;
 
@@ -236,6 +262,40 @@
                 const progress = getTaskProgress();
                 gateProgressTextEl.textContent = `${progress.done}/${progress.total}`;
             };
+
+            const closeAllStatInfoPanels = () => {
+                document.querySelectorAll('[data-stat-info-panel]').forEach((panel) => panel.classList.add('hidden'));
+                statInfoToggles.forEach((toggle) => toggle.setAttribute('aria-expanded', 'false'));
+            };
+
+            statInfoToggles.forEach((toggle) => {
+                toggle.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    const targetId = toggle.getAttribute('data-target-id');
+                    const panel = targetId ? document.getElementById(targetId) : null;
+                    if (!panel) return;
+
+                    const willOpen = panel.classList.contains('hidden');
+                    closeAllStatInfoPanels();
+                    if (willOpen) {
+                        panel.classList.remove('hidden');
+                        toggle.setAttribute('aria-expanded', 'true');
+                    }
+                });
+            });
+
+            statInfoPanels.forEach((panel) => {
+                panel.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                });
+            });
+
+            document.addEventListener('click', () => closeAllStatInfoPanels());
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    closeAllStatInfoPanels();
+                }
+            });
 
             taskButtons.forEach((button) => {
                 button.addEventListener('click', async () => {

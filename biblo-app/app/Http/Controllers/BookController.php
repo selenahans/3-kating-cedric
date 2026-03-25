@@ -85,7 +85,7 @@ class BookController extends Controller
             ]
         );
 
-        $isHungry = (int) $pet->health <= 30;
+        $isHungry = (int) $pet->health < 30;
 
         $progress = UserBookProgress::firstOrCreate(
             [

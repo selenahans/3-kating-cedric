@@ -243,7 +243,7 @@ class MyPetController extends Controller
         return response()->json([
             'success' => true,
             'health' => (int) $pet->health,
-            'is_hungry' => (int) $pet->health <= 30,
+            'is_hungry' => (int) $pet->health < 30,
         ]);
     }
 }
