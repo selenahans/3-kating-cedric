@@ -28,6 +28,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if (!$request->user()?->is_onboarded) {
+            return redirect()->route('onboarding');
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

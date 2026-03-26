@@ -119,93 +119,96 @@ Route::middleware('auth')->group(function () {
     Route::get('/onboarding', [CategoryController::class, 'showOnboarding'])->name('onboarding');
     Route::post('/onboarding', [CategoryController::class, 'storeOnboarding'])->name('onboarding.store');
 
-    /*
-    |--------------------------------------------------------------------------
-    | DASHBOARD / EXPLORE
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/explore', [ExploreController::class, 'index'])->name('explore');
-    Route::get('/search', [SearchController::class, 'index'])->name('search.global');
+    Route::middleware('onboarded')->group(function () {
+        /*
+        |--------------------------------------------------------------------------
+        | DASHBOARD / EXPLORE
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/explore', [ExploreController::class, 'index'])->name('explore');
+        Route::get('/search', [SearchController::class, 'index'])->name('search.global');
 
-    /*
-    |--------------------------------------------------------------------------
-    | LIBRARY / NOTES
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/mylibrary', [LibraryController::class, 'index'])->name('mylibrary');
+        /*
+        |--------------------------------------------------------------------------
+        | LIBRARY / NOTES
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/mylibrary', [LibraryController::class, 'index'])->name('mylibrary');
 
-    Route::post('/book/{id}/toggle-library', [BookController::class, 'toggleLibrary'])
-        ->name('book.toggle-library');
+        Route::post('/book/{id}/toggle-library', [BookController::class, 'toggleLibrary'])
+            ->name('book.toggle-library');
 
-    Route::post('/notes/save', [NoteController::class, 'store'])->name('notes.store');
-    Route::get('/mynotes', [NoteController::class, 'index'])->name('notes.index');
-    Route::get('/mynotes/export-pdf', [NoteController::class, 'exportPdf'])->name('notes.export-pdf');
-    Route::patch('/mynotes/{note}', [NoteController::class, 'update'])->name('notes.update');
-    Route::delete('/mynotes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
+        Route::post('/notes/save', [NoteController::class, 'store'])->name('notes.store');
+        Route::get('/mynotes', [NoteController::class, 'index'])->name('notes.index');
+        Route::get('/mynotes/export-pdf', [NoteController::class, 'exportPdf'])->name('notes.export-pdf');
+        Route::patch('/mynotes/{note}', [NoteController::class, 'update'])->name('notes.update');
+        Route::delete('/mynotes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
 
-    /*
-    |--------------------------------------------------------------------------
-    | BOOK DETAIL / READ / STREAM / PROGRESS
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/book-detail/{book:slug}', [BookController::class, 'show'])->name('book.detail');
-    Route::get('/book-read/{book:slug}', [BookController::class, 'read'])->name('book.read');
-    Route::get('/stream-book/{book:slug}', [BookController::class, 'stream'])->name('book.stream');
-    Route::post('/update-progress/{book:slug}', [BookController::class, 'updateProgress'])->name('reading.update-progress');
+        /*
+        |--------------------------------------------------------------------------
+        | BOOK DETAIL / READ / STREAM / PROGRESS
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/book-detail/{book:slug}', [BookController::class, 'show'])->name('book.detail');
+        Route::get('/book-read/{book:slug}', [BookController::class, 'read'])->name('book.read');
+        Route::get('/stream-book/{book:slug}', [BookController::class, 'stream'])->name('book.stream');
+        Route::post('/update-progress/{book:slug}', [BookController::class, 'updateProgress'])->name('reading.update-progress');
 
-    /*
-    |--------------------------------------------------------------------------
-    | PROFILE / READING GOAL
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/profil', [ProfileController::class, 'show'])->name('profil');
-    Route::put('/profil', [ProfileController::class, 'updateProfile'])->name('profil.update');
-    Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profil.password.update');
-    Route::put('/profil/reading-goal', [ProfileController::class, 'updateReadingGoal'])
-        ->name('profil.reading-goal.update');
+        /*
+        |--------------------------------------------------------------------------
+        | PROFILE / READING GOAL
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/profil', [ProfileController::class, 'show'])->name('profil');
+        Route::put('/profil', [ProfileController::class, 'updateProfile'])->name('profil.update');
+        Route::put('/profil/password', [ProfileController::class, 'updatePassword'])->name('profil.password.update');
+        Route::put('/profil/reading-goal', [ProfileController::class, 'updateReadingGoal'])
+            ->name('profil.reading-goal.update');
 
-    /*
-    |--------------------------------------------------------------------------
-    | NOTIFICATIONS
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/notification', [NotificationController::class, 'index'])->name('notification.index');
-    Route::post('/notification/{id}/read', [NotificationController::class, 'markAsRead'])
-        ->name('notification.mark-as-read');
-    Route::post('/notification/read-all', [NotificationController::class, 'markAllAsRead'])
-        ->name('notification.markAllAsRead');
-    Route::delete('/notification/{id}', [NotificationController::class, 'destroy'])
-        ->name('notification.destroy');
+        /*
+        |--------------------------------------------------------------------------
+        | NOTIFICATIONS
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/notification', [NotificationController::class, 'index'])->name('notification.index');
+        Route::post('/notification/{id}/read', [NotificationController::class, 'markAsRead'])
+            ->name('notification.mark-as-read');
+        Route::post('/notification/read-all', [NotificationController::class, 'markAllAsRead'])
+            ->name('notification.markAllAsRead');
+        Route::delete('/notification/{id}', [NotificationController::class, 'destroy'])
+            ->name('notification.destroy');
 
-    /*
-    |--------------------------------------------------------------------------
-    | OTHER APP PAGES
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/mypet', [MyPetController::class, 'index'])->name('mypet');
-    Route::post('/mypet/feed', [MyPetController::class, 'feed'])->name('mypet.feed');
-    Route::get('/mypet/status', [MyPetController::class, 'getStatus'])->name('mypet.status');
+        /*
+        |--------------------------------------------------------------------------
+        | OTHER APP PAGES
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/mypet', [MyPetController::class, 'index'])->name('mypet');
+        Route::post('/mypet/feed', [MyPetController::class, 'feed'])->name('mypet.feed');
+        Route::get('/mypet/status', [MyPetController::class, 'getStatus'])->name('mypet.status');
 
-    Route::get('/shop', [ShopController::class, 'index'])->name('shop');
-    Route::post('/shop/purchase', [ShopController::class, 'purchase'])->name('shop.purchase');
-    Route::post('/shop/equip-skin', [ShopController::class, 'equipSkin'])->name('shop.equip-skin');
+        Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+        Route::post('/shop/purchase', [ShopController::class, 'purchase'])->name('shop.purchase');
+        Route::post('/shop/equip-skin', [ShopController::class, 'equipSkin'])->name('shop.equip-skin');
 
-    /*
-    |--------------------------------------------------------------------------
-    | TASKS / QUESTS
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/tasks/level/{levelGate}', [TaskController::class, 'getGateTasks'])->name('tasks.get');
-    Route::post('/tasks/complete', [TaskController::class, 'completeTask'])->name('tasks.complete');
+        /*
+        |--------------------------------------------------------------------------
+        | TASKS / QUESTS
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/tasks/level/{levelGate}', [TaskController::class, 'getGateTasks'])->name('tasks.get');
+        Route::post('/tasks/complete', [TaskController::class, 'completeTask'])->name('tasks.complete');
 
-    Route::get('/app', function () {
-        return view('layouts.app');
-    })->name('layout.app.preview');
+        Route::get('/app', function () {
+            return view('layouts.app');
+        })->name('layout.app.preview');
 
-    Route::get('/guest', function () {
-        return view('layouts.guest');
-    })->name('layout.guest.preview');
+        Route::get('/guest', function () {
+            return view('layouts.guest');
+        })->name('layout.guest.preview');
+
+    });
 
     /*
     |--------------------------------------------------------------------------

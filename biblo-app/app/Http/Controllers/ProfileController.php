@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\HighlightNote;
 use App\Models\ReadingGoal;
 use App\Models\ReadingLog;
 use App\Models\TaskCompletion;
+use App\Models\UserInventory;
 use App\Models\UserBookProgress;
 use App\Models\UserNotification;
+use App\Models\UserPet;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -178,8 +181,22 @@ class ProfileController extends Controller
                 Storage::disk('public')->delete($user->photo);
             }
 
-            ReadingLog::where('user_id', $user->id)->delete();
-            $user->delete();
+            $userId = $user->id;
+
+            ReadingLog::where('user_id', $userId)->delete();
+            HighlightNote::where('user_id', $userId)->delete();
+            TaskCompletion::where('user_id', $userId)->delete();
+            UserBookProgress::where('user_id', $userId)->delete();
+            UserInventory::where('user_id', $userId)->delete();
+            ReadingGoal::where('user_id', $userId)->delete();
+            UserNotification::where('user_id', $userId)->delete();
+            UserPet::where('user_id', $userId)->delete();
+
+            if (DB::getSchemaBuilder()->hasTable('category_user')) {
+                DB::table('category_user')->where('user_id', $userId)->delete();
+            }
+
+            DB::table('users')->where('id', $userId)->delete();
         });
 
         Auth::logout();

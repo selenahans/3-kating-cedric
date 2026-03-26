@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 class RegisterController extends Controller
@@ -34,12 +35,14 @@ class RegisterController extends Controller
             $user = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
-                'password' => Hash::make($validated['password'])
+                'password' => Hash::make($validated['password']),
+                'email_verified_at' => now(),
             ]);
 
-            $user->sendEmailVerificationNotification();
+            Auth::login($user);
+            $request->session()->regenerate();
 
-            return redirect()->route('verification.notice');
+            return redirect()->route('onboarding');
 
         } catch (\Exception $e) {
 

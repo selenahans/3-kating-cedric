@@ -31,6 +31,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'email_verified_at',
         'photo',
         'coins',
         'onboarding_completed_at',

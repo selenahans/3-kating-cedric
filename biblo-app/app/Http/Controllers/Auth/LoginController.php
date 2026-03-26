@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
@@ -20,15 +18,10 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
 
             $request->session()->regenerate();
+            $user = $request->user();
 
-            // 🚫 BLOCK IF NOT VERIFIED
-            if (!Auth::user()->hasVerifiedEmail()) {
-
-                Auth::logout();
-
-                return back()->withErrors([
-                    'email' => 'Email belum diverifikasi. Silakan cek inbox Anda.'
-                ]);
+            if (!$user?->is_onboarded) {
+                return redirect()->route('onboarding');
             }
 
             return redirect()->intended(route('dashboard'));
@@ -38,17 +31,4 @@ class LoginController extends Controller
             'email' => 'Email atau password salah.'
         ]);
     }
-    protected function authenticated(Request $request, $user)
-    {
-        if (!$user->hasVerifiedEmail()) {
-
-            Auth::logout();
-
-            return redirect()->route('login')
-                ->withErrors([
-                    'email' => 'Email belum diverifikasi. Silakan cek inbox Anda.'
-                ]);
-        }
-    }
-
 }
