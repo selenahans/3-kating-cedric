@@ -38,7 +38,9 @@
         <a href="#gamifikasi" class="font-black text-[11px] uppercase tracking-widest py-2">Sistem Pet</a>
         <a href="#faq" class="font-black text-[11px] uppercase tracking-widest py-2">FAQ</a>
         <hr>
-        <button class="bg-biblo-charcoal text-white py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest">Mulai Membaca</button>
+        
+        <a href="{{ route('login') }}" class="bg-biblo-charcoal text-white py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest">Masuk</a>
+        <a href="{{ route('register') }}" class="bg-biblo-charcoal text-white py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest">Mulai Membaca</a>
     </div>
 </nav>
 
