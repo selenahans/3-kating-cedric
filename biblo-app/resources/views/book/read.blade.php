@@ -2,14 +2,26 @@
 
 @section('title', 'Membaca: ' . $book->title)
 
+@php
+    $navbar = view('components.read.navbar', [
+        'title' => $book->title,
+        'currentPage' => 1,
+        'totalPages' => ($book->total_pages ?? 1),
+        'backUrl' => route('book.detail', $book),
+        'petImage' => $petImage
+    ])->render();
+
+    $bottomBar = view('components.read.bottom-bar', [
+        'prevUrl' => '#',
+        'nextUrl' => '#',
+        'progress' => $progress->progress_percentage ?? 0
+    ])->render();
+@endphp
+
 @section('content')
-
-    {{-- Navbar --}}
-    <x-read.navbar :title="$book->title" :currentPage="1" :totalPages="($book->total_pages ?? 1)" :backUrl="route('book.detail', $book)" :petImage="$petImage" />
-
     {{-- Cleaned Content Area --}}
-    <main class="pb-44 px-6 bg-biblo-cream/10">
-        <div class="max-w-4xl mx-auto">
+    <main class="bg-biblo-cream/10">
+        <div class="mx-auto">
             {{-- This is the only element ePub.js needs --}}
             <div id="viewer" class="h-[600px] w-full bg-white rounded-lg"></div>
 
@@ -83,19 +95,18 @@
         </div>
     </div>
 
-    {{-- Bottom Bar --}}
-    <x-read.bottom-bar id="prev" nextId="next" :progress="$progress->progress_percentage ?? 0" />
-    
+
     {{-- Hungry Pet Notification Modal --}}
     <div id="hungry-pet-modal"
         class="fixed inset-0 z-[98] bg-biblo-charcoal/30 backdrop-blur-sm hidden items-center justify-center px-4">
         <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl transform transition-all text-center">
             <div class="text-5xl mb-4">🍽️</div>
             <h3 class="font-bold text-2xl text-biblo-charcoal mb-2">Pet Kamu Lapar!</h3>
-            <p class="text-biblo-charcoal/70 mb-6">Pet kamu perlu makan sebelum bisa melanjutkan membaca. Kenyang: <span id="hungry-pet-health" class="font-bold">0</span>%</p>
+            <p class="text-biblo-charcoal/70 mb-6">Pet kamu perlu makan sebelum bisa melanjutkan membaca. Kenyang: <span
+                    id="hungry-pet-health" class="font-bold">0</span>%</p>
             <p class="text-sm text-biblo-charcoal/60 mb-6">Kasih makan pet kamu dulu, ya!</p>
-            
-            <a href="{{ route('mypet') }}" 
+
+            <a href="{{ route('mypet') }}"
                 class="w-full py-3 rounded-xl font-bold text-white bg-biblo-moss hover:bg-[#7e8f7a] transition-all inline-block">
                 Beri Makan Pet
             </a>
@@ -108,8 +119,9 @@
         <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl transform transition-all my-8">
             <div class="text-4xl mb-4 text-center">📋</div>
             <h3 class="font-bold text-2xl text-biblo-charcoal mb-2 text-center">Selesaikan Tugas Dulu</h3>
-            <p class="text-biblo-charcoal/70 mb-6 text-center">Kamu perlu menyelesaikan semua tugas berikut sebelum naik ke level <span id="gate-level" class="font-bold">3</span>:</p>
-            
+            <p class="text-biblo-charcoal/70 mb-6 text-center">Kamu perlu menyelesaikan semua tugas berikut sebelum naik ke
+                level <span id="gate-level" class="font-bold">3</span>:</p>
+
             <div id="tasks-list" class="space-y-3 mb-6 max-h-64 overflow-y-auto">
                 <!-- Tasks akan di-populate via JavaScript -->
             </div>
@@ -158,10 +170,10 @@
             const levelUpViewPetBtn = document.getElementById("level-up-view-pet");
             const levelUpContinueReadingBtn = document.getElementById("level-up-continue-reading");
             const levelUpConfetti = document.getElementById("level-up-confetti");
-            
+
             const hungryPetModal = document.getElementById("hungry-pet-modal");
             const hungryPetHealth = document.getElementById("hungry-pet-health");
-            
+
             const levelGateModal = document.getElementById("level-gate-modal");
             const gateCloseBtn = document.getElementById("gate-close-btn");
             const tasksList = document.getElementById("tasks-list");
@@ -213,7 +225,7 @@
                     }
 
                     const data = await response.json();
-                    
+
                     if (data.is_hungry) {
                         // Show hungry pet modal
                         if (hungryPetHealth) {
@@ -384,14 +396,14 @@
                     const taskEl = document.createElement('div');
                     taskEl.className = 'bg-biblo-oat/20 p-3 rounded-xl flex gap-3';
                     taskEl.innerHTML = `
-                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-biblo-clay/20 flex items-center justify-center">
-                            <span class="text-xs font-black">${index + 1}</span>
-                        </div>
-                        <div class="flex-1 text-left">
-                            <p class="font-bold text-xs text-biblo-charcoal">${task.title}</p>
-                            <p class="text-[10px] text-biblo-charcoal/60">${task.description}</p>
-                        </div>
-                    `;
+                                                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-biblo-clay/20 flex items-center justify-center">
+                                                    <span class="text-xs font-black">${index + 1}</span>
+                                                </div>
+                                                <div class="flex-1 text-left">
+                                                    <p class="font-bold text-xs text-biblo-charcoal">${task.title}</p>
+                                                    <p class="text-[10px] text-biblo-charcoal/60">${task.description}</p>
+                                                </div>
+                                            `;
                     tasksList.appendChild(taskEl);
                 });
 
@@ -400,7 +412,7 @@
             }
 
             if (gateCloseBtn) {
-                gateCloseBtn.addEventListener('click', function() {
+                gateCloseBtn.addEventListener('click', function () {
                     levelGateModal.classList.add('hidden');
                     levelGateModal.classList.remove('flex');
                 });
@@ -497,11 +509,52 @@
                 allowScriptedContent: true
             });
 
+            rendition.themes.default({
+                body: {
+                    "background": "#FDFBF8",
+                    "color": "#3F453F"
+                }
+            });
+
+            function applyReaderTheme() {
+                const isDark = document.documentElement.classList.contains('theme-dark');
+
+                if (isDark) {
+                    rendition.themes.default({
+                        body: {
+                            "background": "#1E2321",
+                            "color": "#E5E7EB"
+                        },
+                        "*": {
+                            "color": "#E5E7EB !important"
+                        },
+                        "a": {
+                            "color": "#93C5FD !important" // softer blue for dark mode
+                        }
+                    });
+                } else {
+                    rendition.themes.default({
+                        body: {
+                            "background": "#FDFBF8",
+                            "color": "#3F453F"
+                        },
+                        "*": {
+                            "color": "#3F453F !important"
+                        },
+                        "a": {
+                            "color": "#2563EB !important"
+                        }
+                    });
+                }
+            }
+
             book.ready.then(async () => {
+                applyReaderTheme();
                 await book.locations.generate(1000); // 🔥 THIS FIXES EVERYTHING
 
                 // Keep topbar in sync before first relocated event fires.
                 setReaderCurrentPage(currentTopbarPage);
+
 
                 try {
                     if (savedCfi) {
@@ -563,6 +616,7 @@
             }
 
             rendition.on("rendered", () => {
+                applyReaderTheme();
                 loadSavedHighlights(); // 🔥 THIS WAS MISSING
             });
 
@@ -589,6 +643,14 @@
                 });
             }
 
+            window.toggleTheme = function () {
+                const html = document.documentElement;
+                const isDark = html.classList.toggle('theme-dark');
+
+                localStorage.setItem('biblo-theme', isDark ? 'dark' : 'light');
+
+                applyReaderTheme(); // 🔥 THIS IS IMPORTANT
+            };
 
             // --- Navigation (WITH PRE-FLIGHT PET HEALTH CHECK) ---
             document.getElementById("next").onclick = (e) => {
@@ -801,10 +863,10 @@
                 noteInput.value = "";
             };
         });
-        
-       
 
-        
+
+
+
 
     </script>
 @endsection
