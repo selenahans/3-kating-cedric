@@ -84,6 +84,16 @@ class ShopController extends Controller
             'image_path' => 'images/skins/biblo-charcoal.webp',
             'slug' => 'biblo-charcoal',
         ],
+        [
+            'name' => 'Pink Star',
+            'label' => 'Langit Asmara',
+            'price' => 100,
+            'desc' => 'Gaya pink cerah untuk mood ceria.',
+            'icon' => '🩷',
+            'preview_color' => 'bg-biblo-pink/30',
+            'image_path' => 'images/skins/biblo-pink-star.webp',
+            'slug' => 'biblo-pink',
+        ],
     ];
 
     private const FOOD_CATALOG = [
