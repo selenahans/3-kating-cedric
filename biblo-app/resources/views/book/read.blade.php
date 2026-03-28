@@ -95,6 +95,13 @@
         </div>
     </div>
 
+    <div id="highlight-popup" class="hidden fixed z-[110] px-3 py-2 rounded-2xl shadow-xl
+                           bg-white border border-biblo-greige/20
+                           flex items-center gap-2">
+        <button id="open-note-modal-btn" class="text-xs font-bold text-biblo-moss">
+            ✨ Tambah Catatan
+        </button>
+    </div>
 
     {{-- Hungry Pet Notification Modal --}}
     <div id="hungry-pet-modal"
@@ -179,6 +186,8 @@
             const tasksList = document.getElementById("tasks-list");
             const gateLevel = document.getElementById("gate-level");
             const initialHungry = @json($isHungry ?? false);
+            const highlightPopup = document.getElementById("highlight-popup");
+            const openNoteModalBtn = document.getElementById("open-note-modal-btn");
 
             function progressToPage(progress) {
                 const normalized = Math.min(100, Math.max(0, Number(progress) || 0));
@@ -396,14 +405,14 @@
                     const taskEl = document.createElement('div');
                     taskEl.className = 'bg-biblo-oat/20 p-3 rounded-xl flex gap-3';
                     taskEl.innerHTML = `
-                                                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-biblo-clay/20 flex items-center justify-center">
-                                                            <span class="text-xs font-black">${index + 1}</span>
-                                                        </div>
-                                                        <div class="flex-1 text-left">
-                                                            <p class="font-bold text-xs text-biblo-charcoal">${task.title}</p>
-                                                            <p class="text-[10px] text-biblo-charcoal/60">${task.description}</p>
-                                                        </div>
-                                                    `;
+                                                                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-biblo-clay/20 flex items-center justify-center">
+                                                                            <span class="text-xs font-black">${index + 1}</span>
+                                                                        </div>
+                                                                        <div class="flex-1 text-left">
+                                                                            <p class="font-bold text-xs text-biblo-charcoal">${task.title}</p>
+                                                                            <p class="text-[10px] text-biblo-charcoal/60">${task.description}</p>
+                                                                        </div>
+                                                                    `;
                     tasksList.appendChild(taskEl);
                 });
 
@@ -817,23 +826,41 @@
                 if (!rendition) return;
 
                 rendition.on("selected", function (cfiRange, contents) {
-                    const selectedText = contents.window.getSelection().toString();
+                    const selection = contents.window.getSelection();
+                    const selectedText = selection.toString();
 
-                    // ignore accidental taps or empty selections
-                    if (!selectedText || selectedText.trim().length < 2) {
-                        return;
-                    }
+                    if (!selectedText || selectedText.trim().length < 2) return;
 
                     currentSelection = {
                         cfiRange: cfiRange,
                         text: selectedText
                     };
 
-                    highlightPreview.innerText = `"${selectedText}"`;
-                    noteModal.classList.remove('hidden');
-                    noteModal.classList.add('flex');
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+
+                    const popupWidth = 140;
+                    const left = Math.max(
+                        12,
+                        Math.min(rect.left + rect.width / 2 - popupWidth / 2, window.innerWidth - popupWidth - 12)
+                    );
+
+                    highlightPopup.style.left = `${left}px`;
+                    highlightPopup.style.top = `${Math.max(12, rect.top - 60)}px`;
+                    highlightPopup.classList.remove("hidden");
                 });
             }
+
+            openNoteModalBtn.onclick = function () {
+                if (!currentSelection) return;
+
+                highlightPreview.innerText = `"${currentSelection.text}"`;
+
+                noteModal.classList.remove("hidden");
+                noteModal.classList.add("flex");
+
+                highlightPopup.classList.add("hidden");
+            };
 
             // Cancel note
             document.getElementById('cancel-note-btn').onclick = function () {
