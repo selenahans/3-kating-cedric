@@ -396,14 +396,14 @@
                     const taskEl = document.createElement('div');
                     taskEl.className = 'bg-biblo-oat/20 p-3 rounded-xl flex gap-3';
                     taskEl.innerHTML = `
-                                                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-biblo-clay/20 flex items-center justify-center">
-                                                    <span class="text-xs font-black">${index + 1}</span>
-                                                </div>
-                                                <div class="flex-1 text-left">
-                                                    <p class="font-bold text-xs text-biblo-charcoal">${task.title}</p>
-                                                    <p class="text-[10px] text-biblo-charcoal/60">${task.description}</p>
-                                                </div>
-                                            `;
+                                                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-biblo-clay/20 flex items-center justify-center">
+                                                            <span class="text-xs font-black">${index + 1}</span>
+                                                        </div>
+                                                        <div class="flex-1 text-left">
+                                                            <p class="font-bold text-xs text-biblo-charcoal">${task.title}</p>
+                                                            <p class="text-[10px] text-biblo-charcoal/60">${task.description}</p>
+                                                        </div>
+                                                    `;
                     tasksList.appendChild(taskEl);
                 });
 
@@ -577,6 +577,47 @@
 
                 loading.style.display = "none";
                 registerHighlightHandler();
+                const isMobile = window.innerWidth < 768;
+
+                if (isMobile) {
+                    rendition.on("rendered", function (section, contents) {
+                        const doc = contents.document;
+                        let touchStartX = 0;
+                        let isSelecting = false;
+                        let selectionTimeout;
+
+                        doc.addEventListener("touchstart", (e) => {
+                            touchStartX = e.touches[0].clientX;
+                            isSelecting = false;
+
+                            // if long press starts, assume text selection mode
+                            selectionTimeout = setTimeout(() => {
+                                isSelecting = true;
+                            }, 250);
+                        });
+
+                        doc.addEventListener("touchmove", () => {
+                            isSelecting = true;
+                            clearTimeout(selectionTimeout);
+                        });
+
+                        doc.addEventListener("touchend", (e) => {
+                            clearTimeout(selectionTimeout);
+
+                            // if selecting text, let epub.js selected event handle it
+                            const selection = contents.window.getSelection();
+                            if (selection && selection.toString().trim().length > 0) {
+                                return;
+                            }
+
+                            // prevent accidental page turns while dragging
+                            if (isSelecting) return;
+
+                            const x = e.changedTouches[0].clientX;
+                            const width = window.innerWidth;
+                        });
+                    });
+                }
             });
 
             function updateProgressUI(location) {
@@ -776,20 +817,21 @@
                 if (!rendition) return;
 
                 rendition.on("selected", function (cfiRange, contents) {
-                    book.getRange(cfiRange).then(function (range) {
-                        const selectedText = range.toString();
+                    const selectedText = contents.window.getSelection().toString();
 
-                        if (selectedText.trim() !== "") {
-                            currentSelection = {
-                                cfiRange: cfiRange,
-                                text: selectedText
-                            };
+                    // ignore accidental taps or empty selections
+                    if (!selectedText || selectedText.trim().length < 2) {
+                        return;
+                    }
 
-                            highlightPreview.innerText = `"${selectedText}"`;
-                            noteModal.classList.remove('hidden');
-                            noteModal.classList.add('flex');
-                        }
-                    });
+                    currentSelection = {
+                        cfiRange: cfiRange,
+                        text: selectedText
+                    };
+
+                    highlightPreview.innerText = `"${selectedText}"`;
+                    noteModal.classList.remove('hidden');
+                    noteModal.classList.add('flex');
                 });
             }
 
