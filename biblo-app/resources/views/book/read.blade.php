@@ -96,8 +96,8 @@
     </div>
 
     <div id="highlight-popup" class="hidden fixed z-[110] px-3 py-2 rounded-2xl shadow-xl
-                           bg-white border border-biblo-greige/20
-                           flex items-center gap-2">
+                                   bg-white border border-biblo-greige/20
+                                   flex items-center gap-2">
         <button id="open-note-modal-btn" class="text-xs font-bold text-biblo-moss">
             ✨ Tambah Sorotan
         </button>
@@ -188,6 +188,7 @@
             const initialHungry = @json($isHungry ?? false);
             const highlightPopup = document.getElementById("highlight-popup");
             const openNoteModalBtn = document.getElementById("open-note-modal-btn");
+            let highlightPopupTimer = null;
 
             function progressToPage(progress) {
                 const normalized = Math.min(100, Math.max(0, Number(progress) || 0));
@@ -405,14 +406,14 @@
                     const taskEl = document.createElement('div');
                     taskEl.className = 'bg-biblo-oat/20 p-3 rounded-xl flex gap-3';
                     taskEl.innerHTML = `
-                                                                        <div class="flex-shrink-0 w-6 h-6 rounded-full bg-biblo-clay/20 flex items-center justify-center">
-                                                                            <span class="text-xs font-black">${index + 1}</span>
-                                                                        </div>
-                                                                        <div class="flex-1 text-left">
-                                                                            <p class="font-bold text-xs text-biblo-charcoal">${task.title}</p>
-                                                                            <p class="text-[10px] text-biblo-charcoal/60">${task.description}</p>
-                                                                        </div>
-                                                                    `;
+                                                                                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-biblo-clay/20 flex items-center justify-center">
+                                                                                    <span class="text-xs font-black">${index + 1}</span>
+                                                                                </div>
+                                                                                <div class="flex-1 text-left">
+                                                                                    <p class="font-bold text-xs text-biblo-charcoal">${task.title}</p>
+                                                                                    <p class="text-[10px] text-biblo-charcoal/60">${task.description}</p>
+                                                                                </div>
+                                                                            `;
                     tasksList.appendChild(taskEl);
                 });
 
@@ -839,19 +840,32 @@
                     const range = selection.getRangeAt(0);
                     const rect = range.getBoundingClientRect();
 
-                    const popupWidth = 140;
+                    const popupWidth = 160;
                     const left = Math.max(
                         12,
-                        Math.min(rect.left + rect.width / 2 - popupWidth / 2, window.innerWidth - popupWidth - 12)
+                        Math.min(
+                            rect.left + rect.width / 2 - popupWidth / 2,
+                            window.innerWidth - popupWidth - 12
+                        )
                     );
 
                     highlightPopup.style.left = `${left}px`;
                     highlightPopup.style.top = `${Math.max(12, rect.top - 60)}px`;
                     highlightPopup.classList.remove("hidden");
+
+                    // clear old timer
+                    clearTimeout(highlightPopupTimer);
+
+                    // auto hide after 3 sec
+                    highlightPopupTimer = setTimeout(() => {
+                        highlightPopup.classList.add("hidden");
+                    }, 3000);
                 });
             }
 
             openNoteModalBtn.onclick = function () {
+                clearTimeout(highlightPopupTimer);
+
                 if (!currentSelection) return;
 
                 highlightPreview.innerText = `"${currentSelection.text}"`;
