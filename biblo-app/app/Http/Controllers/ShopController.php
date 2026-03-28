@@ -87,12 +87,22 @@ class ShopController extends Controller
         [
             'name' => 'Pink Star',
             'label' => 'Langit Asmara',
-            'price' => 100,
+            'price' => 300,
             'desc' => 'Gaya pink cerah untuk mood ceria.',
             'icon' => '🩷',
             'preview_color' => 'bg-biblo-pink/30',
             'image_path' => 'images/skins/biblo-pink-star.webp',
             'slug' => 'biblo-pink',
+        ],
+        [
+            'name' => 'Yellow Daisy',
+            'label' => 'Harvest Harum',
+            'price' => 250,
+            'desc' => 'Gaya kuning cerah untuk mood ceria.',
+            'icon' => '🌻',
+            'preview_color' => 'bg-biblo-yellow/30',
+            'image_path' => 'images/skins/biblo-daisy.webp',
+            'slug' => 'biblo-yellow',
         ],
     ];
 
