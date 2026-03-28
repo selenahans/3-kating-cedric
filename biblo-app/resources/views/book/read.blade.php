@@ -99,7 +99,7 @@
                            bg-white border border-biblo-greige/20
                            flex items-center gap-2">
         <button id="open-note-modal-btn" class="text-xs font-bold text-biblo-moss">
-            ✨ Tambah Catatan
+            ✨ Tambah Sorotan
         </button>
     </div>
 
